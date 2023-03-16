@@ -40,7 +40,7 @@ public interface RestModel extends Serializable {
 
     public static final String WORKFLOWPROCESSSENDERDIARY = "workflowprocesssenderdiarie";
 
-    public static final String LATTERCATOGORY = "lattercategory";
+    public static final String LATTERCATOGORY = "lattercategorie";
 
     public String getType();
 
