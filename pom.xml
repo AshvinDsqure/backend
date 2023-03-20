@@ -17,7 +17,7 @@
     </organization>
 
     <properties>
-        <!--=== GENERAL / DSPACE-API DEPENDENCIES ===-->
+        <!--=== GENERAL / DSPACE-API DEPENDENCIES  ===-->
         <java.version>11</java.version>
         <spring.version>5.3.20</spring.version>
         <spring-boot.version>2.6.8</spring-boot.version>
@@ -779,7 +779,7 @@
         </profile>
 
         <!--
-           Builds central API for DSpace
+           Builds central API for DSpace from api DB resource
         -->
         <profile>
             <id>dspace-api</id>
