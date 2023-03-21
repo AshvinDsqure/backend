@@ -7,35 +7,29 @@
  */
 package org.dspace.app.rest.model;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author root
  */
-public class BarChartdataPointsDTO {    
-    int y;
-    String label;
+public class BarChartdataPointsDTO { 
 
-    public BarChartdataPointsDTO(String label, int y) {
-        this.label = label;
-        this.y = y;
-    }
-    
-   
-
-    public BarChartdataPointsDTO() {
-		super();
+	String name;
+	List<Series> series = new ArrayList<>();
+	
+	public String getName() {
+		return name;
 	}
-
-
-
-	public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
+	public List<Series> getSeries() {
+		return series;
+	}
+	public void setSeries(List<Series> series) {
+		this.series = series;
+	}
     
 }

@@ -22,16 +22,23 @@ import java.util.List;
  * @author root
  */
 public class ItemBarchartDTO {
-    private List<String> labels= new ArrayList<>();
+    //private List<String> labels= new ArrayList<>();
     private List<ItemBardataset> datasets=new ArrayList<>();
+    
     int count=0;
-    private String lable;
+    
+    private String lable = null;
+    /*
     public List<String> getLabels() {
         return labels;
     }
 
     public void setLabels(List<String> labels) {
         this.labels = labels;
+    }
+*/
+    public ItemBarchartDTO() {
+    	super();
     }
 
     public List<ItemBardataset> getDatasets() {
@@ -56,8 +63,6 @@ public class ItemBarchartDTO {
 
     public void setLable(String lable) {
         this.lable = lable;
-    }
-    
-    
+    }  
     
 }

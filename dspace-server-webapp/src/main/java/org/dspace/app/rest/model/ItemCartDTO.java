@@ -13,12 +13,13 @@ package org.dspace.app.rest.model;
  */
 public class ItemCartDTO {
 
+	/*
     private String DocumentType;
     private String uuid;
     private String Title;
     private String Auther;
-     private String collectionName;
-     private String communityName;
+    private String collectionName;
+    private String communityName;
     private int total_View;
     private int total_View_item;
     private int total_Downlode;
@@ -26,10 +27,11 @@ public class ItemCartDTO {
     private int total_Reader;
     private int total_Reader_item;
     private String url;
+    */
     private ItemBarchartDTO viewDatapoint=new ItemBarchartDTO();
     private ItemBarchartDTO DownlodeDatapoint=new ItemBarchartDTO();
     private ItemBarchartDTO ReaderDatapoint=new ItemBarchartDTO();
-
+  /*  
     public String getDocumentType() {
         return DocumentType;
     }
@@ -101,7 +103,7 @@ public class ItemCartDTO {
     public void setTotal_Reader_item(int total_Reader_item) {
         this.total_Reader_item = total_Reader_item;
     }
-
+*/
     public ItemBarchartDTO getViewDatapoint() {
         return viewDatapoint;
     }
@@ -125,7 +127,7 @@ public class ItemCartDTO {
     public void setReaderDatapoint(ItemBarchartDTO ReaderDatapoint) {
         this.ReaderDatapoint = ReaderDatapoint;
     }
-
+/*
     public String getUrl() {
         return url;
     }
@@ -157,7 +159,7 @@ public class ItemCartDTO {
     public void setCommunityName(String communityName) {
         this.communityName = communityName;
     }
-    
+    */
     
    
 }

@@ -12,7 +12,26 @@ package org.dspace.app.rest.model;
  * @author root
  */
 public class TrendingCommunitiesChartDTO {
-    String label;
+	
+	private String name;
+	private Integer value;
+
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Integer getValue() {
+		return value;
+	}
+	public void setValue(Integer value) {
+		this.value = value;
+	}
+	
+	
+	/*
+    String label = null;
     int y;
     String uuid;
 
@@ -39,5 +58,5 @@ public class TrendingCommunitiesChartDTO {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
-    
+    */
 }
