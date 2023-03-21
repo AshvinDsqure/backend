@@ -7,59 +7,35 @@
  */
 package org.dspace.app.rest.model;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author root
  */
 public class LineChartdataPointsDTO {
-    String x;
-    int y;
-    String label;
-    int donwloadcount;
-    public LineChartdataPointsDTO(String x, int y) {
-        this.x = x;
-        this.y = y;
-       
-    }
-    public LineChartdataPointsDTO(String x, int y,int donwloadcount) {
-        this.x = x;
-        this.y = y;
-        this.donwloadcount=donwloadcount;
-    }
-    public String getX() {
-        return x;
+
+    String name;
+    List<Series> series = new ArrayList<>();
+
+    public LineChartdataPointsDTO() {
+    	super();
     }
 
-    public void setX(String x) {
-        this.x = x;
-    }
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public int getY() {
-        return y;
-    }
+	public List<Series> getSeries() {
+		return series;
+	}
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public int getDonwloadcount() {
-        return donwloadcount;
-    }
-
-    public void setDonwloadcount(int donwloadcount) {
-        this.donwloadcount = donwloadcount;
-    }
-    
-
-    
+	public void setSeries(List<Series> series) {
+		this.series = series;
+	}  
+	
 }

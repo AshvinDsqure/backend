@@ -30,7 +30,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.dspace.app.rest.enums.DateEnum;
+import org.dspace.app.rest.enums.DocumentTypeEnum;
+import org.dspace.app.rest.model.BarChartDTO;
+import org.dspace.app.rest.model.BarChartdataPointsDTO;
+import org.dspace.app.rest.model.ItemBarchartDTO;
+import org.dspace.app.rest.model.ItemBardataset;
+import org.dspace.app.rest.model.ItemCartDTO;
+import org.dspace.app.rest.model.ItemCartDetailsDTO;
 import org.dspace.app.rest.model.LineChartDTO;
+import org.dspace.app.rest.model.LineChartdataPointsDTO;
+import org.dspace.app.rest.model.Series;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
@@ -44,19 +53,11 @@ import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.dspace.app.rest.enums.DocumentTypeEnum;
-import org.dspace.app.rest.model.BarChartDTO;
-import org.dspace.app.rest.model.BarChartdataPointsDTO;
-import org.dspace.app.rest.model.ItemBarchartDTO;
-import org.dspace.app.rest.model.ItemBardataset;
-import org.dspace.app.rest.model.ItemCartDTO;
-import org.dspace.app.rest.model.LineChartdataPointsDTO;
 import com.google.gson.Gson;
 
 @RestController
@@ -94,7 +95,9 @@ public class TrendingItemsController implements InitializingBean {
 			HttpServletRequest request) {
 		log.info("Inside TrendingItemsController::getItemBarChart() method...");
 
-		List<BarChartDTO> itemBarChartList = new ArrayList<>();
+		BarChartDTO itemBarChart = new BarChartDTO();
+		itemBarChart.setDataPoints(new ArrayList<BarChartdataPointsDTO>());
+		// List<BarChartdataPointsDTO> itemBarChartList = new ArrayList<>();
 		try {
 			Context context = ContextUtil.obtainContext(request);
 			EPerson user = context.getCurrentUser();
@@ -115,15 +118,12 @@ public class TrendingItemsController implements InitializingBean {
 			Map<String, Map<String, Integer>> sapprationDataMap = new HashMap<String, Map<String, Integer>>();
 			List<Object[]> ItemList = eventTrackService.itemBarChart(context, dateMonthYear.getqueryString(),
 					"e.action");
-			List<BarChartdataPointsDTO> blankList = new ArrayList<BarChartdataPointsDTO>();
-			BarChartDTO view = new BarChartDTO("bar", "Views", "#0.##", blankList, "#014D65");
-			BarChartDTO download = new BarChartDTO("bar", "Attachment Views", "#0.##", blankList, "#92D050");
 
 			for (Object[] objects : ItemList) {
 				if (objects[0] != null && objects[0].toString().length() != 0) {
 					if (!sapprationDataMap.containsKey(objects[0].toString())) {
-						Map<String, Integer> downlodemap = new HashMap();
-						downlodemap.put("downlode", 0);
+						Map<String, Integer> downlodemap = new HashMap<>();
+						downlodemap.put("download", 0);
 						downlodemap.put("view", 0);
 						sapprationDataMap.put(objects[0].toString(), downlodemap);
 					}
@@ -136,24 +136,26 @@ public class TrendingItemsController implements InitializingBean {
 					if (action == Constants.ITEM) {
 						sapprationDataMap.get(objects[0].toString()).put("view", count);
 					} else if (action == Constants.BITSTREAM) {
-						sapprationDataMap.get(objects[0].toString()).put("downlode", count);
+						sapprationDataMap.get(objects[0].toString()).put("download", count);
 					}
 				}
 			}
 			for (Map.Entry<String, Map<String, Integer>> entry : sapprationDataMap.entrySet()) {
 				Object key = entry.getKey();
+				BarChartdataPointsDTO dataPoints = new BarChartdataPointsDTO();
+				dataPoints.setSeries(new ArrayList<Series>());
+				dataPoints.setName(key.toString());
 				for (Map.Entry<String, Integer> innnerview : entry.getValue().entrySet()) {
 					String Type = innnerview.getKey();
 					if (Type.equals("view")) {
-						view.getDataPoints().add(new BarChartdataPointsDTO(key.toString(), innnerview.getValue()));
+						dataPoints.getSeries().add(new Series("Views", innnerview.getValue()));
 					}
-					if (Type.equals("downlode")) {
-						download.getDataPoints().add(new BarChartdataPointsDTO(key.toString(), innnerview.getValue()));
+					if (Type.equals("download")) {
+						dataPoints.getSeries().add(new Series("Attachment Views", innnerview.getValue()));
 					}
 				}
+				itemBarChart.getDataPoints().add(dataPoints);
 			}
-			itemBarChartList.add(view);
-			itemBarChartList.add(download);
 			context.complete();
 		} catch (SQLException sqlExc) {
 			log.error("SQLException occured :", sqlExc);
@@ -161,7 +163,7 @@ public class TrendingItemsController implements InitializingBean {
 			log.error("Exception occured :", ex);
 		}
 		log.info("Exiting from TrendingItemsController::getItemBarChart() method...");
-		return gson.toJson(itemBarChartList);
+		return gson.toJson(itemBarChart);
 	}
 
 	/***
@@ -185,7 +187,7 @@ public class TrendingItemsController implements InitializingBean {
 		} else {
 			dateOrMonthOrYear.setCollectionList(Strings.EMPTY);
 		}
-		List<LineChartDTO> itemLineChartList = new ArrayList<>();
+		LineChartDTO itemLineChart = new LineChartDTO();
 		Context context = ContextUtil.obtainContext(request);
 		EPerson user = context.getCurrentUser();
 
@@ -195,26 +197,28 @@ public class TrendingItemsController implements InitializingBean {
 			log.info("loggedin user:", user);
 		}
 		try {
-			Map<String, LineChartDTO> docTypeMap = new HashMap<>();
+			Map<String, LineChartdataPointsDTO> docTypeMap = new HashMap<>();
 			List<Object[]> ItemList = eventTrackService.itemLineChart(context, dateOrMonthOrYear.getqueryString(),
 					"CAST(e.action_date AS DATE)");
-			for (DocumentTypeEnum t : DocumentTypeEnum.values()) {
-				docTypeMap.put(t.getName(), new LineChartDTO("spline", t.getName(), "#0.##",
-						new ArrayList<LineChartdataPointsDTO>(), t.getColour()));
+			for (DocumentTypeEnum docType : DocumentTypeEnum.values()) {
+				LineChartdataPointsDTO dto = new LineChartdataPointsDTO();
+				dto.setName(docType.getName());
+				docTypeMap.put(docType.getName(), dto);
 			}
+
 			for (Object[] objects : ItemList) {
 				int count = ((BigInteger) objects[2]).intValue();
 				int type = ((Integer) objects[1]).intValue();
 				String date = ((Date) objects[0]).toString();
 				DocumentTypeEnum documentTypeEnumobj = DocumentTypeEnum.getBykey(type);
-				LineChartdataPointsDTO bookDataDTO = new LineChartdataPointsDTO(date, count);
-				docTypeMap.get(documentTypeEnumobj.getName()).getDataPoints().add(bookDataDTO);
+				Series series = new Series();
+				series.setName(date);
+				series.setValue(count);
+				docTypeMap.get(documentTypeEnumobj.getName().toString()).getSeries().add(series);
 			}
 
-			for (Map.Entry<String, LineChartDTO> entry : docTypeMap.entrySet()) {
-				if (entry.getValue().getDataPoints().size() != 0) {
-					itemLineChartList.add(entry.getValue());
-				}
+			for (Map.Entry<String, LineChartdataPointsDTO> entry : docTypeMap.entrySet()) {
+				itemLineChart.getDataPoints().add(entry.getValue());
 			}
 			context.complete();
 		} catch (SQLException sqlExc) {
@@ -223,7 +227,7 @@ public class TrendingItemsController implements InitializingBean {
 			log.error("Exception occured :", ex);
 		}
 		log.info("Exiting from TrendingItemsController::getItemLineChart() method...");
-		return gson.toJson(itemLineChartList);
+		return gson.toJson(itemLineChart);
 	}
 
 	/***
@@ -239,7 +243,7 @@ public class TrendingItemsController implements InitializingBean {
 	public String itemCart(@RequestParam Map<String, String> params, HttpServletResponse response,
 			HttpServletRequest request) {
 		log.info("Inside TrendingItemsController::itemCart() method...");
-		List<ItemCartDTO> itemCartList = new ArrayList<ItemCartDTO>();
+		List<ItemCartDetailsDTO> itemCartList = new ArrayList<ItemCartDetailsDTO>();
 
 		int dateType = Integer.valueOf(params.get("dateType"));
 		log.info("dateType in request is:", dateType);
@@ -264,11 +268,11 @@ public class TrendingItemsController implements InitializingBean {
 			List<Object[]> itemMostvList = eventTrackService.ItemByDate(context, dateMonthYear.getqueryString());
 			for (Object[] objects : itemMostvList) {
 				UUID dspaceItemID = UUID.fromString((String) objects[0]);
-				ItemCartDTO ItemCartDTOobj = new ItemCartDTO();
+				ItemCartDetailsDTO itemCartDetailsDTO = new ItemCartDetailsDTO();
 				Item item = itemService.find(context, dspaceItemID);
 				if (item != null) {
-					ItemCartDTOobj = getItemDTO(request, item, context, dateMonthYear);
-					itemCartList.add(ItemCartDTOobj);
+					itemCartDetailsDTO = getItemDTO(request, item, context, dateMonthYear);
+					itemCartList.add(itemCartDetailsDTO);
 				}
 
 			}
@@ -311,13 +315,13 @@ public class TrendingItemsController implements InitializingBean {
 
 			int dateType = Integer.valueOf(params.get("dateType"));
 			log.info("dateType in request is:", dateType);
-			DateEnum dateMonthYear = DateEnum.getDeploymentClass(dateType);
-			String collectionId = params.get("collectionId");
-			log.info("collectionId in request is:", collectionId);
+			DateEnum dateMonthYear = DateEnum.getDeploymentClass(dateType);			
 			String uid = params.get("id");
 			log.info("uid in request is :", uid);
-			UUID dspaceItemID = UUID.fromString(uid);
+			UUID dspaceItemID = UUID.fromString(uid.toString());
 
+			String collectionId = params.get("collectionId");
+			log.info("collectionId in request is:", collectionId);
 			if (collectionId != null) {
 				dateMonthYear.setCollectionList(collectionId);
 			} else {
@@ -329,46 +333,37 @@ public class TrendingItemsController implements InitializingBean {
 
 				DateEnum alltime = DateEnum.getDeploymentClass(3);
 				alltime.setCollectionList(dateMonthYear.getCollectionList());
-				itemCartDTO = getItemcartDTO(request, item, context, alltime, dateMonthYear);
-				itemCartDTO.setUuid(uid);
+				// itemCartDTO = getItemcartDTO(request, item, context, alltime, dateMonthYear);
+				// itemCartDTO.setUuid(uid);
 				List<Object[]> iteamViewObjectList = eventTrackService.ItemViewBYDate(context,
 						dateMonthYear.getqueryString() + "and dspaceobjectid ='" + item.getID() + "'");
-				ItemBarchartDTO ItemBarchartviewDTO = new ItemBarchartDTO();
-				ItemBardataset ItemBardatasetView = new ItemBardataset("View", "transparent");
-				ItemBardatasetView.setBorderWidth(3);
-				ItemBardatasetView.setPointRadius(2);
-				ItemBardatasetView.setPointBackgroundColor("#1F3F5E");
-				ItemBardatasetView.setBorderColor("#1F3F5E");
+				ItemBarchartDTO itemBarchartviewDTO = new ItemBarchartDTO();
+				ItemBardataset itemBardatasetView = new ItemBardataset();
+				itemBardatasetView.setName("View");
 				for (Object[] iteamViewobjects : iteamViewObjectList) {
 					SimpleDateFormat DateFor = new SimpleDateFormat("MMM dd yyyy");
 					String stringDate = DateFor.format((Date) iteamViewobjects[0]);
-					ItemBarchartviewDTO.getLabels().add(stringDate);
 					int count = ((BigInteger) iteamViewobjects[1]).intValue();
-					ItemBardatasetView.getData().add(count);
+					itemBardatasetView.getSeries().add(new Series(stringDate, count));
 
 				}
-				ItemBarchartviewDTO.getDatasets().add(ItemBardatasetView);
+				itemBarchartviewDTO.getDatasets().add(itemBardatasetView);
 				List<Object[]> iteamDownlodeObjectList = eventTrackService.ItemDownlodeBYDate(context,
 						dateMonthYear.getqueryString() + "and dspaceobjectid ='" + item.getID() + "'");
-				ItemBarchartDTO ItemBarchartDownlodeDTO = new ItemBarchartDTO();
-				ItemBardataset ItemBardatasetDownlode = new ItemBardataset("View", "transparent");
-				ItemBardatasetDownlode.setBorderWidth(3);
-				ItemBardatasetDownlode.setPointRadius(2);
-				ItemBardatasetDownlode.setPointBackgroundColor("#92D050");
-				ItemBardatasetDownlode.setBorderColor("#92D050");
+				ItemBarchartDTO itemBarchartDownlodeDTO = new ItemBarchartDTO();
+				ItemBardataset itemBardatasetDownlode = new ItemBardataset();
+				itemBardatasetDownlode.setName("View");
+
 				for (Object[] iteamDownlodeobjects : iteamDownlodeObjectList) {
 					SimpleDateFormat DateFor = new SimpleDateFormat("MMM dd yyyy");
 					String stringDate = DateFor.format((Date) iteamDownlodeobjects[0]);
-					if (!ItemBarchartDownlodeDTO.getLabels().contains(stringDate)) {
-						ItemBarchartDownlodeDTO.getLabels().add(stringDate);
-					}
 					int count = ((BigInteger) iteamDownlodeobjects[1]).intValue();
-					ItemBardatasetDownlode.getData().add(count);
+					itemBardatasetDownlode.getSeries().add(new Series(stringDate, count));
 
 				}
-				ItemBarchartDownlodeDTO.getDatasets().add(ItemBardatasetDownlode);
-				itemCartDTO.setViewDatapoint(ItemBarchartviewDTO);
-				itemCartDTO.setDownlodeDatapoint(ItemBarchartDownlodeDTO);
+				itemBarchartDownlodeDTO.getDatasets().add(itemBardatasetDownlode);
+				itemCartDTO.setViewDatapoint(itemBarchartviewDTO);
+				itemCartDTO.setDownlodeDatapoint(itemBarchartDownlodeDTO);
 			}
 			context.commit();
 			context.complete();
@@ -409,12 +404,14 @@ public class TrendingItemsController implements InitializingBean {
 				d.getqueryString() + "and dspaceobjectid ='" + item.getID() + "'");
 		int totalReaderBYItem = eventTrackService.totalItemDownlode(context,
 				d.getqueryString() + "and dspaceobjectid ='" + item.getID() + "'");
-		ItemCartDTOobj.setTotal_View(totalItemView);
-		ItemCartDTOobj.setTotal_View_item(totalViewByItem);
-		ItemCartDTOobj.setTotal_Downlode(totalItemDownlode);
-		ItemCartDTOobj.setTotal_Downlode_Item(totalDownlodeByItem);
-		ItemCartDTOobj.setTotal_Reader(totalItemReader);
-		ItemCartDTOobj.setTotal_Reader_item(totalReaderBYItem);
+		/*
+		 * ItemCartDTOobj.setTotal_View(totalItemView);
+		 * ItemCartDTOobj.setTotal_View_item(totalViewByItem);
+		 * ItemCartDTOobj.setTotal_Downlode(totalItemDownlode);
+		 * ItemCartDTOobj.setTotal_Downlode_Item(totalDownlodeByItem);
+		 * ItemCartDTOobj.setTotal_Reader(totalItemReader);
+		 * ItemCartDTOobj.setTotal_Reader_item(totalReaderBYItem);
+		 */
 		return ItemCartDTOobj;
 	}
 
@@ -429,9 +426,9 @@ public class TrendingItemsController implements InitializingBean {
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public ItemCartDTO getItemDTO(HttpServletRequest request, Item item, Context context, DateEnum d)
+	public ItemCartDetailsDTO getItemDTO(HttpServletRequest request, Item item, Context context, DateEnum d)
 			throws ServletException, IOException, SQLException {
-		ItemCartDTO ItemCartDTOobj = new ItemCartDTO();
+		ItemCartDetailsDTO itemCartDetailsDTO = new ItemCartDetailsDTO();
 		List<MetadataValue> MetadataValueauthor = itemService.getMetadata(item, "dc", "contributor", "author",
 				Item.ANY);
 		String author = "<div class=\"widthit displayAuthor\">";
@@ -479,14 +476,16 @@ public class TrendingItemsController implements InitializingBean {
 			}
 		}
 		author = author + "</div>";
-		String Documenttype = itemService.getMetadataFirstValue(item, "dc", "type", null, Item.ANY);
+		String documenttype = itemService.getMetadataFirstValue(item, "dc", "type", null, Item.ANY);
 		String title = itemService.getMetadataFirstValue(item, "dc", "title", null, Item.ANY);
-		ItemCartDTOobj.setTitle(title);
-		ItemCartDTOobj.setAuther(author);
-		ItemCartDTOobj.setDocumentType(Documenttype);
-		ItemCartDTOobj.setUuid(item.getID().toString());
-		ItemCartDTOobj.setUrl(request.getContextPath() + "/handle/" + item.getHandle());
-		return ItemCartDTOobj;
+
+		itemCartDetailsDTO.setTitle(title);
+		itemCartDetailsDTO.setAuther(author);
+		itemCartDetailsDTO.setDocumentType(documenttype);
+		itemCartDetailsDTO.setUuid(item.getID().toString());
+		itemCartDetailsDTO.setUrl(request.getContextPath() + "/handle/" + item.getHandle());
+
+		return itemCartDetailsDTO;
 	}
 
 }

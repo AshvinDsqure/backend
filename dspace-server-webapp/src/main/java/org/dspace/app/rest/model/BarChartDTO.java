@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
  * @author root
  */
 public class BarChartDTO {
+	/*
     String type;    
     String name;
     String markerType="circle";
@@ -22,12 +24,15 @@ public class BarChartDTO {
     String color;
     int lineThickness=4;
     String yValueFormatString;
-    List<BarChartdataPointsDTO> dataPoints;
-    String legendMarkerColor;
+    */
+    List<BarChartdataPointsDTO> dataPoints = new ArrayList<>();
+    //BarChartdataPointsDTO dataPoints;
+    //String legendMarkerColor;
 
     public BarChartDTO() {
     	super();
     }
+    /*
     public BarChartDTO(String type, String name, String yValueFormatString, List<BarChartdataPointsDTO> dataPointsList,String lineColor) {
         this.type = type;        
         this.name = name;
@@ -79,7 +84,7 @@ public class BarChartDTO {
     public void setyValueFormatString(String yValueFormatString) {
         this.yValueFormatString = yValueFormatString;
     }
-
+*/
     public List<BarChartdataPointsDTO> getDataPoints() {
         return dataPoints;
     }
@@ -87,5 +92,4 @@ public class BarChartDTO {
     public void setDataPoints(List<BarChartdataPointsDTO> dataPoints) {
         this.dataPoints = dataPoints;
     }
-            
 }
