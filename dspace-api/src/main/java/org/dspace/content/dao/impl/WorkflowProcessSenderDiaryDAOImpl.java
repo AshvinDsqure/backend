@@ -14,6 +14,9 @@ import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.content.dao.WorkflowProcessNoteDAO;
 import org.dspace.content.dao.WorkflowProcessSenderDiaryDAO;
 import org.dspace.core.AbstractHibernateDSODAO;
+import org.dspace.core.Context;
+
+import java.sql.SQLException;
 
 
 /**
@@ -27,5 +30,11 @@ public class WorkflowProcessSenderDiaryDAOImpl extends AbstractHibernateDSODAO<W
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkflowProcessNoteDAOImpl.class);
     protected WorkflowProcessSenderDiaryDAOImpl() {
         super();
+    }
+
+    @Override
+    public int countRows(Context context) throws SQLException {
+        return count(createQuery(context, "SELECT count(*) FROM WorkflowProcessSenderDiary"));
+
     }
 }

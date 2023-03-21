@@ -54,7 +54,7 @@ public class WorkflowProcessSenderDiary extends DSpaceObject implements DSpaceOb
     @Column(name = "city")
     private String city;
     @Column(name = "country")
-    private String country;
+        private String country;
 
     @Override
     public int getType() {

@@ -41,6 +41,10 @@ public interface RestModel extends Serializable {
     public static final String WORKFLOWPROCESSSENDERDIARY = "workflowprocesssenderdiarie";
 
     public static final String LATTERCATOGORY = "lattercategorie";
+    public static final String WORKFLOWPROCESSMASTER = "workflowprocessmaster";
+    public static final String WORKFLOWPROCESSMASTERVALUE = "workflowprocessmastervalue";
+
+
 
     public String getType();
 

@@ -14,8 +14,10 @@ import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.WorkflowProcessDefinition;
 import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
+import org.springframework.stereotype.Component;
 
 
+@Component
 public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<WorkflowProcessSenderDiary, WorkflowProcessSenderDiaryRest> {
 
     @Override
@@ -28,7 +30,6 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
     protected WorkflowProcessSenderDiaryRest newInstance() {
         return new WorkflowProcessSenderDiaryRest();
     }
-
     @Override
     public WorkflowProcessSenderDiaryRest convert(WorkflowProcessSenderDiary obj, Projection projection) {
         WorkflowProcessSenderDiaryRest rest = new WorkflowProcessSenderDiaryRest();
@@ -41,9 +42,20 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
         rest.setContactNumber(obj.getContactNumber());
         rest.setEmail(obj.getEmail());
         rest.setAddress(obj.getAddress());
-
+        rest.setUuid(obj.getID().toString());
         return rest;
     }
 
-
+    public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiary rest, WorkflowProcessSenderDiaryRest obj) {
+        rest.setCity(obj.getCity());
+        rest.setCountry(obj.getCountry());
+        rest.setOrganization(obj.getOrganization());
+        rest.setLegacyId(obj.getLegacyId());
+        rest.setName(obj.getName());
+        rest.setDesignation(obj.getDesignation());
+        rest.setContactNumber(obj.getContactNumber());
+        rest.setEmail(obj.getEmail());
+        rest.setAddress(obj.getAddress());
+        return rest;
+    }
 }

@@ -47,7 +47,10 @@
     <bean class="org.dspace.content.ItemServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessSenderDiaryServiceImpl"/>
-
+	
+    <bean class="org.dspace.content.WorkFlowProcessMasterServiceImpl"/>
+    <bean class="org.dspace.content.WorkFlowProcessMasterValueServiceImpl"/>
+	
     <bean class="org.dspace.content.DocumentTypeServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessNoteServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessDefinitionServiceImpl"/>

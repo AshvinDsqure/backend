@@ -53,6 +53,8 @@
         <mapping class="org.dspace.content.WorkflowProcessReferenceDoc"/>
         <mapping class="org.dspace.content.WorkflowProcessCorrespondence"/>
         <mapping class="org.dspace.content.WorkflowProcessSenderDiary"/>
+        <mapping class="org.dspace.content.WorkFlowProcessMaster"/>
+        <mapping class="org.dspace.content.WorkFlowProcessMasterValue"/>
         <mapping class="org.dspace.content.WorkflowProcessDefinition"/>
         <mapping class="org.dspace.content.WorkflowProcessDefinitionEperson"/>
         <mapping class="org.dspace.content.DocumentType"/>

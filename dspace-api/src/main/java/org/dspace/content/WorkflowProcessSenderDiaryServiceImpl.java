@@ -49,17 +49,17 @@ public class WorkflowProcessSenderDiaryServiceImpl extends DSpaceObjectServiceIm
 
     @Override
     public WorkflowProcessSenderDiary find(Context context, UUID uuid) throws SQLException {
-        return null;
+        return workflowProcessSenderDiaryDAO.findByID(context,WorkflowProcessSenderDiary.class,uuid);
     }
 
     @Override
     public void updateLastModified(Context context, WorkflowProcessSenderDiary dso) throws SQLException, AuthorizeException {
-
+        workflowProcessSenderDiaryDAO.save(context,dso);
     }
 
     @Override
     public void delete(Context context, WorkflowProcessSenderDiary dso) throws SQLException, AuthorizeException, IOException {
-
+         workflowProcessSenderDiaryDAO.delete(context,dso);
     }
 
     @Override
@@ -87,6 +87,16 @@ public class WorkflowProcessSenderDiaryServiceImpl extends DSpaceObjectServiceIm
     public List<WorkflowProcessSenderDiary> findAll(Context context, Integer limit, Integer offset) throws SQLException {
         return  Optional.ofNullable(workflowProcessSenderDiaryDAO.findAll(context,WorkflowProcessSenderDiary.class,limit,
                 offset)).orElse(new ArrayList<>());
+    }
+
+    @Override
+    public int countRows(Context context) throws SQLException {
+        return workflowProcessSenderDiaryDAO.countRows(context);
+    }
+    @Override
+    public void update(Context context, WorkflowProcessSenderDiary workflowProcessSenderDiary) throws SQLException, AuthorizeException {
+
+        this.workflowProcessSenderDiaryDAO.save(context, workflowProcessSenderDiary);
     }
 
 

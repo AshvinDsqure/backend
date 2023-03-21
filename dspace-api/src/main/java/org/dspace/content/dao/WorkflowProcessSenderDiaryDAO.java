@@ -9,6 +9,9 @@
 package org.dspace.content.dao;
 
 import org.dspace.content.WorkflowProcessSenderDiary;
+import org.dspace.core.Context;
+
+import java.sql.SQLException;
 
 
 /**
@@ -19,4 +22,5 @@ import org.dspace.content.WorkflowProcessSenderDiary;
  * @author ashvinMajethiya at atmire.com
  */
 public interface WorkflowProcessSenderDiaryDAO extends  DSpaceObjectLegacySupportDAO<WorkflowProcessSenderDiary> {
-        }
+        int countRows(Context context) throws SQLException;
+}

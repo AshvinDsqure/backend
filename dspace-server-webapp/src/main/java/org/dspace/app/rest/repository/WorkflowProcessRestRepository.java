@@ -99,7 +99,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
             System.out.println("workFlowProcessRest::"+workFlowProcessRest.getWorkflowProcessReferenceDocRests().size());
             workflowProcess= createworkflowProcessFromRestObject(context,workFlowProcessRest);
-            jbpmServer.startProcess(workflowProcess);
+           // jbpmServer.startProcess(workflowProcess);
+
         } catch (Exception e1) {
             e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
