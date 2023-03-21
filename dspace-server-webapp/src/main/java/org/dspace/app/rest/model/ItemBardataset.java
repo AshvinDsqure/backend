@@ -22,6 +22,7 @@ import java.util.List;
  * @author root
  */
 public class ItemBardataset {
+	/*
     private String label;
     private List<Integer>  data=new ArrayList<>();
     private String backgroundColor;
@@ -30,9 +31,16 @@ public class ItemBardataset {
     private String pointBackgroundColor;
     private int pointRadius;
     private String uuid;
+    */
+    private String name;
+    private List<Series> series = new ArrayList<>();
 
+    public ItemBardataset() {
+    	super();
+    }/*
     public ItemBardataset(String label, String backgroundColor) {
         this.label = label;
+        this.name = label;
         this.backgroundColor = backgroundColor;
     }
     
@@ -99,6 +107,22 @@ public class ItemBardataset {
     public void setUuid(String uuid) {
         this.uuid = uuid;
     }
+*/
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Series> getSeries() {
+		return series;
+	}
+
+	public void setSeries(List<Series> series) {
+		this.series = series;
+	}
     
     
     
