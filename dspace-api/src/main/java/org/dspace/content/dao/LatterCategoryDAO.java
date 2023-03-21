@@ -9,6 +9,10 @@
 package org.dspace.content.dao;
 
 import org.dspace.content.LatterCategory;
+import org.dspace.core.Context;
+
+import java.sql.SQLException;
 
 public interface LatterCategoryDAO extends DSpaceObjectLegacySupportDAO<LatterCategory>{
+    int countRows(Context context) throws SQLException;
 }

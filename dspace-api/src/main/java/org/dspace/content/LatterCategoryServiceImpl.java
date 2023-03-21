@@ -11,7 +11,6 @@ package org.dspace.content;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.LatterCategoryDAO;
-import org.dspace.content.dao.WorkflowProcessDefinitionDAO;
 import org.dspace.content.service.LatterCategoryService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +47,7 @@ public class LatterCategoryServiceImpl extends DSpaceObjectServiceImpl<LatterCat
         return null;
     }
 
-    @Override
-    public LatterCategory find(Context context, UUID uuid) throws SQLException {
-        return null;
-    }
+
 
     @Override
     public void updateLastModified(Context context, LatterCategory dso) throws SQLException, AuthorizeException {
@@ -60,7 +56,7 @@ public class LatterCategoryServiceImpl extends DSpaceObjectServiceImpl<LatterCat
 
     @Override
     public void delete(Context context, LatterCategory dso) throws SQLException, AuthorizeException, IOException {
-
+        latterCategoryDAO.delete(context,dso);
     }
 
     @Override
@@ -84,5 +80,20 @@ public class LatterCategoryServiceImpl extends DSpaceObjectServiceImpl<LatterCat
     public List<LatterCategory> findAll(Context context, Integer limit, Integer offset) throws SQLException {
         return  Optional.ofNullable(latterCategoryDAO.findAll(context,LatterCategory.class,limit,
                 offset)).orElse(new ArrayList<>());
+    }
+
+    @Override
+    public int countRows(Context context) throws SQLException {
+        return latterCategoryDAO.countRows(context);
+    }
+
+    @Override
+    public LatterCategory find(Context context, UUID uuid) throws SQLException {
+        return latterCategoryDAO.findByID(context,LatterCategory.class,uuid);
+    }
+
+    public void update(Context context, LatterCategory latterCategory) throws SQLException, AuthorizeException {
+
+        this.latterCategoryDAO.save(context, latterCategory);
     }
 }

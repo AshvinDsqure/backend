@@ -49,7 +49,6 @@ public abstract class ContentServiceFactory {
     public abstract MetadataValueService getMetadataValueService();
 
     public abstract WorkspaceItemService getWorkspaceItemService();
-    public abstract WorkflowProcessSenderDiaryService getWorkflowProcessSenderDiaryService();
 
 
     public abstract InstallItemService getInstallItemService();

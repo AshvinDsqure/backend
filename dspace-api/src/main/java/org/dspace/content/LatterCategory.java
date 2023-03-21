@@ -19,13 +19,13 @@ public class LatterCategory extends DSpaceObject implements DSpaceObjectLegacySu
      */
     public static final String ANY = "*";
 
-    @Column(name = "lattercategory_id", insertable = false, updatable = false)
+    @Column(name = "lattercategory_id")
     private Integer legacyId;
 
     @Column(name = "lattercategoryenglishname")
-    private String LatterCategoryEnglishName;
+    private String latterCategoryEnglishName;
     @Column(name = "lattercategoryhindiname")
-    private String LatterCategoryHindiName;
+    private String latterCategoryHindiName;
 
 
     @Override
@@ -48,18 +48,18 @@ public class LatterCategory extends DSpaceObject implements DSpaceObjectLegacySu
     }
 
     public String getLatterCategoryEnglishName() {
-        return LatterCategoryEnglishName;
+        return latterCategoryEnglishName;
     }
 
     public void setLatterCategoryEnglishName(String latterCategoryEnglishName) {
-        LatterCategoryEnglishName = latterCategoryEnglishName;
+        this.latterCategoryEnglishName = latterCategoryEnglishName;
     }
 
     public String getLatterCategoryHindiName() {
-        return LatterCategoryHindiName;
+        return latterCategoryHindiName;
     }
 
     public void setLatterCategoryHindiName(String latterCategoryHindiName) {
-        LatterCategoryHindiName = latterCategoryHindiName;
+        this.latterCategoryHindiName = latterCategoryHindiName;
     }
 }

@@ -14,6 +14,7 @@ import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.Bitstream;
 import org.dspace.content.WorkflowProcess;
 import org.dspace.content.WorkflowProcessReferenceDoc;
+import org.dspace.content.enums.Dispatch;
 import org.dspace.content.enums.Priority;
 import org.dspace.content.enums.WorkFlowProcessReferenceDocType;
 import org.dspace.content.service.BitstreamService;
@@ -63,6 +64,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setAssignDueDate(obj.getAssignDueDate());
         workflowProcess.setInitDate(obj.getInitDate());
         workflowProcess.setPriority(Priority.HIGH);
+        workflowProcess.setDispatchmode(Dispatch.ELECTRIC);
         System.out.println("obj.getWorkflowProcessReferenceDocRests()::"+obj.getWorkflowProcessReferenceDocRests().size());
         obj.getWorkflowProcessReferenceDocRests().forEach(workflowProcessReferenceDocRest -> {
             WorkflowProcessReferenceDoc workflowProcessReferenceDoc=new WorkflowProcessReferenceDoc();

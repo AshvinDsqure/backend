@@ -48,8 +48,7 @@ public class ContentServiceFactoryImpl extends ContentServiceFactory {
     @Autowired(required = true)
     private WorkspaceItemService workspaceItemService;
 
-    @Autowired(required = true)
-    private WorkflowProcessSenderDiaryService workflowProcessSenderDiaryService;
+
     @Autowired(required = true)
     private InstallItemService installItemService;
     @Autowired(required = true)
@@ -59,6 +58,7 @@ public class ContentServiceFactoryImpl extends ContentServiceFactory {
 
     @Autowired(required = true)
     private RelationshipService relationshipService;
+
     @Autowired(required = true)
     private RelationshipTypeService relationshipTypeService;
     @Autowired(required = true)
@@ -128,10 +128,7 @@ public class ContentServiceFactoryImpl extends ContentServiceFactory {
         return workspaceItemService;
     }
 
-    @Override
-    public WorkflowProcessSenderDiaryService getWorkflowProcessSenderDiaryService() {
-        return workflowProcessSenderDiaryService;
-    }
+
 
     @Override
     public InstallItemService getInstallItemService() {
@@ -157,6 +154,7 @@ public class ContentServiceFactoryImpl extends ContentServiceFactory {
     public RelationshipService getRelationshipService() {
         return relationshipService;
     }
+
 
     @Override
     public EntityTypeService getEntityTypeService() {

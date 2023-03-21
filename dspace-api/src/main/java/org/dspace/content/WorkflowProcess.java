@@ -37,7 +37,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
      */
     public static final String ANY = "*";
 
-        @Column(name = "workflow_id", insertable = false, updatable = false)
+    @Column(name = "workflow_id", insertable = false, updatable = false)
     private Integer legacyId;
     @Column(name = "subject")
     private String Subject;

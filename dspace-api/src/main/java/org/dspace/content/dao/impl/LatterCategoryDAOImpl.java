@@ -9,9 +9,7 @@ package org.dspace.content.dao.impl;
 
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.LatterCategory;
-import org.dspace.content.MetadataField;
 import org.dspace.content.dao.LatterCategoryDAO;
-import org.dspace.content.dao.MetadataFieldDAO;
 import org.dspace.core.AbstractHibernateDAO;
 import org.dspace.core.Context;
 
@@ -25,5 +23,10 @@ public class LatterCategoryDAOImpl  extends AbstractHibernateDAO<LatterCategory>
     @Override
     public LatterCategory findByLegacyId(Context context, int legacyId, Class<LatterCategory> clazz) throws SQLException {
         return null;
+    }
+
+    @Override
+    public int countRows(Context context) throws SQLException {
+        return count(createQuery(context, "SELECT count(*) FROM LatterCategory"));
     }
 }
