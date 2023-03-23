@@ -43,6 +43,9 @@ public interface RestModel extends Serializable {
     public static final String LATTERCATOGORY = "lattercategorie";
     public static final String WORKFLOWPROCESSMASTER = "workflowprocessmaster";
     public static final String WORKFLOWPROCESSMASTERVALUE = "workflowprocessmastervalue";
+    public static final String WORKFLOWPROCESSHISTORY = "workflowprocesshistorie";
+    public static final String WORKFLOWPROCESSINWARDDETAIL = "workflowprocessinwarddetail";
+    public static final String WORKFLOWPROCESSOUTWARDDETAIL = "workflowprocessoutwarddetail";
 
 
 

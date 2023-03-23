@@ -17,26 +17,19 @@
     <bean class="org.dspace.app.mediafilter.MediaFilterServiceImpl" scope="prototype"/>
 
     <bean class="org.dspace.app.sfx.SFXFileReaderServiceImpl" scope="prototype"/>
-
-
     <bean class="org.dspace.app.util.MetadataExposureServiceImpl"/>
     <bean class="org.dspace.app.util.OpenSearchServiceImpl"/>
     <bean class="org.dspace.app.util.WebAppServiceImpl"/>
     <bean class="org.dspace.app.util.DSpaceObjectUtilsImpl"/>
-
     <bean class="org.dspace.authenticate.AuthenticationServiceImpl"/>
-
     <bean class="org.dspace.authorize.AuthorizeServiceImpl"/>
     <bean class="org.dspace.authorize.ResourcePolicyServiceImpl"/>
-
     <bean class="org.dspace.authority.AuthorityValueServiceImpl"/>
     <bean class="org.dspace.authority.AuthorityServiceImpl"/>
-
     <bean class="org.dspace.checker.ChecksumHistoryServiceImpl"/>
     <bean class="org.dspace.checker.ChecksumResultServiceImpl"/>
     <bean class="org.dspace.checker.MostRecentChecksumServiceImpl"/>
     <bean class="org.dspace.checker.SimpleReporterServiceImpl"/>
-
     <bean class="org.dspace.content.CollectionServiceImpl"/>
     <bean class="org.dspace.content.LatterCategoryServiceImpl"/>
     <bean class="org.dspace.content.BitstreamFormatServiceImpl"/>
@@ -47,10 +40,11 @@
     <bean class="org.dspace.content.ItemServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessSenderDiaryServiceImpl"/>
-	
     <bean class="org.dspace.content.WorkFlowProcessMasterServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessMasterValueServiceImpl"/>
-	
+    <bean class="org.dspace.content.WorkFlowProcessHistoryServiceImpl"/>
+    <bean class="org.dspace.content.WorkFlowProcessInwardDetailsServiceImpl"/>
+    <bean class="org.dspace.content.WorkFlowProcessOutwardDetailsServiceImpl"/>
     <bean class="org.dspace.content.DocumentTypeServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessNoteServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessDefinitionServiceImpl"/>

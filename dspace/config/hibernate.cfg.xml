@@ -54,6 +54,9 @@
         <mapping class="org.dspace.content.WorkflowProcessCorrespondence"/>
         <mapping class="org.dspace.content.WorkflowProcessSenderDiary"/>
         <mapping class="org.dspace.content.WorkFlowProcessMaster"/>
+        <mapping class="org.dspace.content.WorkFlowProcessHistory"/>
+        <mapping class="org.dspace.content.WorkFlowProcessInwardDetails"/>
+        <mapping class="org.dspace.content.WorkFlowProcessOutwardDetails"/>
         <mapping class="org.dspace.content.WorkFlowProcessMasterValue"/>
         <mapping class="org.dspace.content.WorkflowProcessDefinition"/>
         <mapping class="org.dspace.content.WorkflowProcessDefinitionEperson"/>

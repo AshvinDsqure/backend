@@ -27,6 +27,7 @@ import org.dspace.app.solrdatabaseresync.SolrDatabaseResyncCli;
 import org.dspace.app.util.DSpaceContextListener;
 import org.dspace.google.GoogleAsyncEventListener;
 import org.dspace.utils.servlet.DSpaceWebappServletFilter;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,6 +133,11 @@ public class Application extends SpringBootServletInitializer {
     protected DSpaceContextListener dspaceContextListener() {
         // This listener initializes the DSpace Context object
         return new DSpaceContextListener();
+    }
+
+    @Bean
+    public ModelMapper modelMapper(){
+        return new ModelMapper();
     }
     @Bean
     public RestTemplate restTesmplate() {

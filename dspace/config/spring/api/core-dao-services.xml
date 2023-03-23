@@ -36,6 +36,9 @@
     <bean class="org.dspace.content.dao.impl.WorkflowProcessSenderDiaryDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkFlowProcessMasterDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkFlowProcessMasterValueDAOImpl"/>
+    <bean class="org.dspace.content.dao.impl.WorkFlowProcessHistoryDAOImpl"/>
+    <bean class="org.dspace.content.dao.impl.WorkFlowProcessInwardDetailsDAOImpl"/>
+    <bean class="org.dspace.content.dao.impl.WorkFlowProcessOutwardDetailsDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.LatterCategoryDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.RelationshipDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.EntityTypeDAOImpl"/>
