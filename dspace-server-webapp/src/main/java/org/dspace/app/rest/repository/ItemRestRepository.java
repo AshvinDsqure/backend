@@ -2,18 +2,16 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,10 +27,12 @@ import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.BundleRest;
+import org.dspace.app.rest.model.ExcelDTO;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.app.rest.repository.handler.service.UriListHandlerService;
+import org.dspace.app.rest.utils.ExcelHelper;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bundle;
 import org.dspace.content.Collection;
@@ -48,14 +48,18 @@ import org.dspace.content.service.RelationshipService;
 import org.dspace.content.service.RelationshipTypeService;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.core.io.Resource;
 
 /**
  * This is the repository responsible to manage Item Rest object
@@ -128,7 +132,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
             // This endpoint only returns archived items
             long total = itemService.countArchivedItems(context);
             Iterator<Item> it = itemService.findAll(context, pageable.getPageSize(),
-                Math.toIntExact(pageable.getOffset()));
+                    Math.toIntExact(pageable.getOffset()));
             List<Item> items = new ArrayList<>();
             while (it.hasNext()) {
                 items.add(it.next());
@@ -155,23 +159,23 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
     @PreAuthorize("hasPermission(#id, 'ITEM', 'DELETE')")
     protected void delete(Context context, UUID id) throws AuthorizeException {
         String[] copyVirtual =
-            requestService.getCurrentRequest().getServletRequest()
-                .getParameterValues(REQUESTPARAMETER_COPYVIRTUALMETADATA);
+                requestService.getCurrentRequest().getServletRequest()
+                        .getParameterValues(REQUESTPARAMETER_COPYVIRTUALMETADATA);
 
         Item item = null;
         try {
             item = itemService.find(context, id);
             if (item == null) {
                 throw new ResourceNotFoundException(ItemRest.CATEGORY + "." + ItemRest.NAME +
-                    " with id: " + id + " not found");
+                        " with id: " + id + " not found");
             }
             if (itemService.isInProgressSubmission(context, item)) {
                 throw new UnprocessableEntityException("The item cannot be deleted. "
-                    + "It's part of a in-progress submission.");
+                        + "It's part of a in-progress submission.");
             }
             if (item.getTemplateItemOf() != null) {
                 throw new UnprocessableEntityException("The item cannot be deleted. "
-                    + "It's a template for a collection");
+                        + "It's a template for a collection");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -193,7 +197,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
      * @param item        The item to be deleted
      */
     private void deleteMultipleRelationshipsCopyVirtualMetadata(Context context, String[] copyVirtual, Item item)
-        throws SQLException, AuthorizeException {
+            throws SQLException, AuthorizeException {
 
         if (copyVirtual == null || copyVirtual.length == 0) {
             // Don't delete nor copy any metadata here if the "copyVirtualMetadata" parameter wasn't passed. The
@@ -230,7 +234,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
             for (Integer relationshipId : relationshipIds) {
                 RelationshipType relationshipType = relationshipTypeService.find(context, relationshipId);
                 for (Relationship relationship : relationshipService
-                    .findByItemAndRelationshipType(context, item, relationshipType)) {
+                        .findByItemAndRelationshipType(context, item, relationshipType)) {
 
                     deleteRelationshipCopyVirtualMetadata(item, relationship);
                 }
@@ -243,8 +247,8 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
         for (String typeString : copyVirtual) {
             if (!StringUtils.isNumeric(typeString)) {
                 throw new DSpaceBadRequestException("parameter " + REQUESTPARAMETER_COPYVIRTUALMETADATA
-                    + " should only contain a single value '" + COPYVIRTUAL_ALL[0] + "', '" + COPYVIRTUAL_CONFIGURED[0]
-                    + "' or a list of numbers.");
+                        + " should only contain a single value '" + COPYVIRTUAL_ALL[0] + "', '" + COPYVIRTUAL_CONFIGURED[0]
+                        + "' or a list of numbers.");
             }
             types.add(Integer.parseInt(typeString));
         }
@@ -258,7 +262,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
      * @param relationshipToDelete The relationship to be deleted
      */
     private void deleteRelationshipCopyVirtualMetadata(Item itemToDelete, Relationship relationshipToDelete)
-        throws SQLException, AuthorizeException {
+            throws SQLException, AuthorizeException {
 
         boolean copyToLeft = relationshipToDelete.getRightItem().equals(itemToDelete);
         boolean copyToRight = relationshipToDelete.getLeftItem().equals(itemToDelete);
@@ -293,7 +297,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
         Collection collection = collectionService.find(context, owningCollectionUuid);
         if (collection == null) {
             throw new DSpaceBadRequestException("The given owningCollection parameter is invalid: "
-                + owningCollectionUuid);
+                    + owningCollectionUuid);
         }
         WorkspaceItem workspaceItem = workspaceItemService.create(context, collection, false);
         Item item = workspaceItem.getItem();
@@ -312,7 +316,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
     protected ItemRest put(Context context, HttpServletRequest request, String apiCategory, String model, UUID uuid,
                            JsonNode jsonNode)
-        throws RepositoryMethodNotImplementedException, SQLException, AuthorizeException {
+            throws RepositoryMethodNotImplementedException, SQLException, AuthorizeException {
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         ObjectMapper mapper = new ObjectMapper();
         ItemRest itemRest = null;
@@ -331,8 +335,8 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
             metadataConverter.setMetadata(context, item, itemRest.getMetadata());
         } else {
             throw new IllegalArgumentException("The UUID in the Json and the UUID in the url do not match: "
-                + uuid + ", "
-                + itemRest.getId());
+                    + uuid + ", "
+                    + itemRest.getId());
         }
         return converter.toRest(item, utils.obtainProjection());
     }
@@ -346,7 +350,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
      * @return The added bundle
      */
     public Bundle addBundleToItem(Context context, Item item, BundleRest bundleRest)
-        throws SQLException, AuthorizeException {
+            throws SQLException, AuthorizeException {
         if (item.getBundles(bundleRest.getName()).size() > 0) {
             throw new DSpaceBadRequestException("The bundle name already exists in the item");
         }
@@ -363,23 +367,54 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
 
     @Override
     protected ItemRest createAndReturn(Context context, List<String> stringList)
-        throws AuthorizeException, SQLException, RepositoryMethodNotImplementedException {
+            throws AuthorizeException, SQLException, RepositoryMethodNotImplementedException {
 
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         Item item = uriListHandlerService.handle(context, req, stringList, Item.class);
         return converter.toRest(item, utils.obtainProjection());
     }
+
     @SearchRestMethod(name = "findByStartDateAndEndDate")
     public Page<WorkspaceItemRest> findByStartDateAndEndDate(
             @Parameter(value = "startdate", required = true) String startdate,
             @Parameter(value = "enddate", required = true) String enddate,
-            Pageable pageable)
-    {
+            Pageable pageable) {
         try {
             Context context = obtainContext();
-            long total = itemService.countTotal(context,startdate,enddate);
-            List<Item> witems = itemService.getDataTwoDateRange(context,startdate,enddate);
+            long total = itemService.countTotal(context, startdate, enddate);
+            List<Item> witems = itemService.getDataTwoDateRange(context, startdate, enddate);
             return converter.toRestPage(witems, pageable, total, utils.obtainProjection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @SearchRestMethod(name = "download")
+    public ResponseEntity<Resource> download(@Parameter(value = "startdate", required = true) String startdate,
+                                             @Parameter(value = "enddate", required = true) String enddate) throws IOException {
+        try {
+            Context context = obtainContext();
+            String filename = "itemReport.xlsx";
+            List<Item> list = itemService.getDataTwoDateRange(context, startdate, enddate);
+            List<ExcelDTO> listDTo = list.stream().map(i -> {
+                String title = itemService.getMetadataFirstValue(i, "dc", "title", null, null);
+                String type = itemService.getMetadataFirstValue(i, "dc", "type", null, null);
+                String issued = itemService.getMetadataFirstValue(i, "dc", "issued", null, null);
+                type = (type != null) ? type : "-";
+                title = (title != null) ? title : "-";
+                issued = (issued != null) ? issued : "-";
+                String caseDetail = type + "/" + title + "/" + issued;
+                String uploaddate = itemService.getMetadataFirstValue(i, "dc", "date", "accessioned", null);
+                String uploadedby = i.getSubmitter().getEmail();
+                String hierarchy = i.getOwningCollection().getName();
+                return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy);
+            }).collect(Collectors.toList());
+            ByteArrayInputStream in = ExcelHelper.tutorialsToExcel(listDTo);
+            InputStreamResource file = new InputStreamResource(in);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+                    .body(file);
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
