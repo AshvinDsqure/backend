@@ -58,4 +58,18 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
         rest.setAddress(obj.getAddress());
         return rest;
     }
+    public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiaryRest rest) {
+        WorkflowProcessSenderDiary workflowProcessSenderDiary=new WorkflowProcessSenderDiary();
+        rest.setCity(workflowProcessSenderDiary.getCity());
+        rest.setCountry(workflowProcessSenderDiary.getCountry());
+        rest.setOrganization(workflowProcessSenderDiary.getOrganization());
+        rest.setLegacyId(workflowProcessSenderDiary.getLegacyId());
+        rest.setName(workflowProcessSenderDiary.getName());
+        rest.setDesignation(workflowProcessSenderDiary.getDesignation());
+        rest.setContactNumber(workflowProcessSenderDiary.getContactNumber());
+        rest.setEmail(workflowProcessSenderDiary.getEmail());
+        rest.setAddress(workflowProcessSenderDiary.getAddress());
+        return workflowProcessSenderDiary;
+    }
+
 }

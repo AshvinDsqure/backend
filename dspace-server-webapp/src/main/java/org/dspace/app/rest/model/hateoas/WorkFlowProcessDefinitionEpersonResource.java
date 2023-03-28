@@ -8,8 +8,7 @@
 package org.dspace.app.rest.model.hateoas;
 
 
-import org.dspace.app.rest.model.WorkFlowProcessRest;
-import org.dspace.app.rest.model.WorkflowProcessDefinitionEpersonRest;
+import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
 import org.dspace.app.rest.model.hateoas.annotations.RelNameDSpaceResource;
 import org.dspace.app.rest.utils.Utils;
 
@@ -19,9 +18,9 @@ import org.dspace.app.rest.utils.Utils;
  *
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
-@RelNameDSpaceResource(WorkflowProcessDefinitionEpersonRest.NAME)
-public class WorkFlowProcessDefinitionEpersonResource extends DSpaceResource<WorkflowProcessDefinitionEpersonRest> {
-    public WorkFlowProcessDefinitionEpersonResource(WorkflowProcessDefinitionEpersonRest workflowProcessDefinitionEpersonRest, Utils utils) {
+@RelNameDSpaceResource(WorkflowProcessEpersonRest.NAME)
+public class WorkFlowProcessDefinitionEpersonResource extends DSpaceResource<WorkflowProcessEpersonRest> {
+    public WorkFlowProcessDefinitionEpersonResource(WorkflowProcessEpersonRest workflowProcessDefinitionEpersonRest, Utils utils) {
         super(workflowProcessDefinitionEpersonRest, utils);
     }
 }

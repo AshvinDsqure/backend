@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +26,7 @@ import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.discovery.IndexableObject;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +40,8 @@ import org.springframework.stereotype.Component;
 public class ItemConverter
         extends DSpaceObjectConverter<Item, ItemRest>
         implements IndexableObjectConverter<Item, ItemRest> {
-
+    @Autowired
+    ModelMapper modelMapper;
     @Autowired
     private ItemService itemService;
 
@@ -60,6 +63,9 @@ public class ItemConverter
         }
 
         return item;
+    }
+    public Item convert(ItemRest obj) {
+       return modelMapper.map(obj,Item.class);
     }
 
     /**

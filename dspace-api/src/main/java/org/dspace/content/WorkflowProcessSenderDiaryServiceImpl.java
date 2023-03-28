@@ -93,6 +93,12 @@ public class WorkflowProcessSenderDiaryServiceImpl extends DSpaceObjectServiceIm
     public int countRows(Context context) throws SQLException {
         return workflowProcessSenderDiaryDAO.countRows(context);
     }
+
+    @Override
+    public WorkflowProcessSenderDiary findByEmailID(Context context, String emailID) throws SQLException {
+        return workflowProcessSenderDiaryDAO.findByEmailID(context,emailID);
+    }
+
     @Override
     public void update(Context context, WorkflowProcessSenderDiary workflowProcessSenderDiary) throws SQLException, AuthorizeException {
 

@@ -10,7 +10,6 @@ package org.dspace.app.rest.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public class WorkFlowProcessDefinitionRest extends DSpaceObjectRest {
     @JsonProperty
     private String workflowprocessdefinitionname;
     @JsonProperty
-    List<WorkflowProcessDefinitionEpersonRest> workflowProcessDefinitionEpersonRests=new ArrayList<>();
+    List<WorkflowProcessEpersonRest> workflowProcessDefinitionEpersonRests=new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
     @Override
@@ -50,11 +49,11 @@ public class WorkFlowProcessDefinitionRest extends DSpaceObjectRest {
         this.workflowprocessdefinitionname = workflowprocessdefinitionname;
     }
 
-    public List<WorkflowProcessDefinitionEpersonRest> getWorkflowProcessDefinitionEpersonRests() {
+    public List<WorkflowProcessEpersonRest> getWorkflowProcessDefinitionEpersonRests() {
         return workflowProcessDefinitionEpersonRests;
     }
 
-    public void setWorkflowProcessDefinitionEpersonRests(List<WorkflowProcessDefinitionEpersonRest> workflowProcessDefinitionEpersonRests) {
+    public void setWorkflowProcessDefinitionEpersonRests(List<WorkflowProcessEpersonRest> workflowProcessDefinitionEpersonRests) {
         this.workflowProcessDefinitionEpersonRests = workflowProcessDefinitionEpersonRests;
     }
 

@@ -8,9 +8,8 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.dspace.content.Item;
-import org.dspace.content.enums.Priority;
-import org.dspace.eperson.EPerson;
+import lombok.Data;
+import org.dspace.content.WorkflowProcessEperson;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,23 +23,38 @@ import java.util.List;
 @LinksRest(links = {
 
 })
+@Data
 public class WorkFlowProcessRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocesse";
     public static final String PLURAL_NAME = "workflowprocess";
     public static final String CATEGORY = RestAddressableModel.CORE;
     @JsonProperty
+    private WorkFlowProcessInwardDetailsRest workFlowProcessInwardDetailsRest;
+    @JsonProperty
+    private  WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest dispatchModeRest = null;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest eligibleForFilingRest = null;
+    @JsonProperty
+    private ItemRest itemRest;
+    @JsonProperty
     private String Subject;
+    @JsonProperty
+    List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest departmentRest = null;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest officeRest = null;
+    @JsonProperty
+    private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests;
     @JsonProperty
     private Date InitDate = new Date();
     @JsonProperty
-    private ItemRest item;
-    @JsonProperty
-    private EPersonRest submitter = null;
+    private WorkflowProcessEpersonRest submitter = null;
     @JsonProperty
     private String priority;
-    @JsonProperty
-    List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests=new ArrayList<>();
-    private Date assignDueDate = new Date();
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
     @Override
@@ -54,12 +68,84 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
         return NAME;
     }
 
+    public WorkFlowProcessInwardDetailsRest getWorkFlowProcessInwardDetailsRest() {
+        return workFlowProcessInwardDetailsRest;
+    }
+
+    public void setWorkFlowProcessInwardDetailsRest(WorkFlowProcessInwardDetailsRest workFlowProcessInwardDetailsRest) {
+        this.workFlowProcessInwardDetailsRest = workFlowProcessInwardDetailsRest;
+    }
+
+    public WorkflowProcessSenderDiaryRest getWorkflowProcessSenderDiaryRest() {
+        return workflowProcessSenderDiaryRest;
+    }
+
+    public void setWorkflowProcessSenderDiaryRest(WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest) {
+        this.workflowProcessSenderDiaryRest = workflowProcessSenderDiaryRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getDispatchModeRest() {
+        return dispatchModeRest;
+    }
+
+    public void setDispatchModeRest(WorkFlowProcessMasterValueRest dispatchModeRest) {
+        this.dispatchModeRest = dispatchModeRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getEligibleForFilingRest() {
+        return eligibleForFilingRest;
+    }
+
+    public void setEligibleForFilingRest(WorkFlowProcessMasterValueRest eligibleForFilingRest) {
+        this.eligibleForFilingRest = eligibleForFilingRest;
+    }
+
+    public ItemRest getItemRest() {
+        return itemRest;
+    }
+
+    public void setItemRest(ItemRest itemRest) {
+        this.itemRest = itemRest;
+    }
+
     public String getSubject() {
         return Subject;
     }
 
     public void setSubject(String subject) {
         Subject = subject;
+    }
+
+    public List<WorkflowProcessReferenceDocRest> getWorkflowProcessReferenceDocRests() {
+        return workflowProcessReferenceDocRests;
+    }
+
+    public void setWorkflowProcessReferenceDocRests(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests) {
+        this.workflowProcessReferenceDocRests = workflowProcessReferenceDocRests;
+    }
+
+    public WorkFlowProcessMasterValueRest getDepartmentRest() {
+        return departmentRest;
+    }
+
+    public void setDepartmentRest(WorkFlowProcessMasterValueRest departmentRest) {
+        this.departmentRest = departmentRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getOfficeRest() {
+        return officeRest;
+    }
+
+    public void setOfficeRest(WorkFlowProcessMasterValueRest officeRest) {
+        this.officeRest = officeRest;
+    }
+
+    public List<WorkflowProcessEpersonRest> getWorkflowProcessEpersonRests() {
+        return workflowProcessEpersonRests;
+    }
+
+    public void setWorkflowProcessEpersonRests(List<WorkflowProcessEpersonRest> workflowProcessEpersonRests) {
+        this.workflowProcessEpersonRests = workflowProcessEpersonRests;
     }
 
     public Date getInitDate() {
@@ -70,19 +156,11 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
         InitDate = initDate;
     }
 
-    public ItemRest getItem() {
-        return item;
-    }
-
-    public void setItem(ItemRest item) {
-        this.item = item;
-    }
-
-    public EPersonRest getSubmitter() {
+    public WorkflowProcessEpersonRest getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(EPersonRest submitter) {
+    public void setSubmitter(WorkflowProcessEpersonRest submitter) {
         this.submitter = submitter;
     }
 
@@ -94,27 +172,11 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
         this.priority = priority;
     }
 
-    public Date getAssignDueDate() {
-        return assignDueDate;
-    }
-
-    public void setAssignDueDate(Date assignDueDate) {
-        this.assignDueDate = assignDueDate;
-    }
-
     public String getEntityType() {
         return entityType;
     }
 
     public void setEntityType(String entityType) {
         this.entityType = entityType;
-    }
-
-    public List<WorkflowProcessReferenceDocRest> getWorkflowProcessReferenceDocRests() {
-        return workflowProcessReferenceDocRests;
-    }
-
-    public void setWorkflowProcessReferenceDocRests(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests) {
-        this.workflowProcessReferenceDocRests = workflowProcessReferenceDocRests;
     }
 }

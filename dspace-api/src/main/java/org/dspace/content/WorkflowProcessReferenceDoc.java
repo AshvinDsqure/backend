@@ -45,9 +45,9 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "workflowprocess")
     private WorkflowProcess workflowProcess;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "workflowprocessreferencedoctype")
-    private WorkFlowProcessReferenceDocType workFlowProcessReferenceDocType;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documenttype")
+    private WorkFlowProcessMasterValue workFlowProcessReferenceDocType;
 
 
     @Override
@@ -77,11 +77,11 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
         this.bitstream = bitstream;
     }
 
-    public WorkFlowProcessReferenceDocType getWorkFlowProcessReferenceDocType() {
+    public WorkFlowProcessMasterValue getWorkFlowProcessReferenceDocType() {
         return workFlowProcessReferenceDocType;
     }
 
-    public void setWorkFlowProcessReferenceDocType(WorkFlowProcessReferenceDocType workFlowProcessReferenceDocType) {
+    public void setWorkFlowProcessReferenceDocType(WorkFlowProcessMasterValue workFlowProcessReferenceDocType) {
         this.workFlowProcessReferenceDocType = workFlowProcessReferenceDocType;
     }
 

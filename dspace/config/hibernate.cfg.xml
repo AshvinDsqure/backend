@@ -58,7 +58,7 @@
         <mapping class="org.dspace.content.WorkFlowProcessOutwardDetails"/>
         <mapping class="org.dspace.content.WorkFlowProcessMasterValue"/>
         <mapping class="org.dspace.content.WorkflowProcessDefinition"/>
-        <mapping class="org.dspace.content.WorkflowProcessDefinitionEperson"/>
+        <mapping class="org.dspace.content.WorkflowProcessEperson"/>
         <mapping class="org.dspace.content.DocumentType"/>
         <mapping class="org.dspace.content.WorkflowProcessNote"/>
         <mapping class="org.dspace.content.Relationship"/>

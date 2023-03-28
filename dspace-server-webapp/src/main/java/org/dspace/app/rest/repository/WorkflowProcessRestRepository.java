@@ -33,6 +33,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.RegistrationData;
 import org.dspace.util.UUIDUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,7 +64,11 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     @Autowired
     private WorkflowProcessService workflowProcessService;
     @Autowired
+    private WorkflowProcessSenderDiaryService workflowProcessSenderDiaryService;
+    @Autowired
     JbpmServerImpl jbpmServer;
+    @Autowired
+    ModelMapper modelMapper ;
     public WorkflowProcessRestRepository(WorkflowProcessService dsoService) {
         super(dsoService);
     }
@@ -111,10 +116,14 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         WorkflowProcess workflowProcess =null;
         try {
             System.out.println("Priority::"+workFlowProcessRest.getPriority());
+            Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
             workflowProcess=workFlowProcessConverter.convert(workFlowProcessRest,context);
-            workflowProcess.setSubmitter(context.getCurrentUser());
+            if(!workflowProcessSenderDiaryOptional.isPresent()){
+                workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
+            }
             System.out.println("workflow Doc::"+workflowProcess.getWorkflowProcessReferenceDocs().size());
             workflowProcess = workflowProcessService.create(context,workflowProcess);
+
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }

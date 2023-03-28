@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS public.workflowprocess
     dispatchmode character varying COLLATE pg_catalog."default",
     workflowprocesssenderdiary uuid,
     workflowprocesscorrespondence uuid,
+    department_id uuid,
+    dispatch_id uuid,
+    eligible_for_filing_id uuid,
+    office_id uuid,
+    workflowprocessinwarddetails_id uuid,
     CONSTRAINT workflowprocess_pkey PRIMARY KEY (uuid)
 )
 
@@ -22,8 +27,9 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.workflowprocess
     OWNER to dspace;
-    
-    -- Table: public.workflowprocesscorrespondence
+
+
+-- Table: public.workflowprocesscorrespondence
 
 -- DROP TABLE IF EXISTS public.workflowprocesscorrespondence;
 
@@ -41,102 +47,143 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.workflowprocesscorrespondence
     OWNER to dspace;
-    
+
     -- Table: public.workflowprocessdefinition
 
--- DROP TABLE IF EXISTS public.workflowprocessdefinition;
+    -- DROP TABLE IF EXISTS public.workflowprocessdefinition;
 
-CREATE TABLE IF NOT EXISTS public.workflowprocessdefinition
-(
-    uuid uuid NOT NULL DEFAULT gen_random_uuid(),
-    workflowprocessdefinition_id integer,
-    workflowprocessdefinitionname character varying COLLATE pg_catalog."default",
-    CONSTRAINT workflowprocessdefinition_pkey PRIMARY KEY (uuid)
-)
+    CREATE TABLE IF NOT EXISTS public.workflowprocessdefinition
+    (
+        uuid uuid NOT NULL DEFAULT gen_random_uuid(),
+        workflowprocessdefinition_id integer,
+        workflowprocessdefinitionname character varying COLLATE pg_catalog."default",
+        CONSTRAINT workflowprocessdefinition_pkey PRIMARY KEY (uuid)
+    )
 
-TABLESPACE pg_default;
+    TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.workflowprocessdefinition
-    OWNER to dspace;
-    
-    -- Table: public.workflowprocessdefinitioneperson
+    ALTER TABLE IF EXISTS public.workflowprocessdefinition
+        OWNER to dspace;
 
--- DROP TABLE IF EXISTS public.workflowprocessdefinitioneperson;
+        -- Table: public.workflowprocesseperson
 
-CREATE TABLE IF NOT EXISTS public.workflowprocessdefinitioneperson
-(
-    uuid uuid NOT NULL DEFAULT gen_random_uuid(),
-    workflowprocessdefinitioneperson_id integer,
-    eperson uuid,
-    workflowprocessdefinition uuid,
-    index integer,
-    CONSTRAINT workflowprocessdefinitioneperson_pkey PRIMARY KEY (uuid)
-)
+        -- DROP TABLE IF EXISTS public.workflowprocesseperson;
 
-TABLESPACE pg_default;
+        CREATE TABLE IF NOT EXISTS public.workflowprocesseperson
+        (
+            uuid uuid NOT NULL DEFAULT gen_random_uuid(),
+            workflowprocessdefinitioneperson_id integer,
+            eperson uuid,
+            workflowprocessdefinition uuid,
+            index integer,
+            assign_date timestamp with time zone,
+            "workflowProcess_id" uuid,
+            CONSTRAINT workflowprocessdefinitioneperson_pkey PRIMARY KEY (uuid)
+        )
 
-ALTER TABLE IF EXISTS public.workflowprocessdefinitioneperson
-    OWNER to dspace;
-    
-    -- Table: public.workflowprocessreferencedoc
+        TABLESPACE pg_default;
 
--- DROP TABLE IF EXISTS public.workflowprocessreferencedoc;
+        ALTER TABLE IF EXISTS public.workflowprocesseperson
+            OWNER to dspace;
 
-CREATE TABLE IF NOT EXISTS public.workflowprocessreferencedoc
-(
-    uuid uuid NOT NULL DEFAULT gen_random_uuid(),
-    workflowreference_id integer,
-    bitstream uuid,
-    workflowprocess uuid,
-    workflowprocessreferencedoctype character varying COLLATE pg_catalog."default",
-    CONSTRAINT workflowprocessreferencedoc_pkey PRIMARY KEY (uuid)
-)
+       -- Table: public.workflowprocesshistory
 
-TABLESPACE pg_default;
+       -- DROP TABLE IF EXISTS public.workflowprocesshistory;
 
-ALTER TABLE IF EXISTS public.workflowprocessreferencedoc
-    OWNER to dspace;
-    
-    -- Table: public.workflowprocesssenderdiary
+       CREATE TABLE IF NOT EXISTS public.workflowprocesshistory
+       (
+           uuid uuid NOT NULL,
+           eperson_id uuid,
+           action character varying COLLATE pg_catalog."default",
+           actiondate timestamp with time zone,
+           workflowhistory_id integer,
+           CONSTRAINT workflowprocesshistory_pkey PRIMARY KEY (uuid)
+       )
 
--- DROP TABLE IF EXISTS public.workflowprocesssenderdiary;
+       TABLESPACE pg_default;
 
-CREATE TABLE IF NOT EXISTS public.workflowprocesssenderdiary
-(
-    uuid uuid NOT NULL DEFAULT gen_random_uuid(),
-    workflowprocesssenderdiary_id integer,
-    name character varying COLLATE pg_catalog."default",
-    designation character varying COLLATE pg_catalog."default",
-    contactnumber character varying COLLATE pg_catalog."default",
-    email character varying COLLATE pg_catalog."default",
-    organization character varying COLLATE pg_catalog."default",
-    address character varying COLLATE pg_catalog."default",
-    city character varying COLLATE pg_catalog."default",
-    country character varying COLLATE pg_catalog."default",
-    CONSTRAINT workflowprocesssenderdiary_pkey PRIMARY KEY (uuid)
-)
+       ALTER TABLE IF EXISTS public.workflowprocesshistory
+           OWNER to postgres;
 
-TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.workflowprocesssenderdiary
-    OWNER to dspace;
+     -- Table: public.workflowprocessinwarddetails
 
------------------------------------------------------------ashvin add
-CREATE TABLE IF NOT EXISTS public.workflowprocessinwarddetails
-(
-    uuid uuid NOT NULL,
-    workflowprocessinwarddetails_id integer,
-    inwardnumber character varying COLLATE pg_catalog."default",
-    inwarddate timestamp with time zone,
-    receiveddate timestamp with time zone,
-    CONSTRAINT workflowprocessinwarddetails_pkey PRIMARY KEY (uuid)
-)
+     -- DROP TABLE IF EXISTS public.workflowprocessinwarddetails;
 
-TABLESPACE pg_default;
+     CREATE TABLE IF NOT EXISTS public.workflowprocessinwarddetails
+     (
+         uuid uuid NOT NULL,
+         workflowprocessinwarddetails_id integer,
+         inwardnumber character varying COLLATE pg_catalog."default",
+         inwarddate timestamp with time zone,
+         receiveddate timestamp with time zone,
+         CONSTRAINT workflowprocessinwarddetails_pkey PRIMARY KEY (uuid)
+     )
 
-ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
-    OWNER to postgres;
+     TABLESPACE pg_default;
 
+     ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
+         OWNER to postgres;
+
+   -- Table: public.workflowprocessmaster
+
+   -- DROP TABLE IF EXISTS public.workflowprocessmaster;
+
+   CREATE TABLE IF NOT EXISTS public.workflowprocessmaster
+   (
+       workflowprocessmaster_lid integer,
+       uuid uuid NOT NULL,
+       mastername character varying COLLATE pg_catalog."default"
+   )
+
+   TABLESPACE pg_default;
+
+   ALTER TABLE IF EXISTS public.workflowprocessmaster
+       OWNER to postgres;
+
+
+   -- Table: public.workflowprocessmastervalue
+
+   -- DROP TABLE IF EXISTS public.workflowprocessmastervalue;
+
+   CREATE TABLE IF NOT EXISTS public.workflowprocessmastervalue
+   (
+       primaryvalue character varying COLLATE pg_catalog."default",
+       secondaryvalue character varying COLLATE pg_catalog."default",
+       workflowprocessmaster_id uuid,
+       uuid uuid NOT NULL DEFAULT gen_random_uuid(),
+       workflowprocessmastervalue_id integer,
+       CONSTRAINT workflowprocessmastervalue_pkey PRIMARY KEY (uuid)
+   )
+
+   TABLESPACE pg_default;
+
+   ALTER TABLE IF EXISTS public.workflowprocessmastervalue
+       OWNER to postgres;
+
+
+       -- Table: public.workflowprocessnote
+
+       -- DROP TABLE IF EXISTS public.workflowprocessnote;
+
+       CREATE TABLE IF NOT EXISTS public.workflowprocessnote
+       (
+           workflowprocessnote_id integer,
+           uuid uuid DEFAULT gen_random_uuid(),
+           subject character varying COLLATE pg_catalog."default",
+           description character varying COLLATE pg_catalog."default",
+           init_date timestamp with time zone,
+           submitter_id uuid
+       )
+
+       TABLESPACE pg_default;
+
+       ALTER TABLE IF EXISTS public.workflowprocessnote
+           OWNER to dspace;
+
+    -- Table: public.workflowprocessoutwarddetails
+
+    -- DROP TABLE IF EXISTS public.workflowprocessoutwarddetails;
 
     CREATE TABLE IF NOT EXISTS public.workflowprocessoutwarddetails
     (
@@ -156,57 +203,45 @@ ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
         OWNER to postgres;
 
 
-        CREATE TABLE IF NOT EXISTS public.event
+    -- Table: public.workflowprocessreferencedoc
+
+    -- DROP TABLE IF EXISTS public.workflowprocessreferencedoc;
+
+    CREATE TABLE IF NOT EXISTS public.workflowprocessreferencedoc
+    (
+        uuid uuid NOT NULL DEFAULT gen_random_uuid(),
+        workflowreference_id integer,
+        bitstream uuid,
+        workflowprocess uuid,
+        documenttype uuid,
+        CONSTRAINT workflowprocessreferencedoc_pkey PRIMARY KEY (uuid)
+    )
+
+    TABLESPACE pg_default;
+
+    ALTER TABLE IF EXISTS public.workflowprocessreferencedoc
+        OWNER to dspace;
+
+        -- Table: public.workflowprocesssenderdiary
+
+        -- DROP TABLE IF EXISTS public.workflowprocesssenderdiary;
+
+        CREATE TABLE IF NOT EXISTS public.workflowprocesssenderdiary
         (
-            title character varying COLLATE pg_catalog."default",
-            action_date timestamp with time zone NOT NULL,
-            uuid uuid NOT NULL,
-            dspaceobjectid uuid,
-            action integer,
-            dspaceobjecttype integer NOT NULL,
-            parencollection uuid,
-            parencommunity uuid,
-            geolocationeventid uuid,
-            event_id integer,
-            userid uuid,
-            documenttype integer,
-            CONSTRAINT event_pkey PRIMARY KEY (uuid, action_date, dspaceobjecttype)
+            uuid uuid NOT NULL DEFAULT gen_random_uuid(),
+            workflowprocesssenderdiary_id integer,
+            name character varying COLLATE pg_catalog."default",
+            designation character varying COLLATE pg_catalog."default",
+            contactnumber character varying COLLATE pg_catalog."default",
+            email character varying COLLATE pg_catalog."default",
+            organization character varying COLLATE pg_catalog."default",
+            address character varying COLLATE pg_catalog."default",
+            city character varying COLLATE pg_catalog."default",
+            country character varying COLLATE pg_catalog."default",
+            CONSTRAINT workflowprocesssenderdiary_pkey PRIMARY KEY (uuid)
         )
 
         TABLESPACE pg_default;
 
-        ALTER TABLE IF EXISTS public.event
-            OWNER to postgres;
-
-            CREATE TABLE IF NOT EXISTS public.geolocationevent
-            (
-                uuid uuid,
-                ip character varying COLLATE pg_catalog."default",
-                city character varying COLLATE pg_catalog."default",
-                countrycode character varying COLLATE pg_catalog."default",
-                region character varying COLLATE pg_catalog."default",
-                lat character varying COLLATE pg_catalog."default",
-                lon character varying COLLATE pg_catalog."default",
-                country character varying COLLATE pg_catalog."default"
-            )
-
-            TABLESPACE pg_default;
-
-            ALTER TABLE IF EXISTS public.geolocationevent
-                OWNER to postgres;
-
-
-                CREATE TABLE IF NOT EXISTS public.workflowprocesshistory
-                (
-                    uuid uuid NOT NULL,
-                    eperson_id uuid,
-                    action character varying COLLATE pg_catalog."default",
-                    actiondate timestamp with time zone,
-                    workflowhistory_id integer,
-                    CONSTRAINT workflowprocesshistory_pkey PRIMARY KEY (uuid)
-                )
-
-                TABLESPACE pg_default;
-
-                ALTER TABLE IF EXISTS public.workflowprocesshistory
-                    OWNER to postgres;
+        ALTER TABLE IF EXISTS public.workflowprocesssenderdiary
+            OWNER to dspace;

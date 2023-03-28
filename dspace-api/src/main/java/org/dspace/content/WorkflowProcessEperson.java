@@ -11,6 +11,7 @@ import org.dspace.eperson.EPerson;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.util.Date;
 
 /**
  * Class representing an item in DSpace.
@@ -26,8 +27,8 @@ import javax.persistence.Entity;
  * @author Martin Hald
  */
 @Entity
-@Table(name = "workflowprocessdefinitioneperson")
-public class WorkflowProcessDefinitionEperson extends DSpaceObject implements DSpaceObjectLegacySupport {
+@Table(name = "workflowprocesseperson")
+public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObjectLegacySupport {
     /**
      * Wild card for Dublin Core metadata qualifiers/languages
      */
@@ -42,6 +43,13 @@ public class WorkflowProcessDefinitionEperson extends DSpaceObject implements DS
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflowprocessdefinition")
     private WorkflowProcessDefinition workflowProcessDefinition;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflowProcess_id")
+    private WorkflowProcess workflowProcess;
+
+    @Column(name = "assign_date", columnDefinition = "timestamp with time zone")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date assignDate = new Date();
 
     @Override
     public int getType() {
