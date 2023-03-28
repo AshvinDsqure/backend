@@ -10,11 +10,15 @@ package org.dspace.app.rest.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.dspace.app.rest.Parameter;
+import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessMasterRest;
 import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
+import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.Item;
 import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
@@ -141,6 +145,20 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
             workFlowProcessMasterValueService.delete(context, workFlowProcessMasterValue);
             context.commit();
         } catch (SQLException | IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+    @SearchRestMethod(name = "findByType")
+    public Page<WorkFlowProcessMasterValueRest> findByStartDateAndEndDate(
+            @Parameter(value = "type", required = true) String type,
+            Pageable pageable)
+    {
+        try {
+            Context context = obtainContext();
+            System.out.println("in Repo "+type);
+            List<WorkFlowProcessMasterValue> workFlowProcessMasterValueRests = workFlowProcessMasterValueService.findByType(context,type);
+            return converter.toRestPage(workFlowProcessMasterValueRests, pageable, 50, utils.obtainProjection());
+        } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }

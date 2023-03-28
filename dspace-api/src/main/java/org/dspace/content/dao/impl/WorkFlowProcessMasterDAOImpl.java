@@ -13,7 +13,9 @@ import org.dspace.content.dao.WorkFlowProcessMasterDAO;
 import org.dspace.core.AbstractHibernateDAO;
 import org.dspace.core.Context;
 
+import javax.persistence.Query;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class WorkFlowProcessMasterDAOImpl  extends AbstractHibernateDAO<WorkFlowProcessMaster> implements WorkFlowProcessMasterDAO {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkFlowProcessMasterDAOImpl.class);

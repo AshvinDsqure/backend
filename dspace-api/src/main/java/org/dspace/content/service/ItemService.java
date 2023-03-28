@@ -740,6 +740,7 @@ public interface ItemService
      * @throws SQLException if database error
      */
     int countTotal(Context context) throws SQLException;
+    int countTotal(Context context,String startdate,String endDate) throws SQLException;
 
     /**
      * counts all items not in archive
@@ -843,5 +844,8 @@ public interface ItemService
      * @return the entity type of the given item, or null if not found.
      */
     public EntityType getEntityType(Context context, Item item) throws SQLException;
+
+    List<Item> getDataTwoDateRange(Context context, String startdate, String endDate) throws SQLException;
+
 
 }

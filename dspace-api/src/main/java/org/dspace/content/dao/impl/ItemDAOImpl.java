@@ -438,4 +438,44 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
         return count(query);
 
     }
+
+    @Override
+    public List<Item> getDataTwoDateRange(Context context, MetadataField metadataField, String startdate, String endDate) throws SQLException{
+
+        log.info("metadatafile:::::::::::::::"+metadataField);
+        log.info("startdate:::::::::::::::"+startdate);
+        log.info("enddate:::::::::::::::"+endDate);
+        Query query = createQuery(context, "SELECT item FROM Item as item " +
+                "join item.metadata metadatavalue " +
+                "WHERE item.inArchive=:in_archive  " +
+                "AND  metadatavalue.metadataField = :metadataField " +
+                "AND STR(metadatavalue.value) >= :startdate " +
+                "AND STR(metadatavalue.value) <= :endDate" );
+
+        query.setParameter("in_archive",true);
+        query.setParameter("metadataField",metadataField);
+        query.setParameter("startdate",startdate);
+        query.setParameter("endDate",endDate);
+        return query.getResultList();
+    }
+
+    @Override
+    public int countTotal(Context context,MetadataField metadataField, String startdate, String endDate) throws SQLException {
+        log.info("metadatafile:::::::::::::::"+metadataField);
+        log.info("startdate:::::::::::::::"+startdate);
+        log.info("enddate:::::::::::::::"+endDate);
+
+        Query query = createQuery(context, "SELECT count(*) FROM Item as item " +
+                "join item.metadata  metadatavalue " +
+                "WHERE item.inArchive=:in_archive  " +
+                "AND  metadatavalue.metadataField = :metadataField " +
+                "AND STR(metadatavalue.value) >= :startdate " +
+                "AND STR(metadatavalue.value) <= :endDate" );
+
+        query.setParameter("in_archive",true);
+        query.setParameter("metadataField",metadataField);
+        query.setParameter("startdate",startdate);
+        query.setParameter("endDate",endDate);
+        return count(query);
+    }
 }

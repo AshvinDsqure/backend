@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -44,9 +45,7 @@ import org.dspace.app.rest.exception.RepositorySearchMethodNotFoundException;
 import org.dspace.app.rest.exception.RepositorySearchNotFoundException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.link.HalLinkService;
-import org.dspace.app.rest.model.LinkRest;
-import org.dspace.app.rest.model.RestAddressableModel;
-import org.dspace.app.rest.model.RestModel;
+import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.hateoas.DSpaceResource;
 import org.dspace.app.rest.model.hateoas.EmbeddedPage;
 import org.dspace.app.rest.model.hateoas.HALResource;
@@ -56,6 +55,7 @@ import org.dspace.app.rest.repository.LinkRestRepository;
 import org.dspace.app.rest.utils.RestRepositoryUtils;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +97,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/api/{apiCategory}/{model}")
 @SuppressWarnings("rawtypes")
-public class RestResourceController implements InitializingBean {
+public class
+
+RestResourceController implements InitializingBean {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(RestResourceController.class);
 
@@ -430,12 +432,15 @@ public class RestResourceController implements InitializingBean {
 
         RestAddressableModel modelObject;
         if (parent != null) {
+
             UUID parentUuid = UUIDUtils.fromString(parent);
             modelObject = repository.createAndReturn(parentUuid);
         } else {
+
             modelObject = repository.createAndReturn();
         }
         if (modelObject == null) {
+
             return ControllerUtils.toEmptyResponse(HttpStatus.CREATED);
         }
         DSpaceResource result = converter.toResource(modelObject);
@@ -1102,6 +1107,7 @@ public class RestResourceController implements InitializingBean {
                                                     @PathVariable String apiCategory, @PathVariable String model,
                                                     @PathVariable UUID uuid,
                                                     @RequestBody JsonNode jsonNode) {
+        System.out.println("::::::::::::::::::::WorkflowProcessSenderDiaryRest:::::1::::::::::::");
         return putOneJsonInternal(request, apiCategory, model, uuid, jsonNode);
     }
 
@@ -1186,6 +1192,8 @@ public class RestResourceController implements InitializingBean {
                                                     @PathVariable String apiCategory, @PathVariable String model,
                                                     @PathVariable String id,
                                                     @RequestBody(required = true) JsonNode jsonNode) {
+
+
         return putOneJsonInternal(request, apiCategory, model, id, jsonNode);
     }
 
@@ -1201,9 +1209,13 @@ public class RestResourceController implements InitializingBean {
      */
     private <ID extends Serializable> DSpaceResource<RestAddressableModel> putOneJsonInternal(
         HttpServletRequest request, String apiCategory, String model, ID id, JsonNode jsonNode) {
+
+        System.out.println("::::::::::::::::::::WorkflowProcessSenderDiaryRest:::::1::::::asas::::::");
         checkModelPluralForm(apiCategory, model);
         DSpaceRestRepository<RestAddressableModel, ID> repository = utils.getResourceRepository(apiCategory, model);
         RestAddressableModel modelObject = null;
+        System.out.println("::::::::::::::::::::repository::::::"+repository.getClass().getName());
+
         modelObject = repository.put(request, apiCategory, model, id, jsonNode);
         if (modelObject == null) {
             throw new ResourceNotFoundException(apiCategory + "." + model + " with id: " + id + " not found");

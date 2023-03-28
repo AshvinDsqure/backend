@@ -1460,6 +1460,8 @@ prevent the generation of resource policy entry values with null dspace_object a
         return itemDAO.countRows(context);
     }
 
+
+
     @Override
     public int countNotArchivedItems(Context context) throws SQLException {
         // return count of items not in archive and also not withdrawn
@@ -1650,6 +1652,21 @@ prevent the generation of resource policy entry values with null dspace_object a
         }
 
         return entityTypeService.findByEntityType(context, entityTypeString);
+    }
+
+    @Override
+    public List<Item> getDataTwoDateRange(Context context, String startdate, String endDate) throws SQLException {
+        MetadataField metadataField = metadataFieldService.findByElement(context, MetadataSchemaEnum.DC.getName(), "date", "accessioned");
+
+       log.info(":::::::::::::QDATA::::::::::"+itemDAO.getDataTwoDateRange(context,metadataField,startdate,endDate));
+        return itemDAO.getDataTwoDateRange(context,metadataField,startdate,endDate);
+    }
+    @Override
+    public int countTotal(Context context, String startdate, String endDate) throws SQLException {
+
+        MetadataField metadataField = metadataFieldService.findByElement(context, MetadataSchemaEnum.DC.getName(), "date", "accessioned");
+        return itemDAO.countTotal(context,metadataField,startdate,endDate);
+
     }
 
     private void removeOrcidSynchronizationStuff(Context context, Item item) throws SQLException, AuthorizeException {

@@ -13,7 +13,12 @@ import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.core.Context;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 public interface WorkFlowProcessMasterValueDAO extends DSpaceObjectLegacySupportDAO<WorkFlowProcessMasterValue>{
     int countRows(Context context) throws SQLException;
+
+    public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername) throws SQLException;
+
 }

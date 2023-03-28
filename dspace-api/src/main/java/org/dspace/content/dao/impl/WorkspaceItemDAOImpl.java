@@ -161,6 +161,8 @@ public class WorkspaceItemDAOImpl extends AbstractHibernateDAO<WorkspaceItem> im
                                   "SELECT wi.stageReached as stage_reached, count(*) as cnt from WorkspaceItem wi" +
                                       " group by wi.stageReached order by wi.stageReached");
 
+
+
         List<Object[]> list = query.getResultList();
         List<Map.Entry<Integer, Long>> returnList = new LinkedList<>();
         for (Object[] o : list) {

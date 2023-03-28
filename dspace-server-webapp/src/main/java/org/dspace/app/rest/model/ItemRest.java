@@ -68,6 +68,7 @@ public class ItemRest extends DSpaceObjectRest {
     private boolean discoverable = false;
     private boolean withdrawn = false;
     private Date lastModified = new Date();
+    private  String despaceObjectHierarchi;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
 
@@ -120,5 +121,13 @@ public class ItemRest extends DSpaceObjectRest {
 
     public void setEntityType(String entityType) {
         this.entityType = entityType;
+    }
+
+    public String getDespaceObjectHierarchi() {
+        return despaceObjectHierarchi;
+    }
+
+    public void setDespaceObjectHierarchi(String despaceObjectHierarchi) {
+        this.despaceObjectHierarchi = despaceObjectHierarchi;
     }
 }

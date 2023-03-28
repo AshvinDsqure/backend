@@ -11,6 +11,7 @@ package org.dspace.content;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkFlowProcessMasterValueDAO;
+import org.dspace.content.service.WorkFlowProcessMasterService;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,8 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
      */
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(Item.class);
 
+    @Autowired
+    public WorkFlowProcessMasterService workFlowProcessMasterService;
     @Autowired(required = true)
     protected WorkFlowProcessMasterValueDAO workFlowProcessMasterValueDAO;
 
@@ -85,6 +88,12 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
     @Override
     public int countRows(Context context) throws SQLException {
         return workFlowProcessMasterValueDAO.countRows(context);
+    }
+
+    @Override
+    public List<WorkFlowProcessMasterValue> findByType(Context context,String type) throws SQLException {
+        System.out.println("in service impl "+type);
+       return workFlowProcessMasterValueDAO.findByType(context,type);
     }
 
     @Override

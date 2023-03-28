@@ -15,4 +15,6 @@ import java.sql.SQLException;
 
 public interface WorkFlowProcessMasterDAO extends DSpaceObjectLegacySupportDAO<WorkFlowProcessMaster>{
     int countRows(Context context) throws SQLException;
+
+
 }

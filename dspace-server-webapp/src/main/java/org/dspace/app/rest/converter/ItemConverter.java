@@ -51,6 +51,7 @@ public class ItemConverter
         item.setDiscoverable(obj.isDiscoverable());
         item.setWithdrawn(obj.isWithdrawn());
         item.setLastModified(obj.getLastModified());
+        item.setDespaceObjectHierarchi("Top level Community...");
 
         List<MetadataValue> entityTypes =
             itemService.getMetadata(obj, "dspace", "entity", "type", Item.ANY, false);
