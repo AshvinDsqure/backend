@@ -194,3 +194,19 @@ ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
 
             ALTER TABLE IF EXISTS public.geolocationevent
                 OWNER to postgres;
+
+
+                CREATE TABLE IF NOT EXISTS public.workflowprocesshistory
+                (
+                    uuid uuid NOT NULL,
+                    eperson_id uuid,
+                    action character varying COLLATE pg_catalog."default",
+                    actiondate timestamp with time zone,
+                    workflowhistory_id integer,
+                    CONSTRAINT workflowprocesshistory_pkey PRIMARY KEY (uuid)
+                )
+
+                TABLESPACE pg_default;
+
+                ALTER TABLE IF EXISTS public.workflowprocesshistory
+                    OWNER to postgres;
