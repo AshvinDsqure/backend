@@ -7,13 +7,8 @@
  */
 package org.dspace.content;
 
-import org.dspace.content.enums.Dispatch;
-import org.dspace.content.enums.Priority;
-import org.dspace.eperson.EPerson;
-
 import javax.persistence.Entity;
 import javax.persistence.*;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,7 +37,7 @@ public class WorkflowProcessDefinition extends DSpaceObject implements DSpaceObj
     @Column(name = "workflowprocessdefinitionname")
     private String workflowprocessdefinition;
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowProcessDefinition",cascade = { CascadeType.ALL})
-    private Set<WorkflowProcessDefinitionEperson> workflowProcessDefinitionEpeople=new HashSet<>();
+    private Set<WorkflowProcessEperson> workflowProcessDefinitionEpeople=new HashSet<>();
     @Override
     public int getType() {
         return 0;
@@ -68,11 +63,11 @@ public class WorkflowProcessDefinition extends DSpaceObject implements DSpaceObj
         this.workflowprocessdefinition = workflowprocessdefinition;
     }
 
-    public Set<WorkflowProcessDefinitionEperson> getWorkflowProcessDefinitionEpeople() {
+    public Set<WorkflowProcessEperson> getWorkflowProcessDefinitionEpeople() {
         return workflowProcessDefinitionEpeople;
     }
 
-    public void setWorkflowProcessDefinitionEpeople(Set<WorkflowProcessDefinitionEperson> workflowProcessDefinitionEpeople) {
+    public void setWorkflowProcessDefinitionEpeople(Set<WorkflowProcessEperson> workflowProcessDefinitionEpeople) {
         this.workflowProcessDefinitionEpeople = workflowProcessDefinitionEpeople;
     }
 }

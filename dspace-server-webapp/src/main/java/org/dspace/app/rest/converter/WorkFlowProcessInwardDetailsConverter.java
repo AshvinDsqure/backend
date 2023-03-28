@@ -10,11 +10,14 @@ package org.dspace.app.rest.converter;
 import org.dspace.app.rest.model.WorkFlowProcessInwardDetailsRest;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.WorkFlowProcessInwardDetails;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WorkFlowProcessInwardDetailsConverter extends DSpaceObjectConverter<WorkFlowProcessInwardDetails, WorkFlowProcessInwardDetailsRest> {
-
+    @Autowired
+    ModelMapper modelMapper;
     @Override
     public Class<WorkFlowProcessInwardDetails> getModelClass() {
         return WorkFlowProcessInwardDetails.class;
@@ -41,6 +44,9 @@ public class WorkFlowProcessInwardDetailsConverter extends DSpaceObjectConverter
         obj.setInwardDate(rest.getInwardDate());
         obj.setReceivedDate(rest.getReceivedDate());
         return obj;
+    }
+    public WorkFlowProcessInwardDetails convert(WorkFlowProcessInwardDetailsRest rest) {
+       return modelMapper.map(rest,WorkFlowProcessInwardDetails.class);
     }
 
 }

@@ -13,6 +13,7 @@ import org.dspace.content.WorkflowProcess;
 
 import java.io.Serializable;
 import java.util.List;
+
 public  class JBPMProcess  implements Serializable  {
     private String  queueid;
     private String  initiator;
@@ -22,7 +23,7 @@ public  class JBPMProcess  implements Serializable  {
     private Integer jbpmtaskid;
     public JBPMProcess(WorkflowProcess workflowProcess){
        this.queueid=workflowProcess.getID().toString();
-        this.initiator=workflowProcess.getSubmitter().getID().toString();
+        this.initiator="";
         this.dispatch=workflowProcess.getSubject();
         this.users=List.of("vipul","abhi","jayesh");
     }

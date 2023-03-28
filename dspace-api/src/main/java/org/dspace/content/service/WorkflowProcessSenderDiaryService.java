@@ -33,4 +33,5 @@ public interface WorkflowProcessSenderDiaryService extends DSpaceObjectService<W
      */
     public List<WorkflowProcessSenderDiary> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
+    public WorkflowProcessSenderDiary findByEmailID(Context context, String emailID) throws SQLException;
 }

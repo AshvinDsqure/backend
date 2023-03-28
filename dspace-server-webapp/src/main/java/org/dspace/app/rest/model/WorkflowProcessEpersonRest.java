@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @LinksRest(links = {
 
 })
-public class WorkflowProcessDefinitionEpersonRest extends DSpaceObjectRest {
+public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     public static final String NAME = "WorkflowProcessDefinitionEpersonRest";
     public static final String PLURAL_NAME = "WorkflowProcessDefinitionEpersonRest";
     public static final String CATEGORY = RestAddressableModel.CORE;

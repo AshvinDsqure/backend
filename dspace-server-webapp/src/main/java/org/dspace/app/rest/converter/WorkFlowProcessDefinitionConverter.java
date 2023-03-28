@@ -23,14 +23,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class WorkFlowProcessDefinitionConverter extends DSpaceObjectConverter<WorkflowProcessDefinition, WorkFlowProcessDefinitionRest> {
     @Autowired
-    WorkFlowProcessDefinitionEpersonConverter workFlowProcessDefinitionEpersonConverter;
+    WorkFlowProcessEpersonConverter workFlowProcessDefinitionEpersonConverter;
     @Autowired
     BitstreamService bitstreamService;
     @Override
     public WorkFlowProcessDefinitionRest convert(WorkflowProcessDefinition obj, Projection projection) {
         WorkFlowProcessDefinitionRest workflowProcessDefinitionRest = super.convert(obj, projection);
         obj.getWorkflowProcessDefinitionEpeople().forEach(workflowProcessDefinitionEperson->{
-            WorkflowProcessDefinitionEpersonRest workflowProcessDefinitionEpersonRest=workFlowProcessDefinitionEpersonConverter.convert(workflowProcessDefinitionEperson,projection);
+            WorkflowProcessEpersonRest workflowProcessDefinitionEpersonRest=workFlowProcessDefinitionEpersonConverter.convert(workflowProcessDefinitionEperson,projection);
             workflowProcessDefinitionRest.getWorkflowProcessDefinitionEpersonRests().add(workflowProcessDefinitionEpersonRest);
         });
         return workflowProcessDefinitionRest;

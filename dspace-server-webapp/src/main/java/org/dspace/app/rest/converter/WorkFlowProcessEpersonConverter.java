@@ -10,16 +10,10 @@ package org.dspace.app.rest.converter;
 import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.*;
-import org.dspace.content.enums.Priority;
-import org.dspace.content.enums.WorkFlowProcessReferenceDocType;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.core.Context;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.sql.SQLException;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * This is the converter from/to the EPerson in the DSpace API data model and the
@@ -28,27 +22,30 @@ import java.util.UUID;
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
 @Component
-public class WorkFlowProcessDefinitionEpersonConverter extends DSpaceObjectConverter<WorkflowProcessDefinitionEperson, WorkflowProcessDefinitionEpersonRest> {
+public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<WorkflowProcessEperson, WorkflowProcessEpersonRest> {
     @Autowired
     EPersonConverter ePersonConverter;
     @Autowired
-    BitstreamService bitstreamService;
+    ModelMapper modelMapper;
     @Override
-    public WorkflowProcessDefinitionEpersonRest convert(WorkflowProcessDefinitionEperson obj, Projection projection) {
-        WorkflowProcessDefinitionEpersonRest workflowProcessDefinitionEpersonRest = super.convert(obj, projection);
+    public WorkflowProcessEpersonRest convert(WorkflowProcessEperson obj, Projection projection) {
+        WorkflowProcessEpersonRest workflowProcessDefinitionEpersonRest = super.convert(obj, projection);
         if(obj.getePerson()!= null){
         workflowProcessDefinitionEpersonRest.setePersonRest(ePersonConverter.convert(obj.getePerson(),projection));
         }
         return workflowProcessDefinitionEpersonRest;
     }
     @Override
-    protected WorkflowProcessDefinitionEpersonRest newInstance() {
-        return new WorkflowProcessDefinitionEpersonRest();
+    protected WorkflowProcessEpersonRest newInstance() {
+        return new WorkflowProcessEpersonRest();
     }
 
     @Override
-    public Class<WorkflowProcessDefinitionEperson> getModelClass() {
-        return WorkflowProcessDefinitionEperson.class;
+    public Class<WorkflowProcessEperson> getModelClass() {
+        return WorkflowProcessEperson.class;
+    }
+    public WorkflowProcessEperson convert(WorkflowProcessEpersonRest rest) {
+        return modelMapper.map(rest,WorkflowProcessEperson.class) ;
     }
 
 }

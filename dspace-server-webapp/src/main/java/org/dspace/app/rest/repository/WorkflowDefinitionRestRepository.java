@@ -21,7 +21,7 @@ import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkflowProcessDefinition;
-import org.dspace.content.WorkflowProcessDefinitionEperson;
+import org.dspace.content.WorkflowProcessEperson;
 import org.dspace.content.service.WorkflowProcessDefinitionService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
@@ -122,7 +122,7 @@ public class WorkflowDefinitionRestRepository  extends DSpaceObjectRestRepositor
             workflowProcessDefinition.setWorkflowprocessdefinition(workflowProcessDefinitionRest.getWorkflowprocessdefinitionname());
             workflowProcessDefinitionRest.getWorkflowProcessDefinitionEpersonRests().forEach(workflowProcessDefinitionEpersonRest -> {
                 System.out.println("workflowProcessDefinitionEpersonRest::"+workflowProcessDefinitionEpersonRest.getePersonRest().getUuid());
-                WorkflowProcessDefinitionEperson workflowProcessDefinitionEperson=new WorkflowProcessDefinitionEperson();
+                WorkflowProcessEperson workflowProcessDefinitionEperson=new WorkflowProcessEperson();
                 workflowProcessDefinitionEperson.setWorkflowProcessDefinition(workflowProcessDefinition);
                 workflowProcessDefinitionEperson.setIndex(workflowProcessDefinitionEpersonRest.getIndex());
                 try {
