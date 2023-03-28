@@ -177,3 +177,20 @@ ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
 
         ALTER TABLE IF EXISTS public.event
             OWNER to postgres;
+
+            CREATE TABLE IF NOT EXISTS public.geolocationevent
+            (
+                uuid uuid,
+                ip character varying COLLATE pg_catalog."default",
+                city character varying COLLATE pg_catalog."default",
+                countrycode character varying COLLATE pg_catalog."default",
+                region character varying COLLATE pg_catalog."default",
+                lat character varying COLLATE pg_catalog."default",
+                lon character varying COLLATE pg_catalog."default",
+                country character varying COLLATE pg_catalog."default"
+            )
+
+            TABLESPACE pg_default;
+
+            ALTER TABLE IF EXISTS public.geolocationevent
+                OWNER to postgres;
