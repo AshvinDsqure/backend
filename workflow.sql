@@ -120,3 +120,37 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.workflowprocesssenderdiary
     OWNER to dspace;
+
+-----------------------------------------------------------ashvin add
+CREATE TABLE IF NOT EXISTS public.workflowprocessinwarddetails
+(
+    uuid uuid NOT NULL,
+    workflowprocessinwarddetails_id integer,
+    inwardnumber character varying COLLATE pg_catalog."default",
+    inwarddate timestamp with time zone,
+    receiveddate timestamp with time zone,
+    CONSTRAINT workflowprocessinwarddetails_pkey PRIMARY KEY (uuid)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
+    OWNER to postgres;
+
+
+    CREATE TABLE IF NOT EXISTS public.workflowprocessoutwarddetails
+    (
+        uuid uuid NOT NULL,
+        workflowprocessoutwarddetails_id integer,
+        outwardnumber character varying COLLATE pg_catalog."default",
+        outwarddate timestamp with time zone,
+        outwardmedium_id uuid,
+        outwarddepartment_id uuid,
+        outwardmode_id uuid,
+        CONSTRAINT workflowprocessoutwarddetails_pkey PRIMARY KEY (uuid)
+    )
+
+    TABLESPACE pg_default;
+
+    ALTER TABLE IF EXISTS public.workflowprocessoutwarddetails
+        OWNER to postgres;
