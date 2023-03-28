@@ -7,6 +7,7 @@
  */
 package org.dspace.content;
 
+import lombok.Data;
 import org.dspace.content.enums.Priority;
 import org.dspace.content.enums.WorkFlowProcessReferenceDocType;
 import org.dspace.eperson.EPerson;
@@ -31,6 +32,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "workflowprocessreferencedoc")
+@Data
 public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceObjectLegacySupport {
     /**
      * Wild card for Dublin Core metadata qualifiers/languages
@@ -45,11 +47,15 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "workflowprocess")
     private WorkflowProcess workflowProcess;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "workflowprocessreferencedoctype")
-    private WorkFlowProcessReferenceDocType workFlowProcessReferenceDocType;
-
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documenttype_id")
+    private WorkFlowProcessMasterValue documentType = null;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "latterCategory_id")
+    private WorkFlowProcessMasterValue latterCategory = null;
+    @Column(name = "date", columnDefinition = "timestamp with time zone")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date date = new Date();
     @Override
     public int getType() {
         return 0;
@@ -65,31 +71,4 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
         return this.legacyId;
     }
 
-    public void setLegacyId(Integer legacyId) {
-        this.legacyId = legacyId;
-    }
-
-    public Bitstream getBitstream() {
-        return bitstream;
-    }
-
-    public void setBitstream(Bitstream bitstream) {
-        this.bitstream = bitstream;
-    }
-
-    public WorkFlowProcessReferenceDocType getWorkFlowProcessReferenceDocType() {
-        return workFlowProcessReferenceDocType;
-    }
-
-    public void setWorkFlowProcessReferenceDocType(WorkFlowProcessReferenceDocType workFlowProcessReferenceDocType) {
-        this.workFlowProcessReferenceDocType = workFlowProcessReferenceDocType;
-    }
-
-    public WorkflowProcess getWorkflowProcess() {
-        return workflowProcess;
-    }
-
-    public void setWorkflowProcess(WorkflowProcess workflowProcess) {
-        this.workflowProcess = workflowProcess;
-    }
 }
