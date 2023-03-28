@@ -154,3 +154,26 @@ ALTER TABLE IF EXISTS public.workflowprocessinwarddetails
 
     ALTER TABLE IF EXISTS public.workflowprocessoutwarddetails
         OWNER to postgres;
+
+
+        CREATE TABLE IF NOT EXISTS public.event
+        (
+            title character varying COLLATE pg_catalog."default",
+            action_date timestamp with time zone NOT NULL,
+            uuid uuid NOT NULL,
+            dspaceobjectid uuid,
+            action integer,
+            dspaceobjecttype integer NOT NULL,
+            parencollection uuid,
+            parencommunity uuid,
+            geolocationeventid uuid,
+            event_id integer,
+            userid uuid,
+            documenttype integer,
+            CONSTRAINT event_pkey PRIMARY KEY (uuid, action_date, dspaceobjecttype)
+        )
+
+        TABLESPACE pg_default;
+
+        ALTER TABLE IF EXISTS public.event
+            OWNER to postgres;
