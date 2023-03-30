@@ -86,6 +86,16 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @Temporal(TemporalType.TIMESTAMP)
     private Date assignDueDate = new Date();*/
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
+    private List<WorkFlowProcessHistory> WorkFlowProcessHistory = new ArrayList<>();
+
+    public List<org.dspace.content.WorkFlowProcessHistory> getWorkFlowProcessHistory() {
+        return WorkFlowProcessHistory;
+    }
+
+    public void setWorkFlowProcessHistory(List<org.dspace.content.WorkFlowProcessHistory> workFlowProcessHistory) {
+        WorkFlowProcessHistory = workFlowProcessHistory;
+    }
 
     @Override
     public int getType() {

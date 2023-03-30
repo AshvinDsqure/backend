@@ -50,7 +50,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
                 method = "getThumbnail"
         )
 })
-public class ItemRest extends DSpaceObjectRest {
+    public class ItemRest extends DSpaceObjectRest {
     public static final String NAME = "item";
     public static final String PLURAL_NAME = "items";
     public static final String CATEGORY = RestAddressableModel.CORE;
@@ -68,7 +68,22 @@ public class ItemRest extends DSpaceObjectRest {
     private boolean discoverable = false;
     private boolean withdrawn = false;
     private Date lastModified = new Date();
-    private  String despaceObjectHierarchi;
+
+    private  String email;
+    private String caseDetail;
+    private String uploaddate;
+    private String uploadedby;
+
+    private String hierarchy;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
 
@@ -123,11 +138,35 @@ public class ItemRest extends DSpaceObjectRest {
         this.entityType = entityType;
     }
 
-    public String getDespaceObjectHierarchi() {
-        return despaceObjectHierarchi;
+    public String getCaseDetail() {
+        return caseDetail;
     }
 
-    public void setDespaceObjectHierarchi(String despaceObjectHierarchi) {
-        this.despaceObjectHierarchi = despaceObjectHierarchi;
+    public void setCaseDetail(String caseDetail) {
+        this.caseDetail = caseDetail;
+    }
+
+    public String getUploaddate() {
+        return uploaddate;
+    }
+
+    public void setUploaddate(String uploaddate) {
+        this.uploaddate = uploaddate;
+    }
+
+    public String getUploadedby() {
+        return uploadedby;
+    }
+
+    public void setUploadedby(String uploadedby) {
+        this.uploadedby = uploadedby;
+    }
+
+    public String getHierarchy() {
+        return hierarchy;
+    }
+
+    public void setHierarchy(String hierarchy) {
+        this.hierarchy = hierarchy;
     }
 }

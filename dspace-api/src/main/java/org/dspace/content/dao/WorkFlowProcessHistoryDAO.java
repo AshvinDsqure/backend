@@ -12,7 +12,10 @@ import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.core.Context;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 public interface WorkFlowProcessHistoryDAO extends DSpaceObjectLegacySupportDAO<WorkFlowProcessHistory>{
     int countRows(Context context) throws SQLException;
+    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate , String enddate)  throws SQLException;
 }

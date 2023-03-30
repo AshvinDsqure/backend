@@ -13,7 +13,10 @@ import org.dspace.content.dao.WorkFlowProcessHistoryDAO;
 import org.dspace.core.AbstractHibernateDAO;
 import org.dspace.core.Context;
 
+import javax.persistence.Query;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlowProcessHistory> implements WorkFlowProcessHistoryDAO {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkFlowProcessHistoryDAOImpl.class);
@@ -28,5 +31,44 @@ public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlo
     @Override
     public int countRows(Context context) throws SQLException {
         return count(createQuery(context, "SELECT count(*) FROM WorkFlowProcessHistory"));
+    }
+
+    @Override
+    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate, String enddate) throws SQLException {
+
+        if(workflowprocessid!=null){
+            System.out.println("in getHistory workflowprocessid:::::::::::::::::::::::::::>>>> ");
+            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
+                    "join history.workflowProcess  as wp " +
+                    "WHERE wp.id=:workflowprocessid ");
+            query.setParameter("workflowprocessid", workflowprocessid);
+
+            return query.getResultList();
+        }else  if(epersonid!=null){
+            System.out.println("in getHistory epersonid:::::::::::::::::::::::::::>>>> ");
+
+
+            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
+                    "join history.workflowProcess  as wp " +
+                    "WHERE history.epersonid.id=:epersonid ");
+            query.setParameter("epersonid", epersonid);
+            return query.getResultList();
+
+        }else{
+            System.out.println("in getHistory Daterange:::::::::::::::::::::::::::>>>> ");
+
+            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
+                    "join history.workflowProcess  as wp " +
+                    "WHERE history.epersonid.id=:epersonid " +
+                    "OR wp.id=:workflowprocessid "+
+                    "OR STR(history.actionDate) >= :startdate " +
+                    "AND STR(history.actionDate) <= :endDate ");
+            query.setParameter("workflowprocessid", workflowprocessid);
+            query.setParameter("epersonid", epersonid);
+            query.setParameter("startdate", startdate);
+            query.setParameter("endDate", enddate);
+            return query.getResultList();
+        }
+
     }
 }

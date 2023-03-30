@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- * <p>
+ *
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
@@ -48,6 +48,8 @@ import org.dspace.content.service.RelationshipService;
 import org.dspace.content.service.RelationshipTypeService;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.eperson.service.EPersonService;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -87,6 +89,9 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
 
     @Autowired
     ItemService itemService;
+
+    @Autowired
+    private EPersonService es;
 
     @Autowired
     CollectionService collectionService;
@@ -375,15 +380,37 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
     }
 
     @SearchRestMethod(name = "findByStartDateAndEndDate")
-    public Page<WorkspaceItemRest> findByStartDateAndEndDate(
+    public Page<ItemRest> findByStartDateAndEndDate(
             @Parameter(value = "startdate", required = true) String startdate,
             @Parameter(value = "enddate", required = true) String enddate,
             Pageable pageable) {
+
+
+
+
         try {
             Context context = obtainContext();
             long total = itemService.countTotal(context, startdate, enddate);
-            List<Item> witems = itemService.getDataTwoDateRange(context, startdate, enddate);
-            return converter.toRestPage(witems, pageable, total, utils.obtainProjection());
+            List<Item> witems = itemService.getDataTwoDateRange(context, startdate, enddate, Math.toIntExact(pageable.getOffset()),
+                    Math.toIntExact(pageable.getPageSize()));
+
+            List<ExcelDTO> listDTo = witems.stream().map(i -> {
+                String title = itemService.getMetadataFirstValue(i, "dc", "title", null, null);
+                String type = itemService.getMetadataFirstValue(i, "dc", "type", null, null);
+                String issued = itemService.getMetadataFirstValue(i, "dc", "issued", null, null);
+                type = (type != null) ? type : "-";
+                title = (title != null) ? title : "-";
+                issued = (issued != null) ? issued : "-";
+                String caseDetail = type + "/" + title + "/" + issued;
+                String uploaddate = itemService.getMetadataFirstValue(i, "dc", "date", "accessioned", null);
+                String uploadedby = i.getSubmitter().getEmail();
+                String hierarchy = i.getOwningCollection().getName();
+                String email =context.getCurrentUser().getEmail();
+
+                return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy,email);
+            }).collect(Collectors.toList());
+
+            return converter.toRestPage(listDTo, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -395,7 +422,7 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
         try {
             Context context = obtainContext();
             String filename = "itemReport.xlsx";
-            List<Item> list = itemService.getDataTwoDateRange(context, startdate, enddate);
+            List<Item> list = itemService.getDataTwoDateRangeDownload(context, startdate, enddate);
             List<ExcelDTO> listDTo = list.stream().map(i -> {
                 String title = itemService.getMetadataFirstValue(i, "dc", "title", null, null);
                 String type = itemService.getMetadataFirstValue(i, "dc", "type", null, null);
@@ -407,7 +434,8 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
                 String uploaddate = itemService.getMetadataFirstValue(i, "dc", "date", "accessioned", null);
                 String uploadedby = i.getSubmitter().getEmail();
                 String hierarchy = i.getOwningCollection().getName();
-                return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy);
+                String email =context.getCurrentUser().getEmail();;
+                return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy,email);
             }).collect(Collectors.toList());
             ByteArrayInputStream in = ExcelHelper.tutorialsToExcel(listDTo);
             InputStreamResource file = new InputStreamResource(in);

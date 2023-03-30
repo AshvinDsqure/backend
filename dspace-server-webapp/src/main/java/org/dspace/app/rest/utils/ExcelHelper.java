@@ -8,17 +8,15 @@
 
 package org.dspace.app.rest.utils;
 
-import java.io.*;
-import java.util.List;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dspace.app.rest.model.ExcelDTO;
-import org.dspace.content.Item;
-import org.hibernate.internal.build.AllowSysOut;
+
+import java.io.*;
+import java.util.List;
 
 public class ExcelHelper {
 

@@ -195,7 +195,9 @@ public interface ItemDAO extends DSpaceObjectLegacySupportDAO<Item> {
     public int countItems(Context context, EPerson submitter, boolean includeArchived, boolean includeWithdrawn)
         throws SQLException;
 
-    List<Item> getDataTwoDateRange(Context context, MetadataField metadataField,String startdate, String endDate) throws SQLException;
+    List<Item> getDataTwoDateRange(Context context, MetadataField metadataField,String startdate, String endDate,Integer offset,Integer limit) throws SQLException;
+    List<Item> getDataTwoDateRangeDownload(Context context, MetadataField metadataField,String startdate, String endDate) throws SQLException;
+
     int countTotal(Context context,MetadataField metadataField,String startdate,String endDate) throws SQLException;
 
 }

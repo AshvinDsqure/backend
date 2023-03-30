@@ -52,6 +52,17 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
     @Temporal(TemporalType.TIMESTAMP)
     private Date actionDate = new Date();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflowprocess_id")
+    private WorkflowProcess workflowProcess;
+
+    public WorkflowProcess getWorkflowProcess() {
+        return workflowProcess;
+    }
+
+    public void setWorkflowProcess(WorkflowProcess workflowProcess) {
+        this.workflowProcess = workflowProcess;
+    }
 
     public EPerson getEpersonid() {
         return epersonid;

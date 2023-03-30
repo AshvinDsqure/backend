@@ -17,9 +17,11 @@ public class ExcelDTO {
     private String uploadedby;
 
     private String hierarchy;
+    private String email;
 
 
-    public ExcelDTO(String title, String type, String issue, String caseDetail, String uploaddate, String uploadedby,String hierarchy) {
+
+    public ExcelDTO(String title, String type, String issue, String caseDetail, String uploaddate, String uploadedby,String hierarchy,String email) {
         this.title = title;
         this.type = type;
         this.issue = issue;
@@ -27,6 +29,7 @@ public class ExcelDTO {
         this.uploaddate = uploaddate;
         this.uploadedby = uploadedby;
         this.hierarchy =hierarchy;
+        this.email=email;
     }
     public String getTitle() {
         return title;
@@ -87,5 +90,13 @@ public class ExcelDTO {
     public String  getCashDetails(){
 
         return  this.type+"/"+this.title+"/"+this.issue;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
