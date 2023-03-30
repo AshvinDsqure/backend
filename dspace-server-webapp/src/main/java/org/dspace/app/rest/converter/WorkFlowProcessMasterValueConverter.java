@@ -10,14 +10,21 @@ package org.dspace.app.rest.converter;
 import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.service.WorkFlowProcessMasterValueService;
+import org.dspace.core.Context;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 @Component
 public class WorkFlowProcessMasterValueConverter extends DSpaceObjectConverter<WorkFlowProcessMasterValue, WorkFlowProcessMasterValueRest> {
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    WorkFlowProcessMasterValueService masterValueService;
     @Override
     public Class<WorkFlowProcessMasterValue> getModelClass() {
         return WorkFlowProcessMasterValue.class;
@@ -46,8 +53,9 @@ public class WorkFlowProcessMasterValueConverter extends DSpaceObjectConverter<W
         obj.setWorkflowprocessmaster(rest.getWorkFlowProcessMaster());
         return obj;
     }
-    public WorkFlowProcessMasterValue convert( WorkFlowProcessMasterValueRest rest) {
-        return modelMapper.map(rest,WorkFlowProcessMasterValue.class) ;
+    public WorkFlowProcessMasterValue convert(Context context, WorkFlowProcessMasterValueRest rest) throws SQLException {
+        return  masterValueService.find(context, UUID.fromString(rest.getId()));
+        //return modelMapper.map(rest,WorkFlowProcessMasterValue.class) ;
     }
 
 }

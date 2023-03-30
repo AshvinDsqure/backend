@@ -39,8 +39,8 @@ public class WorkflowProcessSenderDiary extends DSpaceObject implements DSpaceOb
 
     @Column(name = "workflowprocesssenderdiary_id", insertable = false, updatable = false)
     private Integer legacyId;
-    @Column(name = "name")
-    private String name;
+    @Column(name = "sendername")
+    private String sendername;
     @Column(name = "designation")
     private String designation;
     @Column(name = "contactnumber")
@@ -75,8 +75,12 @@ public class WorkflowProcessSenderDiary extends DSpaceObject implements DSpaceOb
         this.legacyId = legacyId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getSendername() {
+        return sendername;
+    }
+
+    public void setSendername(String sendername) {
+        this.sendername = sendername;
     }
 
     public String getDesignation() {

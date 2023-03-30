@@ -8,6 +8,13 @@
 package org.dspace.content.enums;
 
 public enum Dispatch {
-    ELECTRIC,
-    PHYSICAL
+    ELECTRIC("Electric"),
+    PHYSICAL("Physical");
+    private String name;
+    Dispatch(String name) {
+        this.name = name;
+    }
+    public String getDispatchMode() {
+        return name;
+    }
 }

@@ -16,9 +16,13 @@ import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.WorkflowProcessDefinition;
 import org.dspace.content.WorkflowProcessReferenceDoc;
 import org.dspace.content.service.BitstreamService;
+import org.dspace.core.Context;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * This is the converter from/to the EPerson in the DSpace API data model and the
@@ -48,8 +52,10 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
     public Class<WorkflowProcessReferenceDoc> getModelClass() {
         return WorkflowProcessReferenceDoc.class;
     }
-    public WorkflowProcessReferenceDoc convert(WorkflowProcessReferenceDocRest rest) {
-        return modelMapper.map(rest,WorkflowProcessReferenceDoc.class) ;
+    public WorkflowProcessReferenceDoc convert(Context context, WorkflowProcessReferenceDocRest rest) throws SQLException {
+        WorkflowProcessReferenceDoc workflowProcessReferenceDoc= modelMapper.map(rest,WorkflowProcessReferenceDoc.class) ;
+        workflowProcessReferenceDoc.setBitstream(bitstreamService.find(context, UUID.fromString(rest.getBitstreamRest().getId())));
+        return  workflowProcessReferenceDoc;
     }
 
 }

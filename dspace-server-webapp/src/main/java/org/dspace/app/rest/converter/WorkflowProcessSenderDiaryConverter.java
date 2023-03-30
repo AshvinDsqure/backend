@@ -51,7 +51,7 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
         rest.setCountry(obj.getCountry());
         rest.setOrganization(obj.getOrganization());
         rest.setLegacyId(obj.getLegacyId());
-        rest.setName(obj.getName());
+        rest.setSendername(obj.getSendername());
         rest.setDesignation(obj.getDesignation());
         rest.setContactNumber(obj.getContactNumber());
         rest.setEmail(obj.getEmail());
