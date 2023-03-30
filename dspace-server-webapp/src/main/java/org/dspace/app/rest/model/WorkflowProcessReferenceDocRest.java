@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     public static final String CATEGORY = RestAddressableModel.CORE;
     @JsonProperty
     private BitstreamRest bitstreamRest;
-    @JsonProperty
+    @JsonFormat(pattern="dd/MM/yyyy")
     private Date InitDate = new Date();
     @JsonProperty
     private WorkFlowProcessRest workFlowProcessRest;

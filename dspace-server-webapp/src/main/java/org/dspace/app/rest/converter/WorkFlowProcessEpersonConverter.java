@@ -11,9 +11,14 @@ import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.*;
 import org.dspace.content.service.BitstreamService;
+import org.dspace.core.Context;
+import org.dspace.eperson.service.EPersonService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * This is the converter from/to the EPerson in the DSpace API data model and the
@@ -25,6 +30,8 @@ import org.springframework.stereotype.Component;
 public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<WorkflowProcessEperson, WorkflowProcessEpersonRest> {
     @Autowired
     EPersonConverter ePersonConverter;
+    @Autowired
+    EPersonService ePersonService;
     @Autowired
     ModelMapper modelMapper;
     @Override
@@ -44,8 +51,10 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
     public Class<WorkflowProcessEperson> getModelClass() {
         return WorkflowProcessEperson.class;
     }
-    public WorkflowProcessEperson convert(WorkflowProcessEpersonRest rest) {
-        return modelMapper.map(rest,WorkflowProcessEperson.class) ;
+    public WorkflowProcessEperson convert(Context context, WorkflowProcessEpersonRest rest) throws SQLException {
+        WorkflowProcessEperson workflowProcessEperson=modelMapper.map(rest,WorkflowProcessEperson.class) ;
+        workflowProcessEperson.setePerson(ePersonService.find(context, UUID.fromString(rest.getePersonRest().getUuid())));
+        return  workflowProcessEperson;
     }
 
 }

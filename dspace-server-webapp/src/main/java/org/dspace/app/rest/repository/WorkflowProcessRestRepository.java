@@ -9,6 +9,7 @@ package org.dspace.app.rest.repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -100,12 +101,15 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         ObjectMapper mapper = new ObjectMapper();
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcess workflowProcess=null;
+        System.out.println("workFlowProcessRest::");
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
-            System.out.println("workFlowProcessRest::"+workFlowProcessRest.getWorkflowProcessReferenceDocRests().size());
             workflowProcess= createworkflowProcessFromRestObject(context,workFlowProcessRest);
-           // jbpmServer.startProcess(workflowProcess);
-
+            try {
+              //  jbpmServer.startProcess(workflowProcess);
+            }catch (RuntimeException e){
+                throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
+            }
         } catch (Exception e1) {
             e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
@@ -115,16 +119,17 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     private WorkflowProcess createworkflowProcessFromRestObject(Context context, WorkFlowProcessRest workFlowProcessRest) throws AuthorizeException {
         WorkflowProcess workflowProcess =null;
         try {
-            System.out.println("Priority::"+workFlowProcessRest.getPriority());
-            Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
             workflowProcess=workFlowProcessConverter.convert(workFlowProcessRest,context);
-            if(!workflowProcessSenderDiaryOptional.isPresent()){
+            System.out.println("Priority::"+workFlowProcessRest.getPriority());
+            System.out.println("workFlowProcessRest dairiyyy::"+new Gson().toJson(workflowProcess.getWorkflowProcessSenderDiary()));
+            Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
+            if(workflowProcessSenderDiaryOptional.isPresent()){
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
             System.out.println("workflow Doc::"+workflowProcess.getWorkflowProcessReferenceDocs().size());
             workflowProcess = workflowProcessService.create(context,workflowProcess);
-
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e.getMessage(), e);
         }
         return workflowProcess;

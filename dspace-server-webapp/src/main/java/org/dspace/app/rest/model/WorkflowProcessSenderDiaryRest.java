@@ -21,7 +21,7 @@ public class WorkflowProcessSenderDiaryRest  extends  DSpaceObjectRest{
     public static final String GROUPS = "groups";
 
     private Integer legacyId;
-    private String name;
+    private String sendername;
     private String designation;
     private String contactNumber;
     private String email;
@@ -39,15 +39,7 @@ public class WorkflowProcessSenderDiaryRest  extends  DSpaceObjectRest{
         this.legacyId = legacyId;
     }
 
-    @Override
-    public String getName() {
-        return name;
-    }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getDesignation() {
         return designation;
@@ -116,8 +108,17 @@ public class WorkflowProcessSenderDiaryRest  extends  DSpaceObjectRest{
         return CATEGORY;
     }
 
+    public String getSendername() {
+        return sendername;
+    }
+
+    public void setSendername(String sendername) {
+        this.sendername = sendername;
+    }
+
     @Override
     public Class getController() {
         return RestResourceController.class;
     }
+
 }

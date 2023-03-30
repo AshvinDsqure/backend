@@ -38,10 +38,10 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
      * Wild card for Dublin Core metadata qualifiers/languages
      */
     public static final String ANY = "*";
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "workflowprocessinwarddetails_id")
     private WorkFlowProcessInwardDetails workFlowProcessInwardDetails = null;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "workflowprocesssenderdiary")
     private WorkflowProcessSenderDiary workflowProcessSenderDiary = null;
     /* Filling Details*/
@@ -51,7 +51,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eligible_for_filing_id")
     private WorkFlowProcessMasterValue eligibleForFiling = null;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item")
     private Item item;
     /* Attechment  Details*/
@@ -76,10 +76,10 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "dispatchmode")
-    private Dispatch dispatchmode;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dispatchmode")
+    private WorkFlowProcessMasterValue dispatchmode = null;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "submitter_id")
     private WorkflowProcessEperson submitter = null;
     /*@Column(name = "date", columnDefinition = "timestamp with time zone")
@@ -202,11 +202,11 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
         this.priority = priority;
     }
 
-    public Dispatch getDispatchmode() {
+    public WorkFlowProcessMasterValue getDispatchmode() {
         return dispatchmode;
     }
 
-    public void setDispatchmode(Dispatch dispatchmode) {
+    public void setDispatchmode(WorkFlowProcessMasterValue dispatchmode) {
         this.dispatchmode = dispatchmode;
     }
 

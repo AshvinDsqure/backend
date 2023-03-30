@@ -57,26 +57,34 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         WorkflowProcess workflowProcess=new WorkflowProcess();
         workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryConverter.convert(obj.getWorkflowProcessSenderDiaryRest()));
         workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
-        workflowProcess.setDispatchMode(workFlowProcessMasterValueConverter.convert(obj.getDispatchModeRest()));
-        workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(obj.getEligibleForFilingRest()));
-        workflowProcess.setItem(itemConverter.convert(obj.getItemRest()));
+        workflowProcess.setDispatchMode(workFlowProcessMasterValueConverter.convert(context,obj.getDispatchModeRest()));
+        workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context,obj.getEligibleForFilingRest()));
+        workflowProcess.setItem(itemConverter.convert(context,obj.getItemRest()));
         workflowProcess.setWorkflowProcessReferenceDocs(obj.getWorkflowProcessReferenceDocRests().stream().map(d->{
-            return  workflowProcessReferenceDocConverter.convert(d);
+            try {
+                return  workflowProcessReferenceDocConverter.convert(context,d);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }).collect(Collectors.toList()));
         workflowProcess.setSubject(obj.getSubject());
-        workflowProcess.setDepartment(workFlowProcessMasterValueConverter.convert(obj.getDepartmentRest()));
-        workflowProcess.setOffice(workFlowProcessMasterValueConverter.convert(obj.getOfficeRest()));
+        workflowProcess.setDepartment(workFlowProcessMasterValueConverter.convert(context,obj.getDepartmentRest()));
+        workflowProcess.setOffice(workFlowProcessMasterValueConverter.convert(context,obj.getOfficeRest()));
         workflowProcess.setWorkflowProcessEpeople( obj.getWorkflowProcessEpersonRests().stream().map(we->{
-           return  workFlowProcessEpersonConverter.convert(we);
+            try {
+                return  workFlowProcessEpersonConverter.convert(context,we);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }).collect(Collectors.toList()));
         workflowProcess.setInitDate(obj.getInitDate());
         if(obj.getPriority()!= null) {
             workflowProcess.setPriority(Priority.valueOf(obj.getPriority()));
         }
         if(obj.getDispatchModeRest() != null)
-        workflowProcess.setDispatchmode(Dispatch.valueOf(obj.getDispatchModeRest().getPrimaryvalue()));
+        workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context,obj.getDispatchModeRest()));
         System.out.println("obj.getWorkflowProcessReferenceDocRests()::"+obj.getWorkflowProcessReferenceDocRests().size());
-        workflowProcess.setSubmitter( workFlowProcessEpersonConverter.convert(obj.getSubmitter()));
+        workflowProcess.setSubmitter( workFlowProcessEpersonConverter.convert(context,obj.getSubmitter()));
         return  workflowProcess;
 
     }

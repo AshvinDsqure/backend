@@ -29,18 +29,13 @@ public class JbpmServerImpl {
     @Autowired
     private ConfigurationService configurationService;
 
-    public String startProcess(WorkflowProcess workflowProcess){
-        try{
+    public String startProcess(WorkflowProcess workflowProcess) throws  RuntimeException{
             String baseurl=configurationService.getProperty("jbpm.server");
             JBPMProcess jbpmProcess=new JBPMProcess(workflowProcess);
             HttpHeaders headers = new HttpHeaders();
             headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
             return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
-        }catch (Exception e){
-            e.printStackTrace();
-             throw  new RuntimeException("somethisng went with JBPM",e);
-        }
 
     }
 }

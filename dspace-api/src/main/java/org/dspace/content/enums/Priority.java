@@ -8,7 +8,13 @@
 package org.dspace.content.enums;
 
 public enum Priority {
-    HIGH,
-    MEDIUM,
-    LOW
+    HIGH("High"), MEDIUM("Medium"), LOW("Low");
+    private String name;
+    Priority(String name) {
+        this.name = name;
+    }
+    public String getPriorityName() {
+        return name;
+    }
+
 }

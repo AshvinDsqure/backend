@@ -44,7 +44,7 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     @JoinColumn(name = "workflowprocessdefinition")
     private WorkflowProcessDefinition workflowProcessDefinition;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workflowProcess_id")
+    @JoinColumn(name = "workflowprocess_id")
     private WorkflowProcess workflowProcess;
 
     @Column(name = "assign_date", columnDefinition = "timestamp with time zone")
