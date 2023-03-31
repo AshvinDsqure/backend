@@ -17,16 +17,7 @@ import java.util.UUID;
 
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
-import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
-import org.dspace.content.Collection;
-import org.dspace.content.Community;
-import org.dspace.content.EntityType;
-import org.dspace.content.Item;
-import org.dspace.content.MetadataField;
-import org.dspace.content.MetadataValue;
-import org.dspace.content.Thumbnail;
-import org.dspace.content.WorkspaceItem;
+import org.dspace.content.*;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -845,7 +836,10 @@ public interface ItemService
      */
     public EntityType getEntityType(Context context, Item item) throws SQLException;
 
-    List<Item> getDataTwoDateRange(Context context, String startdate, String endDate) throws SQLException;
+    List<Item> getDataTwoDateRange(Context context, String startdate, String endDate,Integer offset,Integer limit) throws SQLException;
+
+    List<Item> getDataTwoDateRangeDownload(Context context,String startdate, String endDate) throws SQLException;
+
 
 
 }

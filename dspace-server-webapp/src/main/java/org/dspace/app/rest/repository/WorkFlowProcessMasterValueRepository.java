@@ -156,8 +156,9 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
         try {
             Context context = obtainContext();
             System.out.println("in Repo "+type);
-            List<WorkFlowProcessMasterValue> workFlowProcessMasterValueRests = workFlowProcessMasterValueService.findByType(context,type);
-            return converter.toRestPage(workFlowProcessMasterValueRests, pageable, 50, utils.obtainProjection());
+            int total = workFlowProcessMasterValueService.countfindByType(context,type);
+            List<WorkFlowProcessMasterValue> workFlowProcessMasterValueRests = workFlowProcessMasterValueService.findByType(context,type,Math.toIntExact(pageable.getOffset()),Math.toIntExact(pageable.getPageSize()));
+            return converter.toRestPage(workFlowProcessMasterValueRests, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

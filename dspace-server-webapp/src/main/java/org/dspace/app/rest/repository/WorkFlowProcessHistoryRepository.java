@@ -11,10 +11,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.rest.Parameter;
+import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkFlowProcessHistoryConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessHistoryRest;
+import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.Item;
 import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.content.service.WorkFlowProcessHistoryService;
 import org.dspace.core.Context;
@@ -146,6 +150,28 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+
+    @SearchRestMethod(name = "getHistory")
+    public Page<WorkFlowProcessHistoryRest> getHistory(
+
+            @Parameter(value = "epersionid", required = true) UUID epersionid,
+            @Parameter(value = "workflowid", required = true) UUID workflowid,
+            @Parameter(value = "startdate", required = true) String startdate,
+            @Parameter(value = "enddate", required = true) String enddate,
+            Pageable pageable) {
+        try {
+            Context context = obtainContext();
+          //  long total = itemService.countTotal(context, startdate, enddate);
+            List<WorkFlowProcessHistory> witems = workFlowProcessHistoryService.getHistory(
+                    context,workflowid,epersionid, startdate, enddate);
+            return converter.toRestPage(witems, pageable, 10, utils.obtainProjection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+
+
 
     @Override
     public Class<WorkFlowProcessHistoryRest> getDomainClass() {
