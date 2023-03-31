@@ -44,6 +44,7 @@ public class ItemMappedCollectionLinkRepository extends AbstractDSpaceRestReposi
                                                      @Nullable Pageable optionalPageable,
                                                      Projection projection) {
         try {
+            System.out.println("get mapp collection...");
             Context context = obtainContext();
             Item item = itemService.find(context, itemId);
             if (item == null) {

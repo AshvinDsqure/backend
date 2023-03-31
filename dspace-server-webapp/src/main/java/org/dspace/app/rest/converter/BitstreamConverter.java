@@ -47,7 +47,10 @@ public class BitstreamConverter extends DSpaceObjectConverter<Bitstream, Bitstre
         b.setSizeBytes(obj.getSizeBytes());
         return b;
     }
-
+    public BitstreamRest convertFoWorkFLowRefDoc(org.dspace.content.Bitstream obj, Projection projection) {
+        BitstreamRest b = super.convert(obj, projection);
+        return b;
+    }
     @Override
     protected BitstreamRest newInstance() {
         return new BitstreamRest();

@@ -45,9 +45,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @JoinColumn(name = "workflowprocesssenderdiary")
     private WorkflowProcessSenderDiary workflowProcessSenderDiary = null;
     /* Filling Details*/
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dispatch_id")
-    private WorkFlowProcessMasterValue dispatchMode = null;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eligible_for_filing_id")
     private WorkFlowProcessMasterValue eligibleForFiling = null;
@@ -57,15 +55,12 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     /* Attechment  Details*/
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
     private List<WorkflowProcessReferenceDoc> workflowProcessReferenceDocs = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
+    private List<WorkFlowProcessHistory> workFlowProcessHistories = new ArrayList<>();
     /* Office   Details*/
     @Column(name = "subject")
     private String Subject;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    private WorkFlowProcessMasterValue department = null;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "office_id")
-    private WorkFlowProcessMasterValue office = null;
+
     @Column(name = "workflow_id", insertable = false, updatable = false)
     private Integer legacyId;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
@@ -77,11 +72,9 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @Enumerated(EnumType.STRING)
     private Priority priority;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dispatchmode")
+    @JoinColumn(name = "dispatchmode_id")
     private WorkFlowProcessMasterValue dispatchmode = null;
-    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-    @JoinColumn(name = "submitter_id")
-    private WorkflowProcessEperson submitter = null;
+
     /*@Column(name = "date", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date assignDueDate = new Date();*/
@@ -128,13 +121,6 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
         this.workflowProcessSenderDiary = workflowProcessSenderDiary;
     }
 
-    public WorkFlowProcessMasterValue getDispatchMode() {
-        return dispatchMode;
-    }
-
-    public void setDispatchMode(WorkFlowProcessMasterValue dispatchMode) {
-        this.dispatchMode = dispatchMode;
-    }
 
     public WorkFlowProcessMasterValue getEligibleForFiling() {
         return eligibleForFiling;
@@ -166,22 +152,6 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     public void setSubject(String subject) {
         Subject = subject;
-    }
-
-    public WorkFlowProcessMasterValue getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(WorkFlowProcessMasterValue department) {
-        this.department = department;
-    }
-
-    public WorkFlowProcessMasterValue getOffice() {
-        return office;
-    }
-
-    public void setOffice(WorkFlowProcessMasterValue office) {
-        this.office = office;
     }
 
     public void setLegacyId(Integer legacyId) {
@@ -218,13 +188,5 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     public void setDispatchmode(WorkFlowProcessMasterValue dispatchmode) {
         this.dispatchmode = dispatchmode;
-    }
-
-    public WorkflowProcessEperson getSubmitter() {
-        return submitter;
-    }
-
-    public void setSubmitter(WorkflowProcessEperson submitter) {
-        this.submitter = submitter;
     }
 }

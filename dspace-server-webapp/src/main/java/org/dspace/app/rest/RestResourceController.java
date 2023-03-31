@@ -226,6 +226,7 @@ RestResourceController implements InitializingBean {
         try {
             modelObject = repository.findById(id);
         } catch (ClassCastException e) {
+            e.printStackTrace();
             // ignore, as handled below
         }
         if (!modelObject.isPresent()) {

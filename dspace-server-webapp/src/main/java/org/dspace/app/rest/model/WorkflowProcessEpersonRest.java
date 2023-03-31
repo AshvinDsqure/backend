@@ -27,6 +27,10 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private EPersonRest ePersonRest = null;
     @JsonProperty()
     private WorkFlowProcessDefinitionRest workflowProcessReferenceDocRest;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest departmentRest = null;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest officeRest = null;
     @Override
     public String getCategory() {
         return CATEGORY;
@@ -59,5 +63,21 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     public void setWorkflowProcessReferenceDocRest(WorkFlowProcessDefinitionRest workflowProcessReferenceDocRest) {
         this.workflowProcessReferenceDocRest = workflowProcessReferenceDocRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getDepartmentRest() {
+        return departmentRest;
+    }
+
+    public void setDepartmentRest(WorkFlowProcessMasterValueRest departmentRest) {
+        this.departmentRest = departmentRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getOfficeRest() {
+        return officeRest;
+    }
+
+    public void setOfficeRest(WorkFlowProcessMasterValueRest officeRest) {
+        this.officeRest = officeRest;
     }
 }

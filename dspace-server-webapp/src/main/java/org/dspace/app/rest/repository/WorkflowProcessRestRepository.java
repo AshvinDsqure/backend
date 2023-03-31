@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.MetadataConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessConverter;
+import org.dspace.app.rest.enums.WorkFlowAction;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
@@ -75,9 +76,9 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     }
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
-    public WorkFlowProcessRest findOne(Context context, UUID id) {
-
-        return converter.toRest(null, utils.obtainProjection());
+    public WorkFlowProcessRest findOne(Context context, UUID id) throws SQLException {
+        WorkflowProcess workflowProcess= workflowProcessService.find(context,id);
+        return converter.toRest(workflowProcess, utils.obtainProjection());
     }
 
     @Override
@@ -101,17 +102,24 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         ObjectMapper mapper = new ObjectMapper();
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcess workflowProcess=null;
-        System.out.println("workFlowProcessRest::");
+
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
             workflowProcess= createworkflowProcessFromRestObject(context,workFlowProcessRest);
+            workFlowProcessRest=workFlowProcessConverter.convert(workflowProcess,utils.obtainProjection());
             try {
-              //  jbpmServer.startProcess(workflowProcess);
+                String jbpmResponce=jbpmServer.startProcess(workFlowProcessRest);
+                WorkFlowProcessHistory workFlowProcessHistory=new WorkFlowProcessHistory();
+                workFlowProcessHistory.setWorkflowProcessEpeople(
+                   workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get()
+                );
+                WorkFlowAction.CREATE.perfomeAction(context,workFlowProcessHistory);
+                System.out.println("jbpmResponce:::"+jbpmResponce);
             }catch (RuntimeException e){
+                e.printStackTrace();
                 throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
             }
         } catch (Exception e1) {
-            e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
         }
         return converter.toRest(workflowProcess, utils.obtainProjection());
@@ -120,13 +128,10 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         WorkflowProcess workflowProcess =null;
         try {
             workflowProcess=workFlowProcessConverter.convert(workFlowProcessRest,context);
-            System.out.println("Priority::"+workFlowProcessRest.getPriority());
-            System.out.println("workFlowProcessRest dairiyyy::"+new Gson().toJson(workflowProcess.getWorkflowProcessSenderDiary()));
             Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
             if(workflowProcessSenderDiaryOptional.isPresent()){
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
-            System.out.println("workflow Doc::"+workflowProcess.getWorkflowProcessReferenceDocs().size());
             workflowProcess = workflowProcessService.create(context,workflowProcess);
         } catch (Exception e) {
             e.printStackTrace();

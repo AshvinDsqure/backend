@@ -7,13 +7,6 @@
  */
 package org.dspace.content;
 
-import org.dspace.content.enums.Dispatch;
-import org.dspace.content.enums.Priority;
-import org.dspace.content.enums.WorkFlowAction;
-import org.dspace.eperson.EPerson;
-import org.eclipse.jetty.server.Authentication;
-import org.hibernate.annotations.Where;
-
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.util.*;

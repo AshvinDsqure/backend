@@ -11,7 +11,9 @@ import org.dspace.eperson.EPerson;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Class representing an item in DSpace.
@@ -46,10 +48,18 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflowprocess_id")
     private WorkflowProcess workflowProcess;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private WorkFlowProcessMasterValue department = null;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_id")
+    private WorkFlowProcessMasterValue office = null;
 
     @Column(name = "assign_date", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date assignDate = new Date();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcessEpeople", cascade = {CascadeType.ALL})
+    private List<WorkFlowProcessHistory> workFlowProcessHistories = new ArrayList<>();
 
     @Override
     public int getType() {
@@ -94,4 +104,35 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
         this.workflowProcessDefinition = workflowProcessDefinition;
     }
 
+    public WorkflowProcess getWorkflowProcess() {
+        return workflowProcess;
+    }
+
+    public void setWorkflowProcess(WorkflowProcess workflowProcess) {
+        this.workflowProcess = workflowProcess;
+    }
+
+    public WorkFlowProcessMasterValue getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(WorkFlowProcessMasterValue department) {
+        this.department = department;
+    }
+
+    public WorkFlowProcessMasterValue getOffice() {
+        return office;
+    }
+
+    public void setOffice(WorkFlowProcessMasterValue office) {
+        this.office = office;
+    }
+
+    public Date getAssignDate() {
+        return assignDate;
+    }
+
+    public void setAssignDate(Date assignDate) {
+        this.assignDate = assignDate;
+    }
 }

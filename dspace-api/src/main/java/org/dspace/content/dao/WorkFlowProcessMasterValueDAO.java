@@ -19,7 +19,7 @@ import java.util.UUID;
 public interface WorkFlowProcessMasterValueDAO extends DSpaceObjectLegacySupportDAO<WorkFlowProcessMasterValue>{
     int countRows(Context context) throws SQLException;
 
-    public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername,Integer offset,Integer limit) throws SQLException;
+    public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername) throws SQLException;
+    WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException;
     public int  countfindByType(Context context,String type)throws SQLException;
-
 }

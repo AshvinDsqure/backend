@@ -8,12 +8,18 @@
 package org.dspace.content.dao.impl;
 
 import org.apache.logging.log4j.Logger;
+import org.dspace.content.WorkFlowProcessMaster;
 import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.WorkFlowProcessMasterValue_;
 import org.dspace.content.dao.WorkFlowProcessMasterValueDAO;
 import org.dspace.core.AbstractHibernateDAO;
 import org.dspace.core.Context;
 
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
@@ -33,17 +39,12 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
     }
 
     @Override
-    public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername,Integer offset,Integer limit) throws SQLException{
+    public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername) throws SQLException{
 
         try {
             System.out.println("in DAO impl " + mastername);
             Query query = createQuery(context, " SELECT mv from  WorkFlowProcessMasterValue as mv inner join mv.workflowprocessmaster as  mm where mm.mastername=:mastername");
             query.setParameter("mastername", mastername);
-            if (0 <= offset) {
-                query.setFirstResult(offset);
-            }if (0 <= limit) {
-                query.setMaxResults(limit);
-            }
             return query.getResultList();
         }catch (Exception e){
             System.out.println("in error " + e.getMessage());
@@ -51,7 +52,19 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
         }
 
     }
+    @Override
+    public WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException{
+     CriteriaBuilder criteriaBuilder= getCriteriaBuilder(context);
+     CriteriaQuery<WorkFlowProcessMasterValue> criteriaQuery =getCriteriaQuery(criteriaBuilder,WorkFlowProcessMasterValue.class);
+     Root<WorkFlowProcessMasterValue> workFlowProcessMasterValueRoot=criteriaQuery.from(WorkFlowProcessMasterValue.class);
+     Join<WorkFlowProcessMasterValue,WorkFlowProcessMaster> workFlowProcessMasterValueWorkFlowProcessMasterJoin = workFlowProcessMasterValueRoot.join(WorkFlowProcessMasterValue_.workflowprocessmaster);
+     criteriaQuery.select(workFlowProcessMasterValueRoot).where(criteriaBuilder.and(
+        criteriaBuilder.equal(workFlowProcessMasterValueRoot.get("primaryvalue"),name),
+        criteriaBuilder.equal(workFlowProcessMasterValueWorkFlowProcessMasterJoin.get("id"),workFlowProcessMaster.getID())
+     ));
+     return singleResult(context,criteriaQuery);
 
+    }
     @Override
     public int countfindByType(Context context, String type) throws SQLException {
         try {

@@ -55,7 +55,6 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
     @Override
     protected WorkFlowProcessHistoryRest createAndReturn(Context context)
             throws AuthorizeException {
-        log.info("::::::start::::createAndReturn::::::::::");
         // this need to be revisited we should receive an EPersonRest as input
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         ObjectMapper mapper = new ObjectMapper();
@@ -66,26 +65,20 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
             workFlowProcessHistory = createWorkFlowProcessHistoryFromRestObject(context, workFlowProcessHistoryRest);
 
         } catch (Exception e1) {
-            log.info("::::::error::::createAndReturn::::::::::");
             e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
         }
-        log.info("::::::complate::::createAndReturn::::::::::");
+
         return converter.toRest(workFlowProcessHistory, utils.obtainProjection());
     }
-
-
     private WorkFlowProcessHistory createWorkFlowProcessHistoryFromRestObject(Context context, WorkFlowProcessHistoryRest workFlowProcessHistoryRest) throws AuthorizeException {
-        log.info("::::::start::::createWorkFlowProcessHistoryFromRestObject::::::::::");
         WorkFlowProcessHistory workFlowProcessHistory = new WorkFlowProcessHistory();
         try {
-            workFlowProcessHistory=workFlowProcessHistoryConverter.convert(workFlowProcessHistory,workFlowProcessHistoryRest );
+            workFlowProcessHistory=workFlowProcessHistoryConverter.convert(context,workFlowProcessHistoryRest );
             workFlowProcessHistoryService.create(context, workFlowProcessHistory);
         } catch (Exception e) {
-            log.info("::::::error::::createWorkFlowProcessHistoryFromRestObject::::::::::");
             throw new RuntimeException(e.getMessage(), e);
         }
-        log.info("::::::complate::::createWorkFlowProcessHistoryFromRestObject::::::::::");
         return workFlowProcessHistory;
     }
 
@@ -100,8 +93,7 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
             System.out.println("workFlowProcessHistoryrest id ::: is Null  workFlowProcessHistoryrest tye null"+id);
             throw new ResourceNotFoundException("workFlowProcessHistoryrest  field with id: " + id + " not found");
         }
-
-        workFlowProcessHistory=workFlowProcessHistoryConverter.convert(workFlowProcessHistory,workFlowProcessHistoryRest);
+        workFlowProcessHistory=workFlowProcessHistoryConverter.convert(context,workFlowProcessHistoryRest);
        workFlowProcessHistoryService.update(context, workFlowProcessHistory);
         context.commit();
         log.info("::::::End::::put::::::::::");

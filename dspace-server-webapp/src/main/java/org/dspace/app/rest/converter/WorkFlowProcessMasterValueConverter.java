@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.converter;
@@ -25,6 +25,7 @@ public class WorkFlowProcessMasterValueConverter extends DSpaceObjectConverter<W
     ModelMapper modelMapper;
     @Autowired
     WorkFlowProcessMasterValueService masterValueService;
+
     @Override
     public Class<WorkFlowProcessMasterValue> getModelClass() {
         return WorkFlowProcessMasterValue.class;
@@ -53,8 +54,10 @@ public class WorkFlowProcessMasterValueConverter extends DSpaceObjectConverter<W
         obj.setWorkflowprocessmaster(rest.getWorkFlowProcessMaster());
         return obj;
     }
+
     public WorkFlowProcessMasterValue convert(Context context, WorkFlowProcessMasterValueRest rest) throws SQLException {
-        return  masterValueService.find(context, UUID.fromString(rest.getId()));
+        WorkFlowProcessMasterValue workFlowProcessMasterValue = masterValueService.find(context, UUID.fromString(rest.getUuid()));
+        return workFlowProcessMasterValue;
         //return modelMapper.map(rest,WorkFlowProcessMasterValue.class) ;
     }
 
