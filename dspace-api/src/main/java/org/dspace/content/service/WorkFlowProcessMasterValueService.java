@@ -8,6 +8,7 @@
 package org.dspace.content.service;
 
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.WorkFlowProcessMaster;
 import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.core.Context;
 
@@ -41,7 +42,8 @@ public interface WorkFlowProcessMasterValueService extends DSpaceObjectService<W
     public List<WorkFlowProcessMasterValue> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
 
-   List<WorkFlowProcessMasterValue> findByType(Context context,String type)throws SQLException;
+    List<WorkFlowProcessMasterValue> findByType(Context context,String type)throws SQLException;
+    WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException;
 
 
 }

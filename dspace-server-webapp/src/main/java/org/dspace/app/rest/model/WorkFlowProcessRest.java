@@ -27,7 +27,7 @@ import java.util.List;
 public class WorkFlowProcessRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocesse";
     public static final String PLURAL_NAME = "workflowprocess";
-    public static final String CATEGORY = RestAddressableModel.CORE;
+    public static final String CATEGORY = RestAddressableModel.WORKFLOWPROCESS;
     @JsonProperty
     private WorkFlowProcessInwardDetailsRest workFlowProcessInwardDetailsRest;
     @JsonProperty
@@ -42,16 +42,12 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     private String Subject;
     @JsonProperty
     List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests;
+
     @JsonProperty
-    private WorkFlowProcessMasterValueRest departmentRest = null;
-    @JsonProperty
-    private WorkFlowProcessMasterValueRest officeRest = null;
-    @JsonProperty
-    private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests;
+    private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests=new ArrayList<>();
     @JsonProperty
     private Date InitDate = new Date();
-    @JsonProperty
-    private WorkflowProcessEpersonRest submitter = null;
+
     @JsonProperty
     private String priority;
 
@@ -123,23 +119,6 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     public void setWorkflowProcessReferenceDocRests(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests) {
         this.workflowProcessReferenceDocRests = workflowProcessReferenceDocRests;
     }
-
-    public WorkFlowProcessMasterValueRest getDepartmentRest() {
-        return departmentRest;
-    }
-
-    public void setDepartmentRest(WorkFlowProcessMasterValueRest departmentRest) {
-        this.departmentRest = departmentRest;
-    }
-
-    public WorkFlowProcessMasterValueRest getOfficeRest() {
-        return officeRest;
-    }
-
-    public void setOfficeRest(WorkFlowProcessMasterValueRest officeRest) {
-        this.officeRest = officeRest;
-    }
-
     public List<WorkflowProcessEpersonRest> getWorkflowProcessEpersonRests() {
         return workflowProcessEpersonRests;
     }
@@ -154,14 +133,6 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setInitDate(Date initDate) {
         InitDate = initDate;
-    }
-
-    public WorkflowProcessEpersonRest getSubmitter() {
-        return submitter;
-    }
-
-    public void setSubmitter(WorkflowProcessEpersonRest submitter) {
-        this.submitter = submitter;
     }
 
     public String getPriority() {

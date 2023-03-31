@@ -9,12 +9,12 @@
 package org.dspace.content.dao;
 
 import org.dspace.content.WorkFlowProcessMaster;
+import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.core.Context;
 
 import java.sql.SQLException;
 
 public interface WorkFlowProcessMasterDAO extends DSpaceObjectLegacySupportDAO<WorkFlowProcessMaster>{
     int countRows(Context context) throws SQLException;
-
-
+    WorkFlowProcessMaster findByName(Context context, String name) throws SQLException;
 }

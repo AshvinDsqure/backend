@@ -135,7 +135,12 @@ public abstract class DSpaceRestRepository<T extends RestAddressableModel, ID ex
      */
     public Optional<T> findById(ID id) {
         Context context = obtainContext();
-        final T object = getThisRepository().findOne(context, id);
+        final T object;
+        try {
+            object = getThisRepository().findOne(context, id);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         if (object == null) {
             return Optional.empty();
         } else {
@@ -153,7 +158,7 @@ public abstract class DSpaceRestRepository<T extends RestAddressableModel, ID ex
      * @return the REST object identified by its ID
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    public abstract T findOne(Context context, ID id);
+    public abstract T findOne(Context context, ID id) throws SQLException;
 
     @Override
     /**

@@ -8,10 +8,17 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.dspace.content.WorkFlowProcessHistory;
+import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.eperson.EPerson;
 
 import java.util.Date;
-
+@LinksRest(links = {
+        @LinkRest(
+                name = WorkflowItemRest.STEP,
+                method = "getStep"
+        )
+})
 public class WorkFlowProcessHistoryRest extends  DSpaceObjectRest{
     public static final String NAME = "workflowprocesshistorie";
     public static final String PLURAL_NAME = "workflowprocesshistories";
@@ -21,23 +28,23 @@ public class WorkFlowProcessHistoryRest extends  DSpaceObjectRest{
 
     private Integer legacyId;
 
-    private EPerson epersonid;
-    private String action;
+    private WorkflowProcessEpersonRest workflowProcessEpersonRest;
+    private WorkFlowProcessMasterValueRest action;
 
-    public String getAction() {
+    public WorkFlowProcessMasterValueRest getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(WorkFlowProcessMasterValueRest action) {
         this.action = action;
     }
 
-    public EPerson getEpersonid() {
-        return epersonid;
+    public WorkflowProcessEpersonRest getWorkflowProcessEpersonRest() {
+        return workflowProcessEpersonRest;
     }
 
-    public void setEpersonid(EPerson epersonid) {
-        this.epersonid = epersonid;
+    public void setWorkflowProcessEpersonRest(WorkflowProcessEpersonRest workflowProcessEpersonRest) {
+        this.workflowProcessEpersonRest = workflowProcessEpersonRest;
     }
 
     public Integer getLegacyId() {

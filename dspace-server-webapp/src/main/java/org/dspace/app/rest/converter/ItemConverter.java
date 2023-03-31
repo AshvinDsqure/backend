@@ -61,6 +61,10 @@ public class ItemConverter
 
         return item;
     }
+    public ItemRest convertNameOnly(Item obj, Projection projection) {
+        ItemRest item = super.convert(obj, projection);
+        return item;
+    }
     public Item convert(Context context,ItemRest obj) throws SQLException {
        return itemService.find(context, UUID.fromString(obj.getId()));
        //return modelMapper.map(obj,Item.class);

@@ -36,5 +36,6 @@ public interface WorkFlowProcessMasterService extends DSpaceObjectService<WorkFl
      */
     public List<WorkFlowProcessMaster> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
+    WorkFlowProcessMaster findByName(Context context, String name) throws  SQLException;
 
 }

@@ -7,12 +7,8 @@
  */
 package org.dspace.content;
 
-import org.dspace.content.enums.Dispatch;
-import org.dspace.content.enums.Priority;
-import org.dspace.content.enums.WorkFlowAction;
+
 import org.dspace.eperson.EPerson;
-import org.eclipse.jetty.server.Authentication;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -41,31 +37,25 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
     @Column(name = "workflowhistory_id", insertable = false, updatable = false)
     private Integer legacyId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eperson_id")
-    private EPerson epersonid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflowprocessepeople")
+    private WorkflowProcessEperson workflowProcessEpeople;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "action")
-    private WorkFlowAction action;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflowprocess_id")
+    private WorkflowProcess workflowProcess;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "action")
+    private WorkFlowProcessMasterValue action = null;
     @Column(name = "actiondate", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actionDate = new Date();
 
-
-    public EPerson getEpersonid() {
-        return epersonid;
-    }
-
-    public void setEpersonid(EPerson epersonid) {
-        this.epersonid = epersonid;
-    }
-
-    public WorkFlowAction getAction() {
+    public WorkFlowProcessMasterValue getAction() {
         return action;
     }
 
-    public void setAction(WorkFlowAction action) {
+    public void setAction(WorkFlowProcessMasterValue action) {
         this.action = action;
     }
 
@@ -94,4 +84,20 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
     public void setLegacyId(Integer legacyId) {
         this.legacyId = legacyId;
     }
-   }
+
+    public WorkflowProcessEperson getWorkflowProcessEpeople() {
+        return workflowProcessEpeople;
+    }
+
+    public void setWorkflowProcessEpeople(WorkflowProcessEperson workflowProcessEpeople) {
+        this.workflowProcessEpeople = workflowProcessEpeople;
+    }
+
+    public WorkflowProcess getWorkflowProcess() {
+        return workflowProcess;
+    }
+
+    public void setWorkflowProcess(WorkflowProcess workflowProcess) {
+        this.workflowProcess = workflowProcess;
+    }
+}

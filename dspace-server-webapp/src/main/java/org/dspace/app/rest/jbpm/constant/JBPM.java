@@ -9,5 +9,9 @@ package org.dspace.app.rest.jbpm.constant;
 
 public class JBPM {
    public static  final String CREATEPROCESS="/procdetails";
+   public static  final String FORWARDPROCESS=CREATEPROCESS+"/forwardtask";
+   public static  final String BACKWARDPROCESS=CREATEPROCESS+"/backwardtask";
+   public static  final String HOLDPROCESS=CREATEPROCESS+"/suspendtask";
+   public static  final String RESUMEPROCESS=CREATEPROCESS+"/resumetask";
 
 }

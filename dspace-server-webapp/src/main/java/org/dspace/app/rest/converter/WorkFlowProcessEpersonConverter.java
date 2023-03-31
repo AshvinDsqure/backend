@@ -33,13 +33,22 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
     @Autowired
     EPersonService ePersonService;
     @Autowired
+    WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
+    @Autowired
     ModelMapper modelMapper;
     @Override
     public WorkflowProcessEpersonRest convert(WorkflowProcessEperson obj, Projection projection) {
         WorkflowProcessEpersonRest workflowProcessDefinitionEpersonRest = super.convert(obj, projection);
         if(obj.getePerson()!= null){
-        workflowProcessDefinitionEpersonRest.setePersonRest(ePersonConverter.convert(obj.getePerson(),projection));
+            workflowProcessDefinitionEpersonRest.setePersonRest(ePersonConverter.convert(obj.getePerson(),projection));
         }
+        if(obj.getDepartment() != null){
+            workflowProcessDefinitionEpersonRest.setDepartmentRest(workFlowProcessMasterValueConverter.convert(obj.getDepartment(),projection));
+        }
+        if(obj.getOffice() != null){
+            workflowProcessDefinitionEpersonRest.setOfficeRest(workFlowProcessMasterValueConverter.convert(obj.getOffice(),projection));
+        }
+        workflowProcessDefinitionEpersonRest.setIndex(obj.getIndex());
         return workflowProcessDefinitionEpersonRest;
     }
     @Override
@@ -54,6 +63,10 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
     public WorkflowProcessEperson convert(Context context, WorkflowProcessEpersonRest rest) throws SQLException {
         WorkflowProcessEperson workflowProcessEperson=modelMapper.map(rest,WorkflowProcessEperson.class) ;
         workflowProcessEperson.setePerson(ePersonService.find(context, UUID.fromString(rest.getePersonRest().getUuid())));
+        if(rest.getDepartmentRest() != null)
+        workflowProcessEperson.setDepartment(workFlowProcessMasterValueConverter.convert(context,rest.getDepartmentRest()));
+        if(rest.getOfficeRest() != null)
+        workflowProcessEperson.setOffice(workFlowProcessMasterValueConverter.convert(context,rest.getOfficeRest()));
         return  workflowProcessEperson;
     }
 

@@ -7,10 +7,7 @@
  */
 package org.dspace.app.rest.converter;
 
-import org.dspace.app.rest.model.WorkFlowProcessDefinitionRest;
-import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
-import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
-import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
+import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.WorkflowProcessDefinition;
@@ -36,10 +33,20 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
     @Autowired
     BitstreamService bitstreamService;
     @Autowired
+    BitstreamConverter bitstreamConverter;
+    @Autowired
     ModelMapper modelMapper;
     @Override
     public WorkflowProcessReferenceDocRest convert(WorkflowProcessReferenceDoc obj, Projection projection) {
         WorkflowProcessReferenceDocRest workflowProcessDefinitionRest = super.convert(obj, projection);
+        return workflowProcessDefinitionRest;
+    }
+    public WorkflowProcessReferenceDocRest convertForWorkFlow(WorkflowProcessReferenceDoc obj, Projection projection) {
+        WorkflowProcessReferenceDocRest workflowProcessDefinitionRest = super.convert(obj, projection);
+        if(obj.getBitstream()!= null){
+           BitstreamRest bitstreamRest= bitstreamConverter.convertFoWorkFLowRefDoc(obj.getBitstream(),projection);
+            workflowProcessDefinitionRest.setBitstreamRest(bitstreamRest);
+        }
         return workflowProcessDefinitionRest;
     }
 
