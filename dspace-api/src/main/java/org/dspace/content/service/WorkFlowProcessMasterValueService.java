@@ -14,7 +14,6 @@ import org.dspace.core.Context;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Service interface class for the LatterCategory object.
@@ -42,7 +41,7 @@ public interface WorkFlowProcessMasterValueService extends DSpaceObjectService<W
     public List<WorkFlowProcessMasterValue> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
 
-    List<WorkFlowProcessMasterValue> findByType(Context context,String type)throws SQLException;
+    List<WorkFlowProcessMasterValue> findByType(Context context,String type,Integer offset,Integer limit)throws SQLException;
     WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException;
     public int  countfindByType(Context context,String type)throws SQLException;
 

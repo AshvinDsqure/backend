@@ -16,9 +16,7 @@ import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessMasterRest;
 import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
-import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.Item;
 import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
@@ -124,7 +122,8 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
     @Override
     public Page<WorkFlowProcessMasterValueRest> findAll(Context context, Pageable pageable) throws SQLException {
         int total = workFlowProcessMasterValueService.countRows(context);
-        List<WorkFlowProcessMasterValue> workFlowProcessMasters = workFlowProcessMasterValueService.findAll(context);
+        List<WorkFlowProcessMasterValue> workFlowProcessMasters = workFlowProcessMasterValueService.findAll(context,
+                Math.toIntExact(pageable.getPageSize()), Math.toIntExact(pageable.getOffset()));
         return converter.toRestPage(workFlowProcessMasters, pageable, total, utils.obtainProjection());
 
     }
