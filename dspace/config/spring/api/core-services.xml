@@ -40,12 +40,14 @@
     <bean class="org.dspace.content.ItemServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessSenderDiaryServiceImpl"/>
+	<bean class="org.dspace.content.WorkflowProcessReferenceDocServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessMasterServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessMasterValueServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessHistoryServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessInwardDetailsServiceImpl"/>
     <bean class="org.dspace.content.WorkFlowProcessOutwardDetailsServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessReferenceDocServiceImpl"/>
+    <bean class="org.dspace.content.WorkflowProcessEpersonServiceImpl"/>
 
     <bean class="org.dspace.content.DocumentTypeServiceImpl"/>
     <bean class="org.dspace.content.WorkflowProcessNoteServiceImpl"/>

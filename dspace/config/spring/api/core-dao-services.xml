@@ -28,6 +28,7 @@
     <bean class="org.dspace.content.dao.impl.WorkflowProcessNoteDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.DocumentTypeDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkflowProcessReferenceDocDAOImpl"/>
+    <bean class="org.dspace.content.dao.impl.WorkflowProcessEpersonDAOImpl"/>
 
     <bean class="org.dspace.content.dao.impl.MetadataFieldDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.MetadataSchemaDAOImpl"/>
@@ -35,6 +36,7 @@
     <bean class="org.dspace.content.dao.impl.SiteDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkspaceItemDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkflowProcessSenderDiaryDAOImpl"/>
+	<bean class="org.dspace.content.dao.impl.WorkflowProcessReferenceDocDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkFlowProcessMasterDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkFlowProcessMasterValueDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkFlowProcessHistoryDAOImpl"/>
