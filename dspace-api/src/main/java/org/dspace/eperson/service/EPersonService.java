@@ -276,5 +276,5 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
      *                      access error or other errors.
      */
     EPerson findByProfileItem(Context context, Item profile) throws SQLException;
-    public EPerson wildcardSearchByEmail(Context context, String email) throws SQLException;
+    public List<EPerson> wildcardSearchByEmail(Context context, String email) throws SQLException;
 }

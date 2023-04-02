@@ -589,7 +589,7 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
     }
 
     @Override
-    public EPerson wildcardSearchByEmail(Context context, String email) throws SQLException {
+    public List<EPerson> wildcardSearchByEmail(Context context, String email) throws SQLException {
         return ePersonDAO.wildcardSearchByEmail(context,email);
     }
 
