@@ -16,10 +16,7 @@ import org.dspace.app.rest.enums.WorkFlowAction;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
-import org.dspace.app.rest.model.EPersonRest;
-import org.dspace.app.rest.model.WorkFlowProcessRest;
-import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
-import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
+import org.dspace.app.rest.model.*;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
 import org.dspace.content.service.WorkflowProcessReferenceDocService;
@@ -30,10 +27,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -85,5 +84,27 @@ public class WorkflowProcessReferenceDocRepository extends DSpaceObjectRestRepos
     protected WorkFlowProcessRest createAndReturn(Context context)
             throws AuthorizeException {
         return  null;
+    }
+    @Override
+    @PreAuthorize("hasPermission(#id, 'WORKSPACEITEM', 'WRITE')")
+
+    protected void delete(Context context, UUID id) throws AuthorizeException {
+
+        WorkflowProcessReferenceDoc workflowProcessReferenceDoc = null;
+        try {
+            workflowProcessReferenceDoc = workflowProcessReferenceDocService.find(context, id);
+            if (workflowProcessReferenceDoc == null) {
+                throw new ResourceNotFoundException(WorkflowProcessReferenceDocRest.CATEGORY + "." + WorkflowProcessReferenceDocRest.NAME +
+                        " with id: " + id + " not found");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        try {
+            workflowProcessReferenceDocService.delete(context, workflowProcessReferenceDoc);
+            context.commit();
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 }

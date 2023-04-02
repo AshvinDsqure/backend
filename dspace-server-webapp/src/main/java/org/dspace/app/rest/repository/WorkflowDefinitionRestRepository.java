@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
@@ -16,6 +16,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.dspace.app.rest.converter.WorkFlowProcessDefinitionConverter;
+import org.dspace.app.rest.converter.WorkFlowProcessEpersonConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.*;
@@ -57,6 +59,11 @@ public class WorkflowDefinitionRestRepository extends DSpaceObjectRestRepository
 
     @Autowired
     private WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
+
+    @Autowired
+    WorkFlowProcessEpersonConverter workFlowProcessEpersonConverter;
+    @Autowired
+    WorkFlowProcessDefinitionConverter workFlowProcessDefinitionConverter;
 
     public WorkflowDefinitionRestRepository(WorkflowProcessDefinitionService dso) {
         super(dso);
@@ -127,42 +134,12 @@ public class WorkflowDefinitionRestRepository extends DSpaceObjectRestRepository
         }
         workflowProcessDefinition.setWorkflowprocessdefinition(workflowProcessDefinitionRest.getWorkflowprocessdefinitionname());
         workflowProcessDefinitionService.update(context, workflowProcessDefinition);
+        context.commit();
         return converter.toRest(workflowProcessDefinition, utils.obtainProjection());
     }
 
-    private WorkflowProcessDefinition createworkflowProcessDefinitionFromRestObject(Context context, WorkFlowProcessDefinitionRest workflowProcessDefinitionRest) throws AuthorizeException {
-        WorkflowProcessDefinition workflowProcessDefinition = new WorkflowProcessDefinition();
-        WorkflowProcessEperson workflowProcessDefinitionEperson = new WorkflowProcessEperson();
-        try {
-            workflowProcessDefinition.setWorkflowprocessdefinition(workflowProcessDefinitionRest.getWorkflowprocessdefinitionname());
-            workflowProcessDefinitionRest.getWorkflowProcessEpersonRests().forEach(WorkflowProcessEpersonRest -> {
-                try {
-                    workflowProcessDefinitionEperson.setDepartment(workFlowProcessMasterValueConverter.convert(context, WorkflowProcessEpersonRest.getDepartmentRest()));
-                    workflowProcessDefinitionEperson.setOffice(workFlowProcessMasterValueConverter.convert(context, WorkflowProcessEpersonRest.getOfficeRest()));
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            workflowProcessDefinitionRest.getWorkflowProcessDefinitionEpersonRests().forEach(workflowProcessDefinitionEpersonRest -> {
-                workflowProcessDefinitionEperson.setWorkflowProcessDefinition(workflowProcessDefinition);
-                workflowProcessDefinitionEperson.setIndex(workflowProcessDefinitionEpersonRest.getIndex());
-                try {
-
-
-                    EPerson ePerson = ePersonService.find(context, UUID.fromString(workflowProcessDefinitionEpersonRest.getePersonRest().getUuid()));
-                    if (ePerson != null) {
-                        workflowProcessDefinitionEperson.setePerson(ePerson);
-                    }
-                    workflowProcessDefinition.getWorkflowProcessDefinitionEpeople().add(workflowProcessDefinitionEperson);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            workflowProcessDefinitionService.create(context, workflowProcessDefinition);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-        return workflowProcessDefinition;
+    private WorkflowProcessDefinition createworkflowProcessDefinitionFromRestObject(Context context, WorkFlowProcessDefinitionRest workflowProcessDefinitionRest) throws AuthorizeException, SQLException {
+        return workflowProcessDefinitionService.create(context, workFlowProcessDefinitionConverter.convert(context, workflowProcessDefinitionRest));
     }
 
     @Override

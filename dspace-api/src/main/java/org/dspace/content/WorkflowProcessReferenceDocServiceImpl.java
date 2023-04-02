@@ -66,7 +66,7 @@ public class WorkflowProcessReferenceDocServiceImpl extends DSpaceObjectServiceI
 
     @Override
     public void delete(Context context, WorkflowProcessReferenceDoc dso) throws SQLException, AuthorizeException, IOException {
-
+         workflowProcessReferenceDocDAO.delete(context,dso);
     }
 
     @Override
