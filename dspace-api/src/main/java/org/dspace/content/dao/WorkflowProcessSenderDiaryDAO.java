@@ -25,4 +25,6 @@ import java.sql.SQLException;
 public interface WorkflowProcessSenderDiaryDAO extends  DSpaceObjectLegacySupportDAO<WorkflowProcessSenderDiary> {
         int countRows(Context context) throws SQLException;
         WorkflowProcessSenderDiary findByEmailID(Context context,String emailID) throws SQLException;
+
+
 }

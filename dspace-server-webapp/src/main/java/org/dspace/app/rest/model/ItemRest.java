@@ -10,6 +10,7 @@ package org.dspace.app.rest.model;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.dspace.eperson.EPerson;
 
 /**
  * The Item REST Resource
@@ -48,6 +49,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
         @LinkRest(
                 name = ItemRest.THUMBNAIL,
                 method = "getThumbnail"
+        ),
+        @LinkRest(
+                name = ItemRest.THUMBNAIL,
+                method = "download"
         )
 })
     public class ItemRest extends DSpaceObjectRest {
@@ -68,7 +73,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
     private boolean discoverable = false;
     private boolean withdrawn = false;
     private Date lastModified = new Date();
-
     private  String email;
     private String caseDetail;
     private String uploaddate;
@@ -76,6 +80,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
     private String hierarchy;
 
+    public EPersonRest getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(EPersonRest submitter) {
+        this.submitter = submitter;
+    }
+
+    private EPersonRest submitter = null;
     public String getEmail() {
         return email;
     }
@@ -168,5 +181,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
     public void setHierarchy(String hierarchy) {
         this.hierarchy = hierarchy;
+    }
+
+    public boolean isInArchive() {
+        return inArchive;
+    }
+
+    public boolean isDiscoverable() {
+        return discoverable;
+    }
+
+    public boolean isWithdrawn() {
+        return withdrawn;
     }
 }

@@ -8,7 +8,10 @@
 package org.dspace.app.rest.converter;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -63,9 +66,8 @@ public class ItemConverter
         ItemRest item = super.convert(obj, projection);
         return item;
     }
-    public Item convert(Context context,ItemRest obj) throws SQLException {
-       return itemService.find(context, UUID.fromString(obj.getId()));
-       //return modelMapper.map(obj,Item.class);
+    public Item convert(ItemRest obj) {
+       return modelMapper.map(obj,Item.class);
     }
 
     /**

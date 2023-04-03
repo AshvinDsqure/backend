@@ -425,7 +425,6 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
         query.setParameter("withdrawn", includeWithdrawn);
         return count(query);
     }
-
     @Override
     public int countItems(Context context, EPerson submitter, boolean includeArchived, boolean includeWithdrawn)
         throws SQLException {
@@ -450,7 +449,7 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
                 "WHERE item.inArchive=:in_archive  " +
                 "AND  metadatavalue.metadataField = :metadataField " +
                 "AND STR(metadatavalue.value) >= :startdate " +
-                "AND STR(metadatavalue.value) <= :endDate" );
+                "AND STR(metadatavalue.value) <= :endDate  order by TO_DATE(STR(metadatavalue.value),'yyyy-MM-dd')");
 
         query.setParameter("in_archive",true);
         query.setParameter("metadataField",metadataField);
@@ -474,7 +473,7 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
                 "WHERE item.inArchive=:in_archive  " +
                 "AND  metadatavalue.metadataField = :metadataField " +
                 "AND STR(metadatavalue.value) >= :startdate " +
-                "AND STR(metadatavalue.value) <= :endDate" );
+                "AND STR(metadatavalue.value) <= :endDate order by TO_DATE(STR(metadatavalue.value),'yyyy-MM-dd')");
 
         query.setParameter("in_archive",true);
         query.setParameter("metadataField",metadataField);
@@ -504,4 +503,17 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
 
         return count(query);
     }
+
+    @Override
+    public List<Item> searchItemByTitle(Context context, MetadataField metadataField, String title) throws Exception {
+
+
+        Query query = createQuery(context, "SELECT item FROM Item as item join item.metadata  metadatavalue  WHERE item.inArchive=:in_archive  AND  metadatavalue.metadataField = :metadataField AND lower(STR(metadatavalue.value)) like :title");
+        query.setParameter("in_archive", true);
+        query.setParameter("title", "%"+title.toLowerCase()+"%");
+        query.setParameter("metadataField", metadataField);
+        return query.getResultList();
+
+    }
+
 }

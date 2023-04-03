@@ -20,7 +20,6 @@ public class ExcelDTO {
     private String email;
 
 
-
     public ExcelDTO(String title, String type, String issue, String caseDetail, String uploaddate, String uploadedby,String hierarchy,String email) {
         this.title = title;
         this.type = type;

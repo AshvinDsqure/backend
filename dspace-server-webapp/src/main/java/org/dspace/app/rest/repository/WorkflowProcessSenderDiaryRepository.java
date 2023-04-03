@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- * <p>
+ *
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
@@ -10,12 +10,16 @@ package org.dspace.app.rest.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.dspace.app.rest.Parameter;
+import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkflowProcessSenderDiaryConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.DocumentTypeRest;
+import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.model.LatterCategoryRest;
 import org.dspace.app.rest.model.WorkflowProcessSenderDiaryRest;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.Item;
 import org.dspace.content.LatterCategory;
 import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.content.service.WorkflowProcessSenderDiaryService;
@@ -43,41 +47,38 @@ import java.util.UUID;
 public class WorkflowProcessSenderDiaryRepository extends DSpaceObjectRestRepository<WorkflowProcessSenderDiary, WorkflowProcessSenderDiaryRest> {
 
 
-    public WorkflowProcessSenderDiaryRepository(WorkflowProcessSenderDiaryService s) {
+   public  WorkflowProcessSenderDiaryRepository(WorkflowProcessSenderDiaryService s) {
         super(s);
     }
-
     @Autowired
     WorkflowProcessSenderDiaryService workflowProcessSenderDiaryService;
 
-    @Autowired
-    WorkflowProcessSenderDiaryConverter workflowProcessSenderDiaryConverter;
+   @Autowired
+   WorkflowProcessSenderDiaryConverter workflowProcessSenderDiaryConverter;
 
     @Override
     public WorkflowProcessSenderDiaryRest findOne(Context context, UUID uuid) {
-        WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest = null;
+        WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest=null;
         try {
-            System.out.println("uuid::" + uuid);
+            System.out.println("uuid::"+uuid);
             Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiary = Optional.ofNullable(workflowProcessSenderDiaryService.find(context, uuid));
-            System.out.println("OPtion is present ::" + workflowProcessSenderDiary.isPresent());
-            if (workflowProcessSenderDiary.isPresent()) {
-                workflowProcessSenderDiaryRest = converter.toRest(workflowProcessSenderDiary.get(), utils.obtainProjection());
+            System.out.println("OPtion is present ::"+workflowProcessSenderDiary.isPresent());
+            if(workflowProcessSenderDiary.isPresent()){
+                    workflowProcessSenderDiaryRest =converter.toRest(workflowProcessSenderDiary.get(),utils.obtainProjection());
             }
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
         return workflowProcessSenderDiaryRest;
     }
-
     @Override
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
     public Page<WorkflowProcessSenderDiaryRest> findAll(Context context, Pageable pageable) throws SQLException {
 
-        int total = workflowProcessSenderDiaryService.countRows(context);
-        List<WorkflowProcessSenderDiary> workflowProcessSenderDiaries = workflowProcessSenderDiaryService.findAll(context);
-        return converter.toRestPage(workflowProcessSenderDiaries, pageable, total, utils.obtainProjection());
+        int total=workflowProcessSenderDiaryService.countRows(context);
+        List<WorkflowProcessSenderDiary> workflowProcessSenderDiaries= workflowProcessSenderDiaryService.findAll(context);
+      return   converter.toRestPage(workflowProcessSenderDiaries,pageable, total, utils.obtainProjection());
     }
-
     @Override
     protected WorkflowProcessSenderDiaryRest createAndReturn(Context context)
             throws AuthorizeException {
@@ -85,10 +86,10 @@ public class WorkflowProcessSenderDiaryRepository extends DSpaceObjectRestReposi
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         ObjectMapper mapper = new ObjectMapper();
         WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest = null;
-        WorkflowProcessSenderDiary workflowProcessSenderDiary = null;
+        WorkflowProcessSenderDiary workflowProcessSenderDiary=null;
         try {
             workflowProcessSenderDiaryRest = mapper.readValue(req.getInputStream(), WorkflowProcessSenderDiaryRest.class);
-            workflowProcessSenderDiary = createworkflowProcessFromRestObject(context, workflowProcessSenderDiaryRest);
+            workflowProcessSenderDiary= createworkflowProcessFromRestObject(context,workflowProcessSenderDiaryRest);
 
         } catch (Exception e1) {
             e1.printStackTrace();
@@ -98,11 +99,11 @@ public class WorkflowProcessSenderDiaryRepository extends DSpaceObjectRestReposi
     }
 
     private WorkflowProcessSenderDiary createworkflowProcessFromRestObject(Context context, WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest) throws AuthorizeException {
-        WorkflowProcessSenderDiary workflowProcessSenderDiary = new WorkflowProcessSenderDiary();
+        WorkflowProcessSenderDiary workflowProcessSenderDiary =new WorkflowProcessSenderDiary();
 
         try {
-            workflowProcessSenderDiary = workflowProcessSenderDiaryConverter.convert(workflowProcessSenderDiary, workflowProcessSenderDiaryRest);
-            workflowProcessSenderDiaryService.create(context, workflowProcessSenderDiary);
+            workflowProcessSenderDiary=workflowProcessSenderDiaryConverter.convert(workflowProcessSenderDiary,workflowProcessSenderDiaryRest );
+            workflowProcessSenderDiaryService.create(context,workflowProcessSenderDiary);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -128,26 +129,27 @@ public class WorkflowProcessSenderDiaryRepository extends DSpaceObjectRestReposi
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-
     @Override
     protected WorkflowProcessSenderDiaryRest put(Context context, HttpServletRequest request, String apiCategory, String model, UUID id,
-                                                 JsonNode jsonNode) throws SQLException, AuthorizeException {
+                                     JsonNode jsonNode) throws SQLException, AuthorizeException {
 
-        WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest = null;
+        WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest=null;
         ObjectMapper jsonObjectMapper = new ObjectMapper();
         //= new Gson().fromJson(jsonNode.toString(), WorkflowProcessSenderDiaryRest.class);
-        try {
-            workflowProcessSenderDiaryRest = jsonObjectMapper.readValue(jsonNode.toString(), WorkflowProcessSenderDiaryRest.class);
-        } catch (Exception e) {
+try {
+     workflowProcessSenderDiaryRest = jsonObjectMapper.readValue(jsonNode.toString(), WorkflowProcessSenderDiaryRest.class);
+}catch (Exception e){
 
-        }
+}
         WorkflowProcessSenderDiary workflowProcessSenderDiary = workflowProcessSenderDiaryService.find(context, id);
-        System.out.println("WorkflowProcessSenderDiary a" + id);
+
+
+        System.out.println("WorkflowProcessSenderDiary a"+id);
         if (workflowProcessSenderDiary == null) {
-            System.out.println("workflowProcessSenderDiary id ::: is Null  LatterCategoryRest tye null" + id);
+            System.out.println("workflowProcessSenderDiary id ::: is Null  LatterCategoryRest tye null"+id);
             throw new ResourceNotFoundException("workflowProcessSenderDiary  field with id: " + id + " not found");
         }
-        workflowProcessSenderDiary = workflowProcessSenderDiaryConverter.convert(workflowProcessSenderDiary, workflowProcessSenderDiaryRest);
+        workflowProcessSenderDiary=workflowProcessSenderDiaryConverter.convert(workflowProcessSenderDiary,workflowProcessSenderDiaryRest);
         workflowProcessSenderDiary.setCity(workflowProcessSenderDiaryRest.getCity());
         workflowProcessSenderDiary.setCountry(workflowProcessSenderDiaryRest.getCountry());
         workflowProcessSenderDiary.setOrganization(workflowProcessSenderDiaryRest.getOrganization());
@@ -161,6 +163,22 @@ public class WorkflowProcessSenderDiaryRepository extends DSpaceObjectRestReposi
         System.out.println("WorkflowProcessSenderDiary update finished");
         return converter.toRest(workflowProcessSenderDiary, utils.obtainProjection());
 
+    }
+    @SearchRestMethod(name = "search")
+    public WorkflowProcessSenderDiaryRest search(
+            @Parameter(value = "search", required = true) String search,
+            Pageable pageable) {
+        WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest=null;
+        Context context = obtainContext();
+        try {
+            Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiary = Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context, search));
+            if(workflowProcessSenderDiary.isPresent()){
+                workflowProcessSenderDiaryRest =converter.toRest(workflowProcessSenderDiary.get(),utils.obtainProjection());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return workflowProcessSenderDiaryRest;
     }
 
     @Override

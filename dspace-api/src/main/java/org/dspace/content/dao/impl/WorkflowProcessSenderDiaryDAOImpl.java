@@ -16,13 +16,18 @@ import org.dspace.content.dao.WorkflowProcessNoteDAO;
 import org.dspace.content.dao.WorkflowProcessSenderDiaryDAO;
 import org.dspace.core.AbstractHibernateDSODAO;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
 
+import javax.persistence.Column;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -34,6 +39,7 @@ import java.sql.SQLException;
  */
 public class WorkflowProcessSenderDiaryDAOImpl extends AbstractHibernateDSODAO<WorkflowProcessSenderDiary> implements WorkflowProcessSenderDiaryDAO {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkflowProcessNoteDAOImpl.class);
+
     protected WorkflowProcessSenderDiaryDAOImpl() {
         super();
     }
@@ -45,13 +51,30 @@ public class WorkflowProcessSenderDiaryDAOImpl extends AbstractHibernateDSODAO<W
     }
 
     @Override
-    public WorkflowProcessSenderDiary findByEmailID(Context context, String emailID) throws SQLException {
-        CriteriaBuilder  criteriaBuilder = getCriteriaBuilder(context);
-        CriteriaQuery criteriaQuery=getCriteriaQuery(criteriaBuilder,WorkflowProcessSenderDiary.class);
-        Root<WorkflowProcessSenderDiary> root= criteriaQuery.from(WorkflowProcessSenderDiary.class);
-        criteriaQuery.select(root);
-        criteriaQuery.where(criteriaBuilder.equal(root.get(WorkflowProcessSenderDiary_.email),emailID));
-        return singleResult(context, criteriaQuery);
+    public WorkflowProcessSenderDiary findByEmailID(Context context, String search) throws SQLException {
+        try {
+            StringBuilder queryBuilder = new StringBuilder("SELECT s from  WorkflowProcessSenderDiary as s where city like :name");
 
+          /*  Map<String, String> map = new HashMap<>();
+            map.put("city","ss");
+            map.put("contactNumber","ashivn@122");
+            int i = 0;
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                if (i == 0) {
+                    queryBuilder.append(entry.getKey() + " LIKE :" + '%' + entry.getValue() + '%'+ " " );
+                } else {
+                    queryBuilder.append(" And " + entry.getKey() + " LIKE :" + '%' + entry.getValue() + '%' + " ");
+                }
+            }*/
+
+
+            Query query = createQuery(context, queryBuilder.toString());
+            query.setParameter("name",'%'+search+'%');
+            return (WorkflowProcessSenderDiary) query.getResultList();
+        } catch (Exception e) {
+            System.out.println("in error " + e.getMessage());
+            return null;
+        }
     }
+
 }

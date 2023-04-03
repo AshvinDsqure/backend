@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
+import org.dspace.app.rest.converter.ItemConverter;
 import org.dspace.app.rest.converter.MetadataConverter;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
@@ -51,6 +52,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.util.UUIDUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
@@ -90,6 +92,12 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
     @Autowired
     ItemService itemService;
 
+
+    @Autowired
+    ItemConverter itemConverter;
+
+
+
     @Autowired
     private EPersonService es;
 
@@ -107,6 +115,9 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
 
     @Autowired
     private UriListHandlerService uriListHandlerService;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     public ItemRestRepository(ItemService dsoService) {
         super(dsoService);
@@ -373,7 +384,6 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
     @Override
     protected ItemRest createAndReturn(Context context, List<String> stringList)
             throws AuthorizeException, SQLException, RepositoryMethodNotImplementedException {
-
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         Item item = uriListHandlerService.handle(context, req, stringList, Item.class);
         return converter.toRest(item, utils.obtainProjection());
@@ -385,66 +395,30 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
             @Parameter(value = "enddate", required = true) String enddate,
             Pageable pageable) {
 
-
-
-
         try {
             Context context = obtainContext();
             long total = itemService.countTotal(context, startdate, enddate);
             List<Item> witems = itemService.getDataTwoDateRange(context, startdate, enddate, Math.toIntExact(pageable.getOffset()),
                     Math.toIntExact(pageable.getPageSize()));
-
-            List<ExcelDTO> listDTo = witems.stream().map(i -> {
-                String title = itemService.getMetadataFirstValue(i, "dc", "title", null, null);
-                String type = itemService.getMetadataFirstValue(i, "dc", "type", null, null);
-                String issued = itemService.getMetadataFirstValue(i, "dc", "issued", null, null);
-                type = (type != null) ? type : "-";
-                title = (title != null) ? title : "-";
-                issued = (issued != null) ? issued : "-";
-                String caseDetail = type + "/" + title + "/" + issued;
-                String uploaddate = itemService.getMetadataFirstValue(i, "dc", "date", "accessioned", null);
-                String uploadedby = i.getSubmitter().getEmail();
-                String hierarchy = i.getOwningCollection().getName();
-                String email =context.getCurrentUser().getEmail();
-
-                return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy,email);
-            }).collect(Collectors.toList());
-
-            return converter.toRestPage(listDTo, pageable, total, utils.obtainProjection());
+             return converter.toRestPage(witems, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+    @SearchRestMethod(name = "searchByTitle")
+    public Page<ItemRest> searchByTitle(
+            @Parameter(value = "searchtitle", required = true) String searchtitle,
+            Pageable pageable) {
 
-    @SearchRestMethod(name = "download")
-    public ResponseEntity<Resource> download(@Parameter(value = "startdate", required = true) String startdate,
-                                             @Parameter(value = "enddate", required = true) String enddate) throws IOException {
         try {
             Context context = obtainContext();
-            String filename = "itemReport.xlsx";
-            List<Item> list = itemService.getDataTwoDateRangeDownload(context, startdate, enddate);
-            List<ExcelDTO> listDTo = list.stream().map(i -> {
-                String title = itemService.getMetadataFirstValue(i, "dc", "title", null, null);
-                String type = itemService.getMetadataFirstValue(i, "dc", "type", null, null);
-                String issued = itemService.getMetadataFirstValue(i, "dc", "issued", null, null);
-                type = (type != null) ? type : "-";
-                title = (title != null) ? title : "-";
-                issued = (issued != null) ? issued : "-";
-                String caseDetail = type + "/" + title + "/" + issued;
-                String uploaddate = itemService.getMetadataFirstValue(i, "dc", "date", "accessioned", null);
-                String uploadedby = i.getSubmitter().getEmail();
-                String hierarchy = i.getOwningCollection().getName();
-                String email =context.getCurrentUser().getEmail();;
-                return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy,email);
-            }).collect(Collectors.toList());
-            ByteArrayInputStream in = ExcelHelper.tutorialsToExcel(listDTo);
-            InputStreamResource file = new InputStreamResource(in);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-                    .body(file);
+            List<Item> witems = itemService.searchItemByTitle(context, searchtitle);
+            return converter.toRestPage(witems, pageable, 1000, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
+
 }
