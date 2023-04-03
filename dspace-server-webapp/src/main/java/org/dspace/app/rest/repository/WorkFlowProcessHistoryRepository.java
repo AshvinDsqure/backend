@@ -123,7 +123,8 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
     @Override
     public Page<WorkFlowProcessHistoryRest> findAll(Context context, Pageable pageable) throws SQLException {
         int total = workFlowProcessHistoryService.countRows(context);
-        List<WorkFlowProcessHistory> workFlowProcessHistories = workFlowProcessHistoryService.findAll(context);
+        List<WorkFlowProcessHistory> workFlowProcessHistories = workFlowProcessHistoryService.findAll(context,
+                Math.toIntExact(pageable.getPageSize()), Math.toIntExact(pageable.getOffset()));
         return converter.toRestPage(workFlowProcessHistories, pageable, total, utils.obtainProjection());
 
     }

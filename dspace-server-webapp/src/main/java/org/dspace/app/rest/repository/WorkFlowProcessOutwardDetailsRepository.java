@@ -127,7 +127,8 @@ public class WorkFlowProcessOutwardDetailsRepository extends DSpaceObjectRestRep
     @Override
     public Page<WorkFlowProcessOutwardDetailsRest> findAll(Context context, Pageable pageable) throws SQLException {
         int total = workFlowProcessOutwardDetailsService.countRows(context);
-        List<WorkFlowProcessOutwardDetails>  workFlowProcessOutwardDetails= workFlowProcessOutwardDetailsService.findAll(context);
+        List<WorkFlowProcessOutwardDetails>  workFlowProcessOutwardDetails= workFlowProcessOutwardDetailsService.findAll(context,
+                Math.toIntExact(pageable.getPageSize()), Math.toIntExact(pageable.getOffset()));
         return converter.toRestPage(workFlowProcessOutwardDetails, pageable, total, utils.obtainProjection());
 
     }
