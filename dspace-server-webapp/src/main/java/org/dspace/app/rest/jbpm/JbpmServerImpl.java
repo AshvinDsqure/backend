@@ -43,6 +43,7 @@ public class JbpmServerImpl {
     }
     public String forwardTask(WorkFlowProcessRest workflowProcess, WorkFlowAction workFlowAction) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
+        // add to server
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
         if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
