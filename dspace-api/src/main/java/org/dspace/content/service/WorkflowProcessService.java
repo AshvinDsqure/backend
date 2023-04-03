@@ -64,5 +64,5 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
      * @throws SQLException if database error
      */
     public List<WorkflowProcess> findAll(Context context, Integer limit, Integer offset) throws SQLException;
-
+    List<WorkflowProcess> findByWorkFlowProcessIds(Context context,List<String> WorkFlowProcessIds,Integer offset, Integer limit)throws SQLException;
 }

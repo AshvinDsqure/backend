@@ -29,6 +29,7 @@ public class WorkFlowProcessDefinitionConverter extends DSpaceObjectConverter<Wo
     @Override
     public WorkFlowProcessDefinitionRest convert(WorkflowProcessDefinition obj, Projection projection) {
         WorkFlowProcessDefinitionRest workflowProcessDefinitionRest = super.convert(obj, projection);
+        workflowProcessDefinitionRest.setWorkflowprocessdefinitionname(obj.getWorkflowprocessdefinition());
         obj.getWorkflowProcessDefinitionEpeople().forEach(workflowProcessDefinitionEperson->{
             WorkflowProcessEpersonRest workflowProcessDefinitionEpersonRest=workFlowProcessDefinitionEpersonConverter.convert(workflowProcessDefinitionEperson,projection);
             workflowProcessDefinitionRest.getWorkflowProcessDefinitionEpersonRests().add(workflowProcessDefinitionEpersonRest);

@@ -1669,6 +1669,13 @@ prevent the generation of resource policy entry values with null dspace_object a
     }
 
     @Override
+    public List<Item> searchItemByTitle(Context context,String title) throws Exception {
+        MetadataField metadataFields = metadataFieldService.findByElement(context, MetadataSchemaEnum.DC.getName(), "title", null);
+        return itemDAO.searchItemByTitle(context,metadataFields,title);
+    }
+
+
+    @Override
     public int countTotal(Context context, String startdate, String endDate) throws SQLException {
 
         MetadataField metadataField = metadataFieldService.findByElement(context, MetadataSchemaEnum.DC.getName(), "date", "accessioned");

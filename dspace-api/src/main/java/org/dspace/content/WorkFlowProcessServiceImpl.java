@@ -87,4 +87,9 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
         return  Optional.ofNullable(workflowProcessDAO.findAll(context,WorkflowProcess.class,limit,
                 offset)).orElse(new ArrayList<>());
     }
+
+    @Override
+    public List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit) throws SQLException {
+        return workflowProcessDAO.findByWorkFlowProcessIds(context,WorkFlowProcessIds,offset,limit);
+    }
 }

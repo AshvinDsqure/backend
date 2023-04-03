@@ -36,7 +36,31 @@ import java.util.*;
  */
 public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProcess> implements WorkflowProcessDAO {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkflowProcessDAOImpl.class);
+
     protected WorkflowProcessDAOImpl() {
         super();
+    }
+
+    @Override
+    public List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit) throws SQLException {
+
+        try {
+            String s = WorkFlowProcessIds.toString().replace("[", "");
+            String id = s.replace("]", "");
+            StringBuilder queryBuilder = new StringBuilder("SELECT s from  WorkflowProcess as s where id in (:WorkFlowProcessIds)");
+            Query query = createQuery(context, queryBuilder.toString());
+            query.setParameter("WorkFlowProcessIds", id);
+            if (0 <= offset) {
+                query.setFirstResult(offset);
+            }
+            if (0 <= limit) {
+                query.setMaxResults(limit);
+            }
+
+            return query.getResultList();
+        } catch (Exception e) {
+            System.out.println("in error " + e.getMessage());
+            return null;
+        }
     }
 }

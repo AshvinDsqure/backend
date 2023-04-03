@@ -8,6 +8,10 @@
 package org.dspace.content.dao;
 
 import org.dspace.content.*;
+import org.dspace.core.Context;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Database Access Object interface class for the Item object.
@@ -17,4 +21,6 @@ import org.dspace.content.*;
  * @author kevinvandevelde at atmire.com
  */
 public interface WorkflowProcessDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcess> {
+    List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit)throws SQLException;
+
 }

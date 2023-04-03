@@ -22,12 +22,16 @@ import java.util.List;
 })
 public class WorkFlowProcessDefinitionRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocessdefinition";
-    public static final String PLURAL_NAME = "workflowprocessdefinition";
-    public static final String CATEGORY = RestAddressableModel.CORE;
+    public static final String PLURAL_NAME = "workflowprocessdefinitions";
+    public static final String CATEGORY = RestAddressableModel.WORKFLOWPROCESSDEFINITION;
     @JsonProperty
     private String workflowprocessdefinitionname;
     @JsonProperty
     List<WorkflowProcessEpersonRest> workflowProcessDefinitionEpersonRests=new ArrayList<>();
+    List<WorkflowProcessEpersonRest> workflowProcessEpersonRests=new ArrayList<>();
+
+
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
     @Override
@@ -47,6 +51,13 @@ public class WorkFlowProcessDefinitionRest extends DSpaceObjectRest {
 
     public void setWorkflowprocessdefinitionname(String workflowprocessdefinitionname) {
         this.workflowprocessdefinitionname = workflowprocessdefinitionname;
+    }
+    public List<WorkflowProcessEpersonRest> getWorkflowProcessEpersonRests() {
+        return workflowProcessEpersonRests;
+    }
+
+    public void setWorkflowProcessEpersonRests(List<WorkflowProcessEpersonRest> workflowProcessEpersonRests) {
+        this.workflowProcessEpersonRests = workflowProcessEpersonRests;
     }
 
     public List<WorkflowProcessEpersonRest> getWorkflowProcessDefinitionEpersonRests() {

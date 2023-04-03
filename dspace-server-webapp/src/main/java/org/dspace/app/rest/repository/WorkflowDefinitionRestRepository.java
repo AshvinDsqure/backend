@@ -16,12 +16,15 @@ import java.util.UUID;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.WorkflowProcessDefinition;
 import org.dspace.content.WorkflowProcessEperson;
+import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.content.service.WorkflowProcessDefinitionService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
@@ -43,44 +46,53 @@ import static org.apache.logging.log4j.util.Strings.isBlank;
  * @author Maria Verdonck (Atmire) on 11/12/2019
  */
 @Component(WorkFlowProcessDefinitionRest.CATEGORY + "." + WorkFlowProcessDefinitionRest.NAME)
-public class WorkflowDefinitionRestRepository  extends DSpaceObjectRestRepository<WorkflowProcessDefinition, WorkFlowProcessDefinitionRest> {
+public class WorkflowDefinitionRestRepository extends DSpaceObjectRestRepository<WorkflowProcessDefinition, WorkFlowProcessDefinitionRest> {
 
     @Autowired
     private WorkflowProcessDefinitionService workflowProcessDefinitionService;
     @Autowired
     private EPersonService ePersonService;
+    @Autowired
+    private WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
+
+    @Autowired
+    private WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
 
     public WorkflowDefinitionRestRepository(WorkflowProcessDefinitionService dso) {
         super(dso);
     }
+
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     public WorkFlowProcessDefinitionRest findOne(Context context, UUID id) {
-        WorkFlowProcessDefinitionRest workflowProcessDefinitionRest=null;
+        WorkFlowProcessDefinitionRest workflowProcessDefinitionRest = null;
         try {
             Optional<WorkflowProcessDefinition> workflowProcessDefinitionOption = Optional.ofNullable(workflowProcessDefinitionService.find(context, id));
-            if(workflowProcessDefinitionOption.isPresent()){
-                workflowProcessDefinitionRest =converter.toRest(workflowProcessDefinitionOption.get(),utils.obtainProjection());
+            if (workflowProcessDefinitionOption.isPresent()) {
+                workflowProcessDefinitionRest = converter.toRest(workflowProcessDefinitionOption.get(), utils.obtainProjection());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return converter.toRest(null, utils.obtainProjection());
     }
+
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     @Override
     public Page<WorkFlowProcessDefinitionRest> findAll(Context context, Pageable pageable) {
         try {
-            List<WorkflowProcessDefinition> workflowProcessDefinitions= workflowProcessDefinitionService.findAll(context,pageable.getPageSize(),Math.toIntExact(pageable.getOffset()));
+            List<WorkflowProcessDefinition> workflowProcessDefinitions = workflowProcessDefinitionService.findAll(context, pageable.getPageSize(), Math.toIntExact(pageable.getOffset()));
             return converter.toRestPage(workflowProcessDefinitions, pageable, 0, utils.obtainProjection());
-        }catch (Exception e){
-            throw  new RuntimeException(e.getMessage(),e);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
+
     @Override
     public Class<WorkFlowProcessDefinitionRest> getDomainClass() {
         return null;
     }
+
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     @Override
     protected WorkFlowProcessDefinitionRest createAndReturn(Context context)
@@ -89,16 +101,17 @@ public class WorkflowDefinitionRestRepository  extends DSpaceObjectRestRepositor
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         ObjectMapper mapper = new ObjectMapper();
         WorkFlowProcessDefinitionRest workflowProcessDefinitionRest = null;
-        WorkflowProcessDefinition workflowProcessDefinition=null;
+        WorkflowProcessDefinition workflowProcessDefinition = null;
         try {
             workflowProcessDefinitionRest = mapper.readValue(req.getInputStream(), WorkFlowProcessDefinitionRest.class);
-            workflowProcessDefinition= createworkflowProcessDefinitionFromRestObject(context,workflowProcessDefinitionRest);
+            workflowProcessDefinition = createworkflowProcessDefinitionFromRestObject(context, workflowProcessDefinitionRest);
         } catch (Exception e1) {
             e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
         }
         return converter.toRest(workflowProcessDefinition, utils.obtainProjection());
     }
+
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     protected WorkFlowProcessDefinitionRest put(Context context, HttpServletRequest request, String apiCategory, String model, UUID id,
@@ -116,37 +129,49 @@ public class WorkflowDefinitionRestRepository  extends DSpaceObjectRestRepositor
         workflowProcessDefinitionService.update(context, workflowProcessDefinition);
         return converter.toRest(workflowProcessDefinition, utils.obtainProjection());
     }
+
     private WorkflowProcessDefinition createworkflowProcessDefinitionFromRestObject(Context context, WorkFlowProcessDefinitionRest workflowProcessDefinitionRest) throws AuthorizeException {
-        WorkflowProcessDefinition workflowProcessDefinition =new WorkflowProcessDefinition();
+        WorkflowProcessDefinition workflowProcessDefinition = new WorkflowProcessDefinition();
+        WorkflowProcessEperson workflowProcessDefinitionEperson = new WorkflowProcessEperson();
         try {
             workflowProcessDefinition.setWorkflowprocessdefinition(workflowProcessDefinitionRest.getWorkflowprocessdefinitionname());
+            workflowProcessDefinitionRest.getWorkflowProcessEpersonRests().forEach(WorkflowProcessEpersonRest -> {
+                try {
+                    workflowProcessDefinitionEperson.setDepartment(workFlowProcessMasterValueConverter.convert(context, WorkflowProcessEpersonRest.getDepartmentRest()));
+                    workflowProcessDefinitionEperson.setOffice(workFlowProcessMasterValueConverter.convert(context, WorkflowProcessEpersonRest.getOfficeRest()));
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             workflowProcessDefinitionRest.getWorkflowProcessDefinitionEpersonRests().forEach(workflowProcessDefinitionEpersonRest -> {
-                System.out.println("workflowProcessDefinitionEpersonRest::"+workflowProcessDefinitionEpersonRest.getePersonRest().getUuid());
-                WorkflowProcessEperson workflowProcessDefinitionEperson=new WorkflowProcessEperson();
                 workflowProcessDefinitionEperson.setWorkflowProcessDefinition(workflowProcessDefinition);
                 workflowProcessDefinitionEperson.setIndex(workflowProcessDefinitionEpersonRest.getIndex());
                 try {
-                    EPerson ePerson=ePersonService.find(context,UUID.fromString(workflowProcessDefinitionEpersonRest.getePersonRest().getUuid()));
-                    workflowProcessDefinitionEperson.setePerson(ePerson);
+
+
+                    EPerson ePerson = ePersonService.find(context, UUID.fromString(workflowProcessDefinitionEpersonRest.getePersonRest().getUuid()));
+                    if (ePerson != null) {
+                        workflowProcessDefinitionEperson.setePerson(ePerson);
+                    }
                     workflowProcessDefinition.getWorkflowProcessDefinitionEpeople().add(workflowProcessDefinitionEperson);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
-
-
             });
-            workflowProcessDefinitionService.create(context,workflowProcessDefinition);
+            workflowProcessDefinitionService.create(context, workflowProcessDefinition);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
         return workflowProcessDefinition;
     }
+
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     protected void patch(Context context, HttpServletRequest request, String apiCategory, String model, UUID uuid,
                          Patch patch) throws AuthorizeException, SQLException {
         patchDSpaceObject(apiCategory, model, uuid, patch);
     }
+
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'DELETE')")
     protected void delete(Context context, UUID id) throws AuthorizeException {

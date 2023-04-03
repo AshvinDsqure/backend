@@ -840,6 +840,8 @@ public interface ItemService
 
     List<Item> getDataTwoDateRangeDownload(Context context,String startdate, String endDate) throws SQLException;
 
+    public List<Item> searchItemByTitle(Context context, String title) throws Exception;
+
 
 
 }
