@@ -52,6 +52,9 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     @JoinColumn(name = "department_id")
     private WorkFlowProcessMasterValue department = null;
     @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usetype_id")
+    private WorkFlowProcessMasterValue usertype = null;
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "office_id")
     private WorkFlowProcessMasterValue office = null;
 
@@ -134,5 +137,21 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
 
     public void setAssignDate(Date assignDate) {
         this.assignDate = assignDate;
+    }
+
+    public WorkFlowProcessMasterValue getUsertype() {
+        return usertype;
+    }
+
+    public void setUsertype(WorkFlowProcessMasterValue usertype) {
+        this.usertype = usertype;
+    }
+
+    public List<WorkFlowProcessHistory> getWorkFlowProcessHistories() {
+        return workFlowProcessHistories;
+    }
+
+    public void setWorkFlowProcessHistories(List<WorkFlowProcessHistory> workFlowProcessHistories) {
+        this.workFlowProcessHistories = workFlowProcessHistories;
     }
 }

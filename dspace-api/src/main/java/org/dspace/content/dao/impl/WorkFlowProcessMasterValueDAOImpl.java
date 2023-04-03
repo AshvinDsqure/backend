@@ -59,10 +59,10 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
      Root<WorkFlowProcessMasterValue> workFlowProcessMasterValueRoot=criteriaQuery.from(WorkFlowProcessMasterValue.class);
      Join<WorkFlowProcessMasterValue,WorkFlowProcessMaster> workFlowProcessMasterValueWorkFlowProcessMasterJoin = workFlowProcessMasterValueRoot.join(WorkFlowProcessMasterValue_.workflowprocessmaster);
      criteriaQuery.select(workFlowProcessMasterValueRoot).where(criteriaBuilder.and(
-        criteriaBuilder.equal(workFlowProcessMasterValueRoot.get("primaryvalue"),name),
+        criteriaBuilder.equal(workFlowProcessMasterValueRoot.get(WorkFlowProcessMasterValue_.primaryvalue),name),
         criteriaBuilder.equal(workFlowProcessMasterValueWorkFlowProcessMasterJoin.get("id"),workFlowProcessMaster.getID())
      ));
      return singleResult(context,criteriaQuery);
-
     }
+
 }

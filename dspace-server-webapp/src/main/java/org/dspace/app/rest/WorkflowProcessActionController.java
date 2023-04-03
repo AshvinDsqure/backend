@@ -18,7 +18,6 @@ import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
 import org.dspace.app.rest.repository.AbstractDSpaceRestRepository;
 import org.dspace.app.rest.repository.LinkRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
-import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.content.WorkflowProcess;
@@ -27,7 +26,6 @@ import org.dspace.content.service.WorkflowProcessService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -61,10 +58,10 @@ import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFI
 @RestController
 @RequestMapping("/api/" + WorkFlowProcessRest.CATEGORY + "/" + WorkFlowProcessRest.PLURAL_NAME
         + REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID)
-public class WorkflowProcessController extends AbstractDSpaceRestRepository
+public class WorkflowProcessActionController extends AbstractDSpaceRestRepository
         implements LinkRestRepository {
     private static final Logger log = org.apache.logging.log4j.LogManager
-            .getLogger(WorkflowProcessController.class);
+            .getLogger(WorkflowProcessActionController.class);
 
     @Autowired
     WorkflowProcessService workflowProcessService;
@@ -193,6 +190,7 @@ public class WorkflowProcessController extends AbstractDSpaceRestRepository
         workFlowProcessHistory.setWorkflowProcess(workflowProcess);
         Optional<WorkflowProcessEperson> workflowProcessEpersonPerfomerOption= workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getePerson().getID().equals(ePerson.getID())).findFirst();
         if(workflowProcessEpersonPerfomerOption.isPresent()){
+            workFlowProcessHistory.setWorkflowProcessEpeople(workflowProcessEpersonPerfomerOption.get());
             return workFlowAction.perfomeAction(context, workFlowProcessHistory);
         }
         return null;

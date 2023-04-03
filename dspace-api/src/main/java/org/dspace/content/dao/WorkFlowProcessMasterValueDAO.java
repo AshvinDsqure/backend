@@ -21,4 +21,5 @@ public interface WorkFlowProcessMasterValueDAO extends DSpaceObjectLegacySupport
 
     public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername) throws SQLException;
     WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException;
+
 }

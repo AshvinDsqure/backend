@@ -13,17 +13,14 @@ import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.converter.MetadataConverter;
-import org.dspace.app.rest.converter.WorkFlowProcessConverter;
+import org.dspace.app.rest.converter.*;
 import org.dspace.app.rest.enums.WorkFlowAction;
+import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
-import org.dspace.app.rest.model.BundleRest;
-import org.dspace.app.rest.model.EPersonRest;
-import org.dspace.app.rest.model.ItemRest;
-import org.dspace.app.rest.model.WorkFlowProcessRest;
+import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.app.rest.repository.handler.service.UriListHandlerService;
 import org.dspace.app.util.AuthorizeUtil;
@@ -48,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -64,9 +62,15 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     @Autowired
     WorkFlowProcessConverter workFlowProcessConverter;
     @Autowired
+    WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
+    @Autowired
     private WorkflowProcessService workflowProcessService;
     @Autowired
+    private WorkflowProcessReferenceDocService workflowProcessReferenceDocService;
+    @Autowired
     private WorkflowProcessSenderDiaryService workflowProcessSenderDiaryService;
+    @Autowired
+    private WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
     @Autowired
     JbpmServerImpl jbpmServer;
     @Autowired
@@ -75,13 +79,14 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         super(dsoService);
     }
     @Override
-    @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
+    @PreAuthorize("hasPermission(#id, 'WORKSPACEITEM', 'WRITE')")
     public WorkFlowProcessRest findOne(Context context, UUID id) throws SQLException {
         WorkflowProcess workflowProcess= workflowProcessService.find(context,id);
         return converter.toRest(workflowProcess, utils.obtainProjection());
     }
 
     @Override
+    @PreAuthorize("hasPermission(#id, 'WORKSPACEITEM', 'WRITE')")
     public Page<WorkFlowProcessRest> findAll(Context context, Pageable pageable) {
         try {
             List<WorkflowProcess> workflowProcesses= workflowProcessService.findAll(context,pageable.getPageSize(),Math.toIntExact(pageable.getOffset()));
@@ -95,6 +100,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         return null;
     }
     @Override
+    @PreAuthorize("hasPermission(#id, 'WORKSPACEITEM', 'WRITE')")
     protected WorkFlowProcessRest createAndReturn(Context context)
             throws AuthorizeException {
         // this need to be revisited we should receive an EPersonRest as input
@@ -105,16 +111,30 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
+            //set submitorUser
+            if(context.getCurrentUser() != null){
+                WorkflowProcessEpersonRest workflowProcessEpersonSubmitor=new WorkflowProcessEpersonRest();
+                EPersonRest ePersonRest=new EPersonRest();
+                ePersonRest.setUuid(context.getCurrentUser().getID().toString());
+                workflowProcessEpersonSubmitor.setIndex(0);
+                Optional<WorkFlowProcessMasterValue> workFlowUserTypOptional = WorkFlowUserType.INITIATOR.getUserTypeFromMasterValue(context);
+                if(workFlowUserTypOptional.isPresent()){
+                    workflowProcessEpersonSubmitor.setUserType(workFlowProcessMasterValueConverter.convert(workFlowUserTypOptional.get(),utils.obtainProjection()));
+                }
+                workflowProcessEpersonSubmitor.setePersonRest(ePersonRest);
+                workFlowProcessRest.getWorkflowProcessEpersonRests().add(workflowProcessEpersonSubmitor);
+            }
             workflowProcess= createworkflowProcessFromRestObject(context,workFlowProcessRest);
             workFlowProcessRest=workFlowProcessConverter.convert(workflowProcess,utils.obtainProjection());
             try {
                 String jbpmResponce=jbpmServer.startProcess(workFlowProcessRest);
-                WorkFlowProcessHistory workFlowProcessHistory=new WorkFlowProcessHistory();
-                workFlowProcessHistory.setWorkflowProcessEpeople(
-                   workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get()
-                );
-                WorkFlowAction.CREATE.perfomeAction(context,workFlowProcessHistory);
-                System.out.println("jbpmResponce:::"+jbpmResponce);
+                System.out.println("jbpmResponce"+jbpmResponce);
+                storeHistory(context,workflowProcess,WorkFlowAction.CREATE,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get());
+                WorkFlowAction workFlowAction= WorkFlowAction.FORWARD;
+                String forwardResponce=jbpmServer.forwardTask(workFlowProcessRest,workFlowAction);
+                System.out.println("forwardResponce"+forwardResponce);
+                storeHistory(context,workflowProcess,workFlowAction,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==1).findFirst().get());
+                context.commit();
             }catch (RuntimeException e){
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
@@ -124,15 +144,33 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         }
         return converter.toRest(workflowProcess, utils.obtainProjection());
     }
+    private WorkFlowProcessHistory storeHistory(Context context,WorkflowProcess workflowProcess,WorkFlowAction workFlowAction,WorkflowProcessEperson workflowProcessEperson) throws SQLException, AuthorizeException {
+        WorkFlowProcessHistory workFlowProcessHistory=new WorkFlowProcessHistory();
+        workFlowProcessHistory.setWorkflowProcessEpeople(workflowProcessEperson);
+        workFlowProcessHistory.setWorkflowProcess(workflowProcess);
+       return workFlowAction.perfomeAction(context,workFlowProcessHistory);
+    }
     private WorkflowProcess createworkflowProcessFromRestObject(Context context, WorkFlowProcessRest workFlowProcessRest) throws AuthorizeException {
         WorkflowProcess workflowProcess =null;
         try {
+
             workflowProcess=workFlowProcessConverter.convert(workFlowProcessRest,context);
             Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
             if(workflowProcessSenderDiaryOptional.isPresent()){
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
             workflowProcess = workflowProcessService.create(context,workflowProcess);
+            WorkflowProcess finalWorkflowProcess = workflowProcess;
+            workflowProcess.setWorkflowProcessReferenceDocs(workFlowProcessRest.getWorkflowProcessReferenceDocRests().stream().map(d -> {
+                try {
+                    WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, d);
+                    workflowProcessReferenceDoc.setWorkflowProcess(finalWorkflowProcess);
+                    return workflowProcessReferenceDoc;
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+            workflowProcessService.update(context,workflowProcess);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage(), e);

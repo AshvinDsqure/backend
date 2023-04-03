@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -45,8 +46,8 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
+        if(workflowProcess.getWorkflowProcessEpersonRests()!= null && workflowProcess.getWorkflowProcessEpersonRests().size() != 0) {
+            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
         }
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -60,9 +61,7 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
-        }
+        jbpmProcess.setUsers(new ArrayList<>());
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
@@ -74,9 +73,7 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
-        }
+        jbpmProcess.setUsers(new ArrayList<>());
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
@@ -88,9 +85,7 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
-        }
+        jbpmProcess.setUsers(new ArrayList<>());
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();

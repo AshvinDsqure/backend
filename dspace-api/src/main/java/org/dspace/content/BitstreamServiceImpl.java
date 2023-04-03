@@ -144,7 +144,12 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
         bundleService.addBitstream(context, bundle, b);
         return b;
     }
-
+    @Override
+    public Bitstream createWithoutBundle(Context context, InputStream is)
+            throws IOException, SQLException, AuthorizeException {
+        Bitstream b = create(context, is);
+        return b;
+    }
     @Override
     public Bitstream register(Context context, Bundle bundle, int assetstore, String bitstreamPath)
         throws IOException, SQLException, AuthorizeException {

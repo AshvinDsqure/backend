@@ -235,4 +235,6 @@ public interface BitstreamService extends DSpaceObjectService<Bitstream>, DSpace
      */
     @Nullable
     Long getLastModified(Bitstream bitstream) throws IOException;
+    public Bitstream createWithoutBundle(Context context, InputStream is)
+            throws IOException, SQLException, AuthorizeException;
 }

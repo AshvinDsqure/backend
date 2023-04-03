@@ -8,6 +8,9 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.dspace.app.rest.enums.WorkFlowUserType;
+import org.springframework.data.annotation.Transient;
 
 /**
  * The Item REST Resource
@@ -31,6 +34,10 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private WorkFlowProcessMasterValueRest departmentRest = null;
     @JsonProperty
     private WorkFlowProcessMasterValueRest officeRest = null;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest userType = null;
+    @Transient
+    private WorkFlowUserType workFlowUserType;
     @Override
     public String getCategory() {
         return CATEGORY;
@@ -79,5 +86,21 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     public void setOfficeRest(WorkFlowProcessMasterValueRest officeRest) {
         this.officeRest = officeRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getUserType() {
+        return userType;
+    }
+
+    public void setUserType(WorkFlowProcessMasterValueRest userType) {
+        this.userType = userType;
+    }
+
+    public WorkFlowUserType getWorkFlowUserType() {
+        return workFlowUserType;
+    }
+
+    public void setWorkFlowUserType(WorkFlowUserType workFlowUserType) {
+        this.workFlowUserType = workFlowUserType;
     }
 }
