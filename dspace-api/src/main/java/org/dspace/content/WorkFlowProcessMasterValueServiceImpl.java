@@ -91,8 +91,8 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
     }
 
     @Override
-    public List<WorkFlowProcessMasterValue> findByType(Context context,String type) throws SQLException {
-       return workFlowProcessMasterValueDAO.findByType(context,type);
+    public List<WorkFlowProcessMasterValue> findByType(Context context, String type, Integer offset, Integer limit) throws SQLException {
+       return workFlowProcessMasterValueDAO.findByType(context,type,limit,offset);
     }
 
     @Override
@@ -107,4 +107,9 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
     public WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException{
         return  workFlowProcessMasterValueDAO.findByName(context,name,workFlowProcessMaster);
     }
-}ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+
+    @Override
+    public int countfindByType(Context context, String type) throws SQLException {
+        return workFlowProcessMasterValueDAO.countfindByType(context,type);
+    }
+}
