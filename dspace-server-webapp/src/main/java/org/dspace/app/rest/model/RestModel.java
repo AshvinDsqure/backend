@@ -35,6 +35,7 @@ public interface RestModel extends Serializable {
     public static final String AUTHENTICATION = "authn";
     public static final String TOOLS = "tools";
     public static final String WORKFLOWPROCESS = "workflowprocesse";
+    public static final String WORKFLOWPROCESSREFERENCEDOC = "workflowprocessreferencedoc";
     public static final String DOCUMENTTYPE = "documenttype";
     public static final String WORKFLOWPROCESSDEFINITION = "workflowprocessdefinition";
 

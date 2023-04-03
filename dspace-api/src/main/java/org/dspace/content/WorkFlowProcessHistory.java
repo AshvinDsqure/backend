@@ -97,6 +97,7 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
         return workflowProcess;
     }
 
+
     public void setWorkflowProcess(WorkflowProcess workflowProcess) {
         this.workflowProcess = workflowProcess;
     }

@@ -71,6 +71,8 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
      return singleResult(context,criteriaQuery);
 
     }
+
+
     @Override
     public int countfindByType(Context context, String type) throws SQLException {
         try {
@@ -84,4 +86,5 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
             return 0;
         }
     }
+
 }

@@ -9,6 +9,7 @@ package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.dspace.content.WorkFlowProcessMasterValue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,12 +25,20 @@ import java.util.List;
 })
 public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocessreferencedoc";
-    public static final String PLURAL_NAME = "workflowprocessreferencedoc";
-    public static final String CATEGORY = RestAddressableModel.CORE;
+    public static final String PLURAL_NAME = "workflowprocessreferencedocs";
+    public static final String CATEGORY = RestAddressableModel.WORKFLOWPROCESSREFERENCEDOC;
     @JsonProperty
     private BitstreamRest bitstreamRest;
+    @JsonProperty
+    private String subject;
+    @JsonProperty
+    private String referenceNumber;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest workFlowProcessReferenceDocType;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest latterCategoryRest;
     @JsonFormat(pattern="dd/MM/yyyy")
-    private Date InitDate = new Date();
+    private Date initdate = new Date();
     @JsonProperty
     private WorkFlowProcessRest workFlowProcessRest;
 
@@ -39,7 +48,6 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     public String getCategory() {
         return CATEGORY;
     }
-
     @Override
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
@@ -54,18 +62,17 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
         this.bitstreamRest = bitstreamRest;
     }
 
-    public Date getInitDate() {
-        return InitDate;
+    public Date getInitdate() {
+        return initdate;
     }
 
-    public void setInitDate(Date initDate) {
-        InitDate = initDate;
+    public void setInitdate(Date initdate) {
+        this.initdate = initdate;
     }
 
     public WorkFlowProcessRest getWorkFlowProcessRest() {
         return workFlowProcessRest;
     }
-
     public void setWorkFlowProcessRest(WorkFlowProcessRest workFlowProcessRest) {
         this.workFlowProcessRest = workFlowProcessRest;
     }
@@ -76,5 +83,37 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
 
     public void setEntityType(String entityType) {
         this.entityType = entityType;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
+
+    public WorkFlowProcessMasterValueRest getLatterCategoryRest() {
+        return latterCategoryRest;
+    }
+
+    public void setLatterCategoryRest(WorkFlowProcessMasterValueRest latterCategoryRest) {
+        this.latterCategoryRest = latterCategoryRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getWorkFlowProcessReferenceDocType() {
+        return workFlowProcessReferenceDocType;
+    }
+
+    public void setWorkFlowProcessReferenceDocType(WorkFlowProcessMasterValueRest workFlowProcessReferenceDocType) {
+        this.workFlowProcessReferenceDocType = workFlowProcessReferenceDocType;
     }
 }

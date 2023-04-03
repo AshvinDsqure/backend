@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.converter;
@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -36,21 +37,27 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
     @Autowired
     ModelMapper modelMapper;
+
     @Override
     public WorkflowProcessEpersonRest convert(WorkflowProcessEperson obj, Projection projection) {
         WorkflowProcessEpersonRest workflowProcessDefinitionEpersonRest = super.convert(obj, projection);
-        if(obj.getePerson()!= null){
-            workflowProcessDefinitionEpersonRest.setePersonRest(ePersonConverter.convert(obj.getePerson(),projection));
+        if (obj.getePerson() != null) {
+            workflowProcessDefinitionEpersonRest.setePersonRest(ePersonConverter.convert(obj.getePerson(), projection));
         }
-        if(obj.getDepartment() != null){
-            workflowProcessDefinitionEpersonRest.setDepartmentRest(workFlowProcessMasterValueConverter.convert(obj.getDepartment(),projection));
+        if (obj.getDepartment() != null) {
+            workflowProcessDefinitionEpersonRest.setDepartmentRest(workFlowProcessMasterValueConverter.convert(obj.getDepartment(), projection));
         }
-        if(obj.getOffice() != null){
-            workflowProcessDefinitionEpersonRest.setOfficeRest(workFlowProcessMasterValueConverter.convert(obj.getOffice(),projection));
+        if (obj.getOffice() != null) {
+            workflowProcessDefinitionEpersonRest.setOfficeRest(workFlowProcessMasterValueConverter.convert(obj.getOffice(), projection));
         }
+        if (obj.getUsertype() != null) {
+            workflowProcessDefinitionEpersonRest.setUserType(workFlowProcessMasterValueConverter.convert(obj.getUsertype(), projection));
+        }
+        System.out.println("obj.getIndex()::" + obj.getIndex());
         workflowProcessDefinitionEpersonRest.setIndex(obj.getIndex());
         return workflowProcessDefinitionEpersonRest;
     }
+
     @Override
     protected WorkflowProcessEpersonRest newInstance() {
         return new WorkflowProcessEpersonRest();
@@ -60,14 +67,18 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
     public Class<WorkflowProcessEperson> getModelClass() {
         return WorkflowProcessEperson.class;
     }
+
     public WorkflowProcessEperson convert(Context context, WorkflowProcessEpersonRest rest) throws SQLException {
-        WorkflowProcessEperson workflowProcessEperson=modelMapper.map(rest,WorkflowProcessEperson.class) ;
+        WorkflowProcessEperson workflowProcessEperson = modelMapper.map(rest, WorkflowProcessEperson.class);
         workflowProcessEperson.setePerson(ePersonService.find(context, UUID.fromString(rest.getePersonRest().getUuid())));
-        if(rest.getDepartmentRest() != null)
-        workflowProcessEperson.setDepartment(workFlowProcessMasterValueConverter.convert(context,rest.getDepartmentRest()));
-        if(rest.getOfficeRest() != null)
-        workflowProcessEperson.setOffice(workFlowProcessMasterValueConverter.convert(context,rest.getOfficeRest()));
-        return  workflowProcessEperson;
+        if (rest.getDepartmentRest() != null)
+            workflowProcessEperson.setDepartment(workFlowProcessMasterValueConverter.convert(context, rest.getDepartmentRest()));
+        if (rest.getOfficeRest() != null)
+            workflowProcessEperson.setOffice(workFlowProcessMasterValueConverter.convert(context, rest.getOfficeRest()));
+        if (rest.getUserType() != null) {
+            workflowProcessEperson.setUsertype(workFlowProcessMasterValueConverter.convert(context, rest.getUserType()));
+        }
+        return workflowProcessEperson;
     }
 
 }

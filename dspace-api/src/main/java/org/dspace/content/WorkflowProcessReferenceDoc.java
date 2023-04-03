@@ -39,6 +39,10 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
 
     @Column(name = "workflowreference_id", insertable = false, updatable = false)
     private Integer legacyId;
+    @Column(name = "subject")
+    private String subject;
+    @Column(name = "referencenumber")
+    private String referenceNumber;
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "bitstream")
     private Bitstream bitstream;
@@ -48,7 +52,12 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "documenttype")
     private WorkFlowProcessMasterValue workFlowProcessReferenceDocType;
-
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lattercategory")
+    private WorkFlowProcessMasterValue latterCategory;
+    @Column(name = "initdate", columnDefinition = "timestamp with time zone")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date initdate = new Date();
 
     @Override
     public int getType() {
@@ -91,5 +100,37 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
 
     public void setWorkflowProcess(WorkflowProcess workflowProcess) {
         this.workflowProcess = workflowProcess;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getReferenceNumber() {
+        return referenceNumber;
+    }
+
+    public void setReferenceNumber(String referenceNumber) {
+        this.referenceNumber = referenceNumber;
+    }
+
+    public WorkFlowProcessMasterValue getLatterCategory() {
+        return latterCategory;
+    }
+
+    public void setLatterCategory(WorkFlowProcessMasterValue latterCategory) {
+        this.latterCategory = latterCategory;
+    }
+
+    public Date getInitdate() {
+        return initdate;
+    }
+
+    public void setInitdate(Date initdate) {
+        this.initdate = initdate;
     }
 }

@@ -22,7 +22,7 @@ public class JBPMProcess implements Serializable {
     private String queueid;
     private String initiator;
     private List<String> users;
-    private List<String> new_users;
+
     private String dispatch;
     private Integer jbpmprocid;
     private Integer jbpmtaskid;
@@ -74,13 +74,6 @@ public class JBPMProcess implements Serializable {
         this.dispatch = dispatch;
     }
 
-    public List<String> getNew_users() {
-        return new_users;
-    }
-
-    public void setNew_users(List<String> new_users) {
-        this.new_users = new_users;
-    }
 
     public Integer getJbpmprocid() {
         return jbpmprocid;

@@ -8,6 +8,7 @@
 package org.dspace.app.rest.converter;
 
 import com.google.gson.Gson;
+import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.model.EPersonRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.model.WorkFlowProcessRest;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -87,7 +89,8 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
             workFlowProcessRest.setPriority(obj.getPriority().getPriorityName());
         }
         if (obj.getDispatchmode() != null)
-           workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
+            workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
+
 
         return workFlowProcessRest;
     }
@@ -99,28 +102,27 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
         workflowProcess.setItem(itemConverter.convert(context, obj.getItemRest()));
-        workflowProcess.setWorkflowProcessReferenceDocs(obj.getWorkflowProcessReferenceDocRests().stream().map(d -> {
+        /*workflowProcess.setWorkflowProcessReferenceDocs(obj.getWorkflowProcessReferenceDocRests().stream().map(d -> {
             try {
-                WorkflowProcessReferenceDoc workflowProcessReferenceDoc=workflowProcessReferenceDocConverter.convert(context, d);
+                WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, d);
                 workflowProcessReferenceDoc.setWorkflowProcess(workflowProcess);
                 return workflowProcessReferenceDoc;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }).collect(Collectors.toList()));
+        }).collect(Collectors.toList()))*/
         workflowProcess.setSubject(obj.getSubject());
         // set submitor...
-        if(context.getCurrentUser() != null){
-            WorkflowProcessEpersonRest workflowProcessEpersonSubmitor=new WorkflowProcessEpersonRest();
-            EPersonRest ePersonRest=new EPersonRest();
-            ePersonRest.setUuid(context.getCurrentUser().getID().toString());
-            workflowProcessEpersonSubmitor.setIndex(0);
-            workflowProcessEpersonSubmitor.setePersonRest(ePersonRest);
-            obj.getWorkflowProcessEpersonRests().add(workflowProcessEpersonSubmitor);
-        }
+        AtomicInteger index = new AtomicInteger(0);
         workflowProcess.setWorkflowProcessEpeople(obj.getWorkflowProcessEpersonRests().stream().map(we -> {
             try {
-                WorkflowProcessEperson workflowProcessEperson=workFlowProcessEpersonConverter.convert(context, we);
+                if (we.getUserType() == null) {
+                    we.setIndex(index.incrementAndGet());
+                    System.out.println("Index in Type"+we.getIndex());
+                }else{
+                    System.out.println("default index"+we.getIndex());
+                }
+                WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, we);
                 workflowProcessEperson.setWorkflowProcess(workflowProcess);
                 return workflowProcessEperson;
             } catch (SQLException e) {
