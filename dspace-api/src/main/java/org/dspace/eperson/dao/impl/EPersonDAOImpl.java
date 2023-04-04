@@ -52,6 +52,15 @@ public class EPersonDAOImpl extends AbstractHibernateDSODAO<EPerson> implements 
         criteriaQuery.where(criteriaBuilder.equal(ePersonRoot.get(EPerson_.email), email.toLowerCase()));
         return uniqueResult(context, criteriaQuery, true, EPerson.class);
     }
+    @Override
+    public EPerson wildcardSearchByEmail(Context context, String email) throws SQLException {
+        CriteriaBuilder criteriaBuilder = getCriteriaBuilder(context);
+        CriteriaQuery criteriaQuery = getCriteriaQuery(criteriaBuilder, EPerson.class);
+        Root<EPerson> ePersonRoot = criteriaQuery.from(EPerson.class);
+        criteriaQuery.select(ePersonRoot);
+        criteriaQuery.where(criteriaBuilder.like(ePersonRoot.get(EPerson_.email), email.toLowerCase()+"%"));
+        return uniqueResult(context, criteriaQuery, true, EPerson.class);
+    }
 
 
     @Override
