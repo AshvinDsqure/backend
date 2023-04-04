@@ -45,12 +45,16 @@ public class CountryDTO {
     public void setCountryDTO(List<CountryDTO> CountryDTO) {
         this.CountryDTO = CountryDTO;
     }
+
+    public CountryDTO() {
+        super();
+    }
     public CountryDTO(int views, int downloads, int searches) {
         this.views = views;
         this.downloads = downloads;
         this.searches = searches;
     }
-    
+
 
     public int getViews() {
         return views;
@@ -85,7 +89,7 @@ public class CountryDTO {
     }
 
     public Map<String, String> getContent() {
-        content.put("content", "<strong class=\"country_name\">"+this.city+"</strong><br /><span class=\"support3lbl\">Views: "+this.views+"</span></br> <span class=\"support3lbl\">Downloads: "+this.downloads+"</span> </br><span class=\"support3lbl\"> Searches: "+this.searches+" </span>");            
+        content.put("content", "<strong class=\"country_name\">"+this.city+"</strong><br /><span class=\"support3lbl\">Views: "+this.views+"</span></br> <span class=\"support3lbl\">Downloads: "+this.downloads+"</span> </br><span class=\"support3lbl\"> Searches: "+this.searches+" </span>");
         return content;
     }
 
@@ -93,7 +97,7 @@ public class CountryDTO {
         this.content = content;
     }
 
-    
+
 
     public int getValue() {
         this.value=this.views +this.downloads +this.searches;
@@ -119,8 +123,8 @@ public class CountryDTO {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
-    
-    
-    
+
+
+
 
 }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,7 +86,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -95,7 +96,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String highChartmapDTO(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+								  HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::highChartmapDTO() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -137,7 +138,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -147,7 +148,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getTrendingCommunitie(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+										HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getTrendingCommunitie() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -194,7 +195,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -204,7 +205,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getTrandingType(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+								  HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getTrandingType() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -260,7 +261,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -270,7 +271,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getTrandingSearch(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+									HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getTrandingSearch() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -312,7 +313,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -322,7 +323,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getTrendingSearchByDate(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+										  HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getTrandingSearch() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -360,7 +361,7 @@ public class TrendingMetricsController implements InitializingBean {
 					SimpleDateFormat DateFor = new SimpleDateFormat("MMM dd yyyy");
 					String stringDate = DateFor.format((Date) iteamViewobjects[0]);
 					int count = ((BigInteger) iteamViewobjects[1]).intValue();
-					itemBardatasetView.getSeries().add(new Series(stringDate, count));					
+					itemBardatasetView.getSeries().add(new Series(stringDate, count));
 					itemBarchartviewDTO.setCount(itemBarchartviewDTO.getCount() + count);
 				}
 				itemBarchartviewDTO.getDatasets().add(itemBardatasetView);
@@ -377,7 +378,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -387,7 +388,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getTrendingTypeByDate(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+										HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getTrendingTypeByDate() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -440,7 +441,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -450,7 +451,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getcountry(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+							 HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getcountry() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -586,7 +587,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -596,7 +597,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getTrendingCommunitieByDate(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+											  HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getTrendingCommunitieByDate() method...");
 		ItemBarchartDTO itemBarchartviewDTO = new ItemBarchartDTO();
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -652,7 +653,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -662,7 +663,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getDocumentAllType(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+									 HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getDocumentAllType() method...");
 
 		List<DocType> docTypes = new ArrayList<>();
@@ -679,7 +680,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -689,9 +690,8 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getcountryBySearch(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+									 HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getcountryBySearch() method...");
-		Map<String, CountryDTO> countryDTOmap = new LinkedHashMap<>();
 		int dateType = Integer.valueOf(params.get("dateType"));
 		log.info("dateType in request is:", dateType);
 		DateEnum dateMonthYear = DateEnum.getDeploymentClass(dateType);
@@ -718,50 +718,85 @@ public class TrendingMetricsController implements InitializingBean {
 			String searchvalue = Strings.EMPTY;
 			if (StringUtils.isNotBlank(id)) {
 				if (!id.equals("ALL")) {
-					searchvalue = "and title ='" + id + "'";
+					searchvalue = (new StringBuilder()).append("and title ='").append(id).append("'").toString();
 				}
 			}
-			String quary = Strings.EMPTY;
-			if (typeWise.equals("citywise")) {
-				quary = "select  ge.city,"
-						+ "SUM(CASE WHEN  action =5 and dspaceobjecttype=8  THEN 1 ELSE 0 END)  searchcount"
-						+ " from event e left JOIN geolocationevent ge"
-						+ " ON e.geolocationeventid = ge.uuid where ge.country='" + countryName
-						+ "' and ge.city is not null " + dateMonthYear.getqueryString() + " " + searchvalue
-						+ " GROUP by ge.city  order by searchcount desc";
-			} else if (typeWise.equals("countrywise")) {
-				quary = "select  ge.country,"
-						+ "SUM(CASE WHEN  action =5 and dspaceobjecttype=8  THEN 1 ELSE 0 END)  searchcount"
-						+ " from event e left JOIN geolocationevent ge"
-						+ " ON e.geolocationeventid = ge.uuid where ge.country is not null "
-						+ dateMonthYear.getqueryString() + " " + searchvalue
-						+ " GROUP by ge.country  order by searchcount desc";
+			List countrylist = eventTrackService.getcountryBySearch(context,
+					(new StringBuilder()).append(dateMonthYear.getqueryString()).append(" ").append(searchvalue).toString(), "");
+			Map countryDTOmap = new LinkedHashMap();
+			for (Iterator iterator = countrylist.iterator(); iterator.hasNext();) {
+				Object iteamViewobjects[] = (Object[]) iterator.next();
+				String county = iteamViewobjects[0].toString();
+				int count = ((BigInteger) iteamViewobjects[1]).intValue();
+				CountryDTO countryDTOobj = new CountryDTO(0, 0, 0);
+				if (countryDTOmap.containsKey(county)) {
+					((CountryDTO) countryDTOmap.get(county)).setViews(count);
+				} else {
+					countryDTOobj.setViews(count);
+					countryDTOobj.setCity(county);
+					List citylist = eventTrackService.getcitycountryBySearch(context,
+							(new StringBuilder()).append(dateMonthYear.getqueryString()).append(" ").append(searchvalue).toString(),
+							county, "");
+					Map cityDTOmap = new LinkedHashMap();
+					for (Iterator iterator3 = citylist.iterator(); iterator3.hasNext();) {
+						Object iteamViewobjects1[] = (Object[]) iterator3.next();
+						int count1 = ((BigInteger) iteamViewobjects1[1]).intValue();
+						String city = iteamViewobjects1[0].toString();
+						CountryDTO cityDTOobj = new CountryDTO(0, 0, 0);
+						if (cityDTOmap.containsKey(city)) {
+							((CountryDTO) cityDTOmap.get(city)).setViews(count1);
+						} else {
+							cityDTOobj.setViews(count1);
+							cityDTOobj.setCity(city);
+							//System.out.println(
+							//	(new StringBuilder()).append("AnalyticsController.java -- citylist size-  ")
+							//		.append(city).append(" ").append(count1).toString());
+							cityDTOmap.put(city, cityDTOobj);
+						}
+					}
+
+					countryDTOobj.setCityDTOmap(cityDTOmap);
+					countryDTOmap.put(county, countryDTOobj);
+				}
 			}
 
-			List<Object[]> countrylist = eventTrackService.ViewCountReport(context, quary);
-
-			for (Object[] iteamViewobjects : countrylist) {
-				String county = iteamViewobjects[0].toString();
-				int searchcount = ((BigInteger) iteamViewobjects[1]).intValue();
-				CountryDTO countryDTOobj = new CountryDTO(0, 0, 0);
-				countryDTOobj.setSearches(searchcount);
-				countryDTOobj.setCity(county);
-				if (searchcount != 0)
-					countryDTOmap.put(county, countryDTOobj);
+			Map ChartmapparentObjeobject = new LinkedHashMap();
+			java.util.Map.Entry entry;
+			Map ChartmapchildObjeobject;
+			for (Iterator iterator1 = countryDTOmap.entrySet().iterator(); iterator1.hasNext(); ChartmapparentObjeobject
+					.put(entry.getKey(), ChartmapchildObjeobject)) {
+				entry = (java.util.Map.Entry) iterator1.next();
+				ChartmapchildObjeobject = new LinkedHashMap();
+				ChartmapchildObjeobject.put("value", Integer.valueOf(((CountryDTO) entry.getValue()).getValue()));
+				ChartmapchildObjeobject.put("view", Integer.valueOf(((CountryDTO) entry.getValue()).getViews()));
+				ChartmapchildObjeobject.put("country", ((CountryDTO) entry.getValue()).getCity());
+				Map citiesDTOmap1 = ((CountryDTO) entry.getValue()).getCityDTOmap();
+				//System.out.println((new StringBuilder()).append("AnalyticsController.java -- citiesDTOmap1 size-  ")
+				//	.append(citiesDTOmap1.size()).toString());
+				java.util.Map.Entry entry1;
+				Map ChartmapchildObjeobject1;
+				for (Iterator iterator2 = citiesDTOmap1.entrySet().iterator(); iterator2
+						.hasNext(); ChartmapchildObjeobject.put(entry1.getKey(), ChartmapchildObjeobject1)) {
+					entry1 = (java.util.Map.Entry) iterator2.next();
+					ChartmapchildObjeobject1 = new LinkedHashMap();
+					ChartmapchildObjeobject1.put("value", Integer.valueOf(((CountryDTO) entry1.getValue()).getValue()));
+					ChartmapchildObjeobject1.put("view", Integer.valueOf(((CountryDTO) entry1.getValue()).getViews()));
+					ChartmapchildObjeobject1.put("city", ((CountryDTO) entry1.getValue()).getCity());
+				}
 			}
 			context.complete();
-
+			return gson.toJson(ChartmapparentObjeobject);
 		} catch (SQLException sqlExc) {
 			log.error("SQLException occured :", sqlExc);
 		} catch (Exception ex) {
 			log.error("Exception occured :", ex);
 		}
 		log.info("Exiting from TrendingMetricsController::getcountryBySearch() method...");
-		return gson.toJson(countryDTOmap);
+		return null;
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -771,7 +806,7 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getItemByType(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+								HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getItemByTpe() method...");
 
 		int dateType = Integer.valueOf(params.get("dateType"));
@@ -833,7 +868,7 @@ public class TrendingMetricsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -843,18 +878,13 @@ public class TrendingMetricsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getcountryBycommunity(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+										HttpServletRequest request) {
 		log.info("Inside TrendingMetricsController::getcountryBycommunity() method...");
-		Map<String, CountryDTO> countryDTOmap = new LinkedHashMap<>();
 		int dateType = Integer.valueOf(params.get("dateType"));
 		log.info("dateType in request is:", dateType);
 		DateEnum dateMonthYear = DateEnum.getDeploymentClass(dateType);
 		String id = params.get("id");
 		log.info("id in request is:", id);
-		String typeWise = params.get("typeWise");
-		log.info("typeWise in request is:", typeWise);
-		String countryName = params.get("countryName");
-		log.info("countryName in request is:", countryName);
 
 		if (params.get("collectionId") != null) {
 			dateMonthYear.setCollectionList(params.get("collectionId"));
@@ -869,49 +899,85 @@ public class TrendingMetricsController implements InitializingBean {
 			} else {
 				log.info("loggedin user:", user);
 			}
-			String searchvalue = Strings.EMPTY;
+
+			String query = Strings.EMPTY;
 			if (id != null && !id.equals("ALL")) {
-				searchvalue = " and e.dspaceobjectid ='" + id + "'";
+				query = (new StringBuilder()).append(" and e.dspaceobjectid ='").append(id).append("'").toString();
 			}
-			String quary = Strings.EMPTY;
-			if (typeWise.equals("citywise")) {
-				quary = "select  ge.city,"
-						+ "SUM(CASE WHEN  action =4 and dspaceobjecttype=4  THEN 1 ELSE 0 END)  searchcount"
-						+ " from event e left JOIN geolocationevent ge"
-						+ " ON e.geolocationeventid = ge.uuid where ge.country='" + countryName
-						+ "' and ge.city is not null " + dateMonthYear.getqueryString() + " " + searchvalue
-						+ " GROUP by ge.city  order by searchcount desc";
-			} else if (typeWise.equals("countrywise")) {
-
-				quary = "select  ge.country,"
-						+ "SUM(CASE WHEN  action =4 and dspaceobjecttype=4  THEN 1 ELSE 0 END)  searchcount"
-						+ " from event e left JOIN geolocationevent ge"
-						+ " ON e.geolocationeventid = ge.uuid where ge.country is not null "
-						+ dateMonthYear.getqueryString() + " " + searchvalue
-						+ " GROUP by ge.country  order by searchcount desc";
-			}
-			log.info("query is ::" + quary.toString());
-			// System.out.println("AnalyticsController.java -- getcountryBySearch
-			// "+d.getqueryString() + " " + searchvalue);
-			List<Object[]> countrylist = eventTrackService.ViewCountReport(context, quary);
-
-			for (Object[] iteamViewobjects : countrylist) {
+			List countrylist = eventTrackService.getcountryBycommunity(context, (new StringBuilder()).append(dateMonthYear.getqueryString()).append(" ").append(query).toString(), "");
+			Map countryDTOmap = new LinkedHashMap();
+			for(Iterator iterator = countrylist.iterator(); iterator.hasNext();)
+			{
+				Object iteamViewobjects[] = (Object[])iterator.next();
 				String county = iteamViewobjects[0].toString();
-				int searchcount = ((BigInteger) iteamViewobjects[1]).intValue();
+				int count = ((BigInteger)iteamViewobjects[1]).intValue();
 				CountryDTO countryDTOobj = new CountryDTO(0, 0, 0);
-				countryDTOobj.setSearches(searchcount);
-				countryDTOobj.setCity(county);
-				if (searchcount != 0)
+				if(countryDTOmap.containsKey(county))
+				{
+					((CountryDTO)countryDTOmap.get(county)).setViews(count);
+				} else
+				{
+					countryDTOobj.setViews(count);
+					countryDTOobj.setCity(county);
+					List citylist = eventTrackService.getcitycountryBycommunity(context, (new StringBuilder()).append(dateMonthYear.getqueryString()).append(" ").append(query).toString(), county, "");
+					Map cityDTOmap = new LinkedHashMap();
+					for(Iterator iterator3 = citylist.iterator(); iterator3.hasNext();)
+					{
+						Object iteamViewobjects1[] = (Object[])iterator3.next();
+						int count1 = ((BigInteger)iteamViewobjects1[1]).intValue();
+						String city = iteamViewobjects1[0].toString();
+						CountryDTO cityDTOobj = new CountryDTO(0, 0, 0);
+						if(cityDTOmap.containsKey(city))
+						{
+							((CountryDTO)cityDTOmap.get(city)).setViews(count1);
+						} else
+						{
+							cityDTOobj.setViews(count1);
+							cityDTOobj.setCity(city);
+							// log.info((new StringBuilder()).append("AnalyticsController.java -- citylist size-  ").append(city).append(" ").append(count1).toString());
+							cityDTOmap.put(city, cityDTOobj);
+						}
+					}
+
+					countryDTOobj.setCityDTOmap(cityDTOmap);
 					countryDTOmap.put(county, countryDTOobj);
+				}
 			}
+
+			Map ChartmapparentObjeobject = new LinkedHashMap();
+			java.util.Map.Entry entry;
+			Map ChartmapchildObjeobject;
+			for(Iterator iterator1 = countryDTOmap.entrySet().iterator(); iterator1.hasNext(); ChartmapparentObjeobject.put(entry.getKey(), ChartmapchildObjeobject))
+			{
+				entry = (java.util.Map.Entry)iterator1.next();
+				ChartmapchildObjeobject = new LinkedHashMap();
+				ChartmapchildObjeobject.put("value", Integer.valueOf(((CountryDTO)entry.getValue()).getValue()));
+				ChartmapchildObjeobject.put("view", Integer.valueOf(((CountryDTO)entry.getValue()).getViews()));
+				ChartmapchildObjeobject.put("country", ((CountryDTO)entry.getValue()).getCity());
+				Map citiesDTOmap1 = ((CountryDTO)entry.getValue()).getCityDTOmap();
+				//System.out.println((new StringBuilder()).append("AnalyticsController.java -- citiesDTOmap1 size-  ").append(citiesDTOmap1.size()).toString());
+				java.util.Map.Entry entry1;
+				Map ChartmapchildObjeobject1;
+				for(Iterator iterator2 = citiesDTOmap1.entrySet().iterator(); iterator2.hasNext(); ChartmapchildObjeobject.put(entry1.getKey(), ChartmapchildObjeobject1))
+				{
+					entry1 = (java.util.Map.Entry)iterator2.next();
+					ChartmapchildObjeobject1 = new LinkedHashMap();
+					ChartmapchildObjeobject1.put("value", Integer.valueOf(((CountryDTO)entry1.getValue()).getValue()));
+					ChartmapchildObjeobject1.put("view", Integer.valueOf(((CountryDTO)entry1.getValue()).getViews()));
+					ChartmapchildObjeobject1.put("city", ((CountryDTO)entry1.getValue()).getCity());
+				}
+
+			}
+
 			context.complete();
+			return gson.toJson(ChartmapparentObjeobject);
 		} catch (SQLException sqlExc) {
 			log.error("SQLException occured :", sqlExc);
 		} catch (Exception ex) {
 			log.error("Exception occured :", ex);
 		}
 		log.info("Exiting from TrendingMetricsController::getcountryBycommunity() method...");
-		return gson.toJson(countryDTOmap);
+		return null;
 	}
 
 }

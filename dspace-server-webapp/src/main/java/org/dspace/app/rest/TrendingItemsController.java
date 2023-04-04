@@ -82,7 +82,7 @@ public class TrendingItemsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -92,7 +92,7 @@ public class TrendingItemsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getItemBarChart(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+								  HttpServletRequest request) {
 		log.info("Inside TrendingItemsController::getItemBarChart() method...");
 
 		BarChartDTO itemBarChart = new BarChartDTO();
@@ -167,7 +167,7 @@ public class TrendingItemsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -177,7 +177,7 @@ public class TrendingItemsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String getItemLineChart(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+								   HttpServletRequest request) {
 		log.info("Inside TrendingItemsController::getItemLineChart() method...");
 		int dateType = Integer.parseInt(params.get("dateType"));
 		DateEnum dateOrMonthOrYear = DateEnum.getDeploymentClass(dateType);
@@ -231,7 +231,7 @@ public class TrendingItemsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -241,7 +241,7 @@ public class TrendingItemsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String itemCart(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) {
+						   HttpServletRequest request) {
 		log.info("Inside TrendingItemsController::itemCart() method...");
 		List<ItemCartDetailsDTO> itemCartList = new ArrayList<ItemCartDetailsDTO>();
 
@@ -287,7 +287,7 @@ public class TrendingItemsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param params
 	 * @param response
 	 * @param request
@@ -299,7 +299,7 @@ public class TrendingItemsController implements InitializingBean {
 	@Produces({ "application/json" })
 	@Consumes({ "application/json" })
 	public String renderitemCartChart(@RequestParam Map<String, String> params, HttpServletResponse response,
-			HttpServletRequest request) throws SQLException, AuthorizeException {
+									  HttpServletRequest request) throws SQLException, AuthorizeException {
 		log.info("Inside TrendingItemsController::renderitemCartChart() method...");
 
 		ItemCartDTO itemCartDTO = new ItemCartDTO();
@@ -312,10 +312,10 @@ public class TrendingItemsController implements InitializingBean {
 			} else {
 				log.info("loggedin user:", user);
 			}
-
-			int dateType = Integer.valueOf(params.get("dateType"));
+			int dateType = Integer.parseInt(params.get("dateType"));
+			//int dateType = Integer.valueOf(params.get("dateType"));
 			log.info("dateType in request is:", dateType);
-			DateEnum dateMonthYear = DateEnum.getDeploymentClass(dateType);			
+			DateEnum dateMonthYear = DateEnum.getDeploymentClass(dateType);
 			String uid = params.get("id");
 			log.info("uid in request is :", uid);
 			UUID dspaceItemID = UUID.fromString(uid.toString());
@@ -377,7 +377,7 @@ public class TrendingItemsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param request
 	 * @param item
 	 * @param context
@@ -387,7 +387,7 @@ public class TrendingItemsController implements InitializingBean {
 	 * @throws Exception
 	 */
 	public ItemCartDTO getItemcartDTO(HttpServletRequest request, Item item, Context context, DateEnum alltime,
-			DateEnum d) throws Exception {
+									  DateEnum d) throws Exception {
 		ItemCartDTO ItemCartDTOobj = new ItemCartDTO();
 		int daysinterval = alltime.getId();
 		alltime.setId(3);
@@ -416,7 +416,7 @@ public class TrendingItemsController implements InitializingBean {
 	}
 
 	/***
-	 * 
+	 *
 	 * @param request
 	 * @param item
 	 * @param context
