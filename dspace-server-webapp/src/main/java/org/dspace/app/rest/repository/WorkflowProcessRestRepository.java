@@ -117,7 +117,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
-            if(workFlowProcessRest.getIsDraft()){
+            if(workFlowProcessRest.getDraft()){
                 workFlowProcessRest.getWorkflowProcessEpersonRests().clear();
                 //clear user if workflowis Draft
             }
@@ -173,7 +173,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
             Optional<WorkFlowProcessMasterValue> workflowstatusopOptionalWorkFlowProcessMasterValue=null;
-            if(workFlowProcessRest.getIsDraft()){
+            System.out.println("workFlowProcessRest.getDraft()::"+workFlowProcessRest.getDraft());
+            if(workFlowProcessRest.getDraft()){
                 workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.INPROGRESS.getUserTypeFromMasterValue(context);
             }else{
                 workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.SUSPEND.getUserTypeFromMasterValue(context);
