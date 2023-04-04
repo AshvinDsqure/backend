@@ -22,8 +22,8 @@ import java.util.Optional;
 
 public enum WorkFlowType {
     MASTER("Workflow Type"),
-    INPROGRESS("Inward"),
-    SUSPEND("Outward");
+    INWARD("Inward"),
+    OUTWARED("Outward");
     private String type;
     private WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
     private WorkFlowProcessMasterService workFlowProcessMasterService;
