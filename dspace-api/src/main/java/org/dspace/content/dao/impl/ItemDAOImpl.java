@@ -506,8 +506,6 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
 
     @Override
     public List<Item> searchItemByTitle(Context context, MetadataField metadataField, String title) throws Exception {
-
-
         Query query = createQuery(context, "SELECT item FROM Item as item join item.metadata  metadatavalue  WHERE item.inArchive=:in_archive  AND  metadatavalue.metadataField = :metadataField AND lower(STR(metadatavalue.value)) like :title");
         query.setParameter("in_archive", true);
         query.setParameter("title", "%"+title.toLowerCase()+"%");

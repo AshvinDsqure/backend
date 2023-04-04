@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.converter;
 
+import com.google.gson.Gson;
 import org.dspace.app.rest.model.WorkFlowProcessDefinitionRest;
 import org.dspace.app.rest.model.WorkflowItemRest;
 import org.dspace.app.rest.model.WorkflowProcessSenderDiaryRest;
@@ -60,15 +61,15 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
     }
     public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiaryRest rest) {
         WorkflowProcessSenderDiary workflowProcessSenderDiary=new WorkflowProcessSenderDiary();
-        rest.setCity(workflowProcessSenderDiary.getCity());
-        rest.setCountry(workflowProcessSenderDiary.getCountry());
-        rest.setOrganization(workflowProcessSenderDiary.getOrganization());
-        rest.setLegacyId(workflowProcessSenderDiary.getLegacyId());
-        rest.setName(workflowProcessSenderDiary.getName());
-        rest.setDesignation(workflowProcessSenderDiary.getDesignation());
-        rest.setContactNumber(workflowProcessSenderDiary.getContactNumber());
-        rest.setEmail(workflowProcessSenderDiary.getEmail());
-        rest.setAddress(workflowProcessSenderDiary.getAddress());
+        workflowProcessSenderDiary.setCity(rest.getCity());
+        workflowProcessSenderDiary.setCountry(rest.getCountry());
+        workflowProcessSenderDiary.setOrganization(rest.getOrganization());
+        workflowProcessSenderDiary.setLegacyId(rest.getLegacyId());
+        workflowProcessSenderDiary.setSendername(rest.getSendername());
+        workflowProcessSenderDiary.setDesignation(rest.getDesignation());
+        workflowProcessSenderDiary.setContactNumber(rest.getContactNumber());
+        workflowProcessSenderDiary.setEmail(rest.getEmail());
+        workflowProcessSenderDiary.setAddress(rest.getAddress());
         return workflowProcessSenderDiary;
     }
 

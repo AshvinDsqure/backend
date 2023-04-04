@@ -53,28 +53,13 @@ public class WorkflowProcessSenderDiaryDAOImpl extends AbstractHibernateDSODAO<W
     @Override
     public WorkflowProcessSenderDiary findByEmailID(Context context, String search) throws SQLException {
         try {
-            StringBuilder queryBuilder = new StringBuilder("SELECT s from  WorkflowProcessSenderDiary as s where city like :name");
-
-          /*  Map<String, String> map = new HashMap<>();
-            map.put("city","ss");
-            map.put("contactNumber","ashivn@122");
-            int i = 0;
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                if (i == 0) {
-                    queryBuilder.append(entry.getKey() + " LIKE :" + '%' + entry.getValue() + '%'+ " " );
-                } else {
-                    queryBuilder.append(" And " + entry.getKey() + " LIKE :" + '%' + entry.getValue() + '%' + " ");
-                }
-            }*/
-
-
+            StringBuilder queryBuilder = new StringBuilder("SELECT s from  WorkflowProcessSenderDiary as s where email =:name");
             Query query = createQuery(context, queryBuilder.toString());
-            query.setParameter("name",'%'+search+'%');
-            return (WorkflowProcessSenderDiary) query.getResultList();
+            query.setParameter("name",search);
+            return (WorkflowProcessSenderDiary) query.getSingleResult();
         } catch (Exception e) {
             System.out.println("in error " + e.getMessage());
             return null;
         }
     }
-
 }
