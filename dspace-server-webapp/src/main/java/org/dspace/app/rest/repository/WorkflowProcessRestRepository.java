@@ -7,48 +7,31 @@
  */
 package org.dspace.app.rest.repository;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.converter.MetadataConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessConverter;
 import org.dspace.app.rest.enums.WorkFlowAction;
-import org.dspace.app.rest.exception.DSpaceBadRequestException;
-import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
-import org.dspace.app.rest.model.BundleRest;
-import org.dspace.app.rest.model.EPersonRest;
-import org.dspace.app.rest.model.ItemRest;
+import org.dspace.app.rest.jbpm.models.JBPMResponse;
+import org.dspace.app.rest.jbpm.models.Message;
 import org.dspace.app.rest.model.WorkFlowProcessRest;
-import org.dspace.app.rest.model.patch.Patch;
-import org.dspace.app.rest.repository.handler.service.UriListHandlerService;
-import org.dspace.app.util.AuthorizeUtil;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.Collection;
 import org.dspace.content.*;
 import org.dspace.content.service.*;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
-import org.dspace.eperson.RegistrationData;
-import org.dspace.util.UUIDUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 /**
  * This is the repository responsible to manage Item Rest object
@@ -84,8 +67,13 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     @Override
     public Page<WorkFlowProcessRest> findAll(Context context, Pageable pageable) {
         try {
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findAll(context,pageable.getPageSize(),Math.toIntExact(pageable.getOffset()));
-            return converter.toRestPage(workflowProcesses, pageable, 0, utils.obtainProjection());
+            String uuid=context.getCurrentUser().getID().toString();
+            String jbpmResponce=jbpmServer.gettasklist(uuid);
+            JBPMResponse jbpmResponse=new JBPMResponse();
+            jbpmResponse=modelMapper.map(jbpmResponce,JBPMResponse.class);
+            List<String> ides=jbpmResponse.getMessage().stream().map(Message->Message.getQueueid()).collect(Collectors.toList());
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkFlowProcessIds(context,ides,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            return converter.toRestPage(workflowProcesses, pageable, jbpmResponse.getCount(), utils.obtainProjection());
         }catch (Exception e){
             throw  new RuntimeException(e.getMessage(),e);
         }

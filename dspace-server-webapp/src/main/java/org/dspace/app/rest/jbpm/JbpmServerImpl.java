@@ -9,6 +9,7 @@ package org.dspace.app.rest.jbpm;
 
 import com.google.gson.Gson;
 import org.dspace.app.rest.enums.WorkFlowAction;
+import org.dspace.app.rest.jbpm.models.JBPMResponse;
 import org.dspace.app.rest.model.WorkFlowProcessRest;
 import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
 import org.dspace.content.WorkflowProcess;
@@ -23,6 +24,8 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,22 +35,21 @@ public class JbpmServerImpl {
     @Autowired
     private ConfigurationService configurationService;
     public String startProcess(WorkFlowProcessRest workflowProcessw) throws  RuntimeException{
-            String baseurl=configurationService.getProperty("jbpm.server");
-            JBPMProcess jbpmProcess=new JBPMProcess(workflowProcessw);
-            System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
-            HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-            HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
-            return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
+        String baseurl=configurationService.getProperty("jbpm.server");
+        JBPMProcess jbpmProcess=new JBPMProcess(workflowProcessw);
+        System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
+        return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
     public String forwardTask(WorkFlowProcessRest workflowProcess, WorkFlowAction workFlowAction) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
-        // add to server
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
         if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
+            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
         }
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -62,7 +64,7 @@ public class JbpmServerImpl {
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
         if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
+            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
         }
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -76,7 +78,7 @@ public class JbpmServerImpl {
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
         if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
+            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
         }
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -90,7 +92,7 @@ public class JbpmServerImpl {
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
         if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setNew_users(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
+            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
         }
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -99,4 +101,13 @@ public class JbpmServerImpl {
         HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
         return restTemplate.exchange(baseurl+ JBPM.RESUMEPROCESS, HttpMethod.POST, entity, String.class).getBody();
     }
+
+    public String gettasklist(String uuid) throws  RuntimeException{
+        String baseurl=configurationService.getProperty("jbpm.server");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<String> entity = new HttpEntity<String>(uuid,headers);
+        return restTemplate.exchange(baseurl+ JBPM.GETTASKLIST+"/"+uuid, HttpMethod.GET, entity, String.class).getBody();
+    }
 }
+
