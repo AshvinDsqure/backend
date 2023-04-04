@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
+import org.dspace.app.rest.converter.ConverterService;
 import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessMasterRest;
@@ -21,7 +22,9 @@ import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
@@ -32,6 +35,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 /**
  * This is the repository responsible to manage Item Rest object
  *
@@ -45,6 +50,7 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
 
     @Autowired
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
+
 
     public WorkFlowProcessMasterValueRepository(WorkFlowProcessMasterValueService dso) {
         super(dso);
@@ -148,7 +154,7 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
         }
     }
     @SearchRestMethod(name = "findByType")
-    public Page<WorkFlowProcessMasterValueRest> findByStartDateAndEndDate(
+    public Page<WorkFlowProcessMasterRest> findByStartDateAndEndDate(
             @Parameter(value = "type", required = true) String type,
             Pageable pageable)
     {
@@ -157,7 +163,11 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
             System.out.println("in Repo "+type);
             int total = workFlowProcessMasterValueService.countfindByType(context,type);
             List<WorkFlowProcessMasterValue> workFlowProcessMasterValueRests = workFlowProcessMasterValueService.findByType(context,type,Math.toIntExact(pageable.getOffset()),Math.toIntExact(pageable.getPageSize()));
-            return converter.toRestPage(workFlowProcessMasterValueRests, pageable, total, utils.obtainProjection());
+            System.out.println("workFlowProcessMasterValueRests result"+workFlowProcessMasterValueRests.size());
+           List<WorkFlowProcessMasterValueRest> transformedList= workFlowProcessMasterValueRests.stream().map(f->{
+               return workFlowProcessMasterValueConverter.convert(f,utils.obtainProjection());
+            }).collect(Collectors.toList());
+          return  new PageImpl(transformedList, pageable, total);
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
