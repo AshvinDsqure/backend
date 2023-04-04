@@ -98,6 +98,8 @@
                         <exclude>src/main/webapp/styles.css</exclude>
                         <exclude>src/main/webapp/js/hal/**</exclude>
                         <exclude>src/main/webapp/js/vendor/**</exclude>
+                        <exclude>**.java</exclude>
+                        <exclude>src/main/java/org/dspace/app/rest/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
