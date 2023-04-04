@@ -8,6 +8,7 @@
 package org.dspace.app.rest.converter;
 
 import com.google.gson.Gson;
+import org.dspace.app.rest.enums.WorkFlowType;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.model.EPersonRest;
 import org.dspace.app.rest.model.ItemRest;
@@ -102,6 +103,13 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
         workflowProcess.setItem(itemConverter.convert(obj.getItemRest()));
+       WorkFlowType workFlowType=WorkFlowType.valueOf(obj.getWorkflowTypeStr());
+       if(workFlowType != null){
+          Optional<WorkFlowProcessMasterValue> workFlowProcessMasterValue=workFlowType.getUserTypeFromMasterValue(context);
+          if(workFlowProcessMasterValue.isPresent()) {
+              workflowProcess.setWorkflowType(workFlowProcessMasterValue.get());
+          }
+       }
         /*workflowProcess.setWorkflowProcessReferenceDocs(obj.getWorkflowProcessReferenceDocRests().stream().map(d -> {
             try {
                 WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, d);
@@ -118,9 +126,6 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
             try {
                 if (we.getUserType() == null) {
                     we.setIndex(index.incrementAndGet());
-                    System.out.println("Index in Type"+we.getIndex());
-                }else{
-                    System.out.println("default index"+we.getIndex());
                 }
                 WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, we);
                 workflowProcessEperson.setWorkflowProcess(workflowProcess);

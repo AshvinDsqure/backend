@@ -35,11 +35,19 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private WorkFlowProcessMasterValueRest dispatchModeRest = null;
     @JsonProperty
+    private WorkFlowProcessMasterValueRest workflowStatus = null;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest workflowType = null;
+    @JsonProperty
     private WorkFlowProcessMasterValueRest eligibleForFilingRest = null;
     @JsonProperty
     private ItemRest itemRest;
     @JsonProperty
     private String Subject;
+    @JsonProperty
+    private String workflowTypeStr;
+    @JsonProperty
+    private  Boolean isDraft=false;
     @JsonProperty
     List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests;
 
@@ -149,5 +157,37 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setEntityType(String entityType) {
         this.entityType = entityType;
+    }
+
+    public WorkFlowProcessMasterValueRest getWorkflowStatus() {
+        return workflowStatus;
+    }
+
+    public void setWorkflowStatus(WorkFlowProcessMasterValueRest workflowStatus) {
+        this.workflowStatus = workflowStatus;
+    }
+
+    public WorkFlowProcessMasterValueRest getWorkflowType() {
+        return workflowType;
+    }
+
+    public void setWorkflowType(WorkFlowProcessMasterValueRest workflowType) {
+        this.workflowType = workflowType;
+    }
+
+    public Boolean getDraft() {
+        return isDraft;
+    }
+
+    public void setDraft(Boolean draft) {
+        isDraft = draft;
+    }
+
+    public String getWorkflowTypeStr() {
+        return workflowTypeStr;
+    }
+
+    public void setWorkflowTypeStr(String workflowTypeStr) {
+        this.workflowTypeStr = workflowTypeStr;
     }
 }

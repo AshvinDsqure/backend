@@ -262,6 +262,20 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
         }
         return converter.toRest(eperson, utils.obtainProjection());
     }
+    @SearchRestMethod(name = "wildcardSearchByEmail")
+    public EPersonRest wildcardSearchByEmail(@Parameter(value = "email", required = true) String email) {
+        EPerson eperson = null;
+        try {
+            Context context = obtainContext();
+            eperson = es.wildcardSearchByEmail(context, email);
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        if (eperson == null) {
+            return null;
+        }
+        return converter.toRest(eperson, utils.obtainProjection());
+    }
 
     /**
      * Find the epersons matching the query parameter. The search is delegated to the

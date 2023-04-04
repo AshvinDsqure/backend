@@ -49,6 +49,12 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "eligible_for_filing_id")
     private WorkFlowProcessMasterValue eligibleForFiling = null;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflow_status_id")
+    private WorkFlowProcessMasterValue workflowStatus = null;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflow_type_id")
+    private WorkFlowProcessMasterValue workflowType = null;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item")
     private Item item;
@@ -188,5 +194,29 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     public void setDispatchmode(WorkFlowProcessMasterValue dispatchmode) {
         this.dispatchmode = dispatchmode;
+    }
+
+    public WorkFlowProcessMasterValue getWorkflowStatus() {
+        return workflowStatus;
+    }
+
+    public void setWorkflowStatus(WorkFlowProcessMasterValue workflowStatus) {
+        this.workflowStatus = workflowStatus;
+    }
+
+    public List<org.dspace.content.WorkFlowProcessHistory> getWorkFlowProcessHistories() {
+        return workFlowProcessHistories;
+    }
+
+    public void setWorkFlowProcessHistories(List<org.dspace.content.WorkFlowProcessHistory> workFlowProcessHistories) {
+        this.workFlowProcessHistories = workFlowProcessHistories;
+    }
+
+    public WorkFlowProcessMasterValue getWorkflowType() {
+        return workflowType;
+    }
+
+    public void setWorkflowType(WorkFlowProcessMasterValue workflowType) {
+        this.workflowType = workflowType;
     }
 }
