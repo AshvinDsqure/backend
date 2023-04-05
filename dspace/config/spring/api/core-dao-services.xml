@@ -27,6 +27,7 @@
     <bean class="org.dspace.content.dao.impl.WorkflowProcessDefinitionDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.WorkflowProcessNoteDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.DocumentTypeDAOImpl"/>
+    <bean class="org.dspace.content.dao.impl.WorkflowProcessReferenceDocDAOImpl"/>
 
     <bean class="org.dspace.content.dao.impl.MetadataFieldDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.MetadataSchemaDAOImpl"/>
