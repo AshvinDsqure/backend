@@ -102,7 +102,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
-        workflowProcess.setItem(itemConverter.convert(obj.getItemRest()));
+        workflowProcess.setItem(itemConverter.convert(obj.getItemRest(),context));
        WorkFlowType workFlowType=WorkFlowType.valueOf(obj.getWorkflowTypeStr());
        if(workFlowType != null){
           Optional<WorkFlowProcessMasterValue> workFlowProcessMasterValue=workFlowType.getUserTypeFromMasterValue(context);

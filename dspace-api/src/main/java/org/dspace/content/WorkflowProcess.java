@@ -59,7 +59,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @JoinColumn(name = "item")
     private Item item;
     /* Attechment  Details*/
-    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
+    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "workflowProcess")
     private List<WorkflowProcessReferenceDoc> workflowProcessReferenceDocs = new ArrayList<>();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
     private List<WorkFlowProcessHistory> workFlowProcessHistories = new ArrayList<>();

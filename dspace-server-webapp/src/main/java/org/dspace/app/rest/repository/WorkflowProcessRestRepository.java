@@ -117,7 +117,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
-            if(workFlowProcessRest.getDraft()){
+            boolean isDraft=workFlowProcessRest.getDraft();
+            if(isDraft){
                 workFlowProcessRest.getWorkflowProcessEpersonRests().clear();
                 //clear user if workflowis Draft
             }
@@ -137,15 +138,17 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workflowProcess= createworkflowProcessFromRestObject(context,workFlowProcessRest);
             workFlowProcessRest=workFlowProcessConverter.convert(workflowProcess,utils.obtainProjection());
             try {
-                if(!workFlowProcessRest.getDraft()) {
+                if(isDraft) {
                     String jbpmResponce = jbpmServer.startProcess(workFlowProcessRest);
-                    WorkFlowAction workFlowAction= WorkFlowAction.FORWARD;
-                    String forwardResponce=jbpmServer.forwardTask(workFlowProcessRest,workFlowAction);
                     storeHistory(context,workflowProcess,WorkFlowAction.CREATE,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get());
-                    storeHistory(context,workflowProcess,workFlowAction,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==1).findFirst().get());
                 }else{
                     String jbpmResponce = jbpmServer.startProcess(workFlowProcessRest);
+                    System.out.println("jbpmResponce create"+jbpmResponce);
+                    WorkFlowAction workFlowAction= WorkFlowAction.FORWARD;
+                    String forwardResponce=jbpmServer.forwardTask(workFlowProcessRest,workFlowAction);
+                    System.out.println("jbpmResponce create"+forwardResponce);
                     storeHistory(context,workflowProcess,WorkFlowAction.CREATE,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get());
+                    storeHistory(context,workflowProcess,workFlowAction,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==1).findFirst().get());
                 }
                 context.commit();
             }catch (RuntimeException e){
@@ -153,9 +156,10 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
                 throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
             }
         } catch (Exception e1) {
+            e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
         }
-        return converter.toRest(workflowProcess, utils.obtainProjection());
+        return workFlowProcessRest;
     }
     private WorkFlowProcessHistory storeHistory(Context context,WorkflowProcess workflowProcess,WorkFlowAction workFlowAction,WorkflowProcessEperson workflowProcessEperson) throws SQLException, AuthorizeException {
         WorkFlowProcessHistory workFlowProcessHistory=new WorkFlowProcessHistory();
@@ -170,11 +174,13 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workflowProcess=workFlowProcessConverter.convert(workFlowProcessRest,context);
             Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
             if(workflowProcessSenderDiaryOptional.isPresent()){
+                System.out.println("is diari presenttttttt");
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
+            System.out.println("workflowProcess sender diariy::"+workflowProcess.getWorkflowProcessSenderDiary().getEmail());
             Optional<WorkFlowProcessMasterValue> workflowstatusopOptionalWorkFlowProcessMasterValue=null;
             System.out.println("workFlowProcessRest.getDraft()::"+workFlowProcessRest.getDraft());
-            if(workFlowProcessRest.getDraft()){
+            if(!workFlowProcessRest.getDraft()){
                 workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.INPROGRESS.getUserTypeFromMasterValue(context);
             }else{
                 workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.SUSPEND.getUserTypeFromMasterValue(context);
@@ -193,6 +199,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
                     throw new RuntimeException(e);
                 }
             }).collect(Collectors.toList()));
+            System.out.println("workflowProcess::: update ......");
             workflowProcessService.update(context,workflowProcess);
         } catch (Exception e) {
             e.printStackTrace();
