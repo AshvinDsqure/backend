@@ -14,10 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.ConverterService;
 import org.dspace.app.rest.converter.WorkflowProcessReferenceDocConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
-import org.dspace.app.rest.model.BitstreamRest;
-import org.dspace.app.rest.model.BundleRest;
-import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
-import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
+import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.hateoas.BitstreamResource;
 import org.dspace.app.rest.repository.BundleRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
@@ -31,9 +28,11 @@ import org.dspace.content.service.BundleService;
 import org.dspace.content.service.WorkflowProcessReferenceDocService;
 import org.dspace.core.Context;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ControllerUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID;
@@ -67,9 +67,8 @@ import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFI
  * </pre>
  */
 @RestController
-@RequestMapping("/api/" + WorkflowProcessReferenceDocRest.CATEGORY + "/" + WorkflowProcessReferenceDocRest.PLURAL_NAME
-        + "/bitstream")
-public class WorkflowProcessReferenceDocController {
+@RequestMapping("/api/" + WorkflowProcessReferenceDocRest.CATEGORY)
+public class WorkflowProcessReferenceDocController  implements InitializingBean {
 
     private static final Logger log = LogManager.getLogger();
     @Autowired
@@ -82,7 +81,8 @@ public class WorkflowProcessReferenceDocController {
     private WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
     @Autowired
     private WorkflowProcessReferenceDocService workflowProcessReferenceDocService;
-
+    @Autowired
+    private DiscoverableEndpointsService discoverableEndpointsService;
     /**
      * Method to upload a Bitstream to a Bundle with the given UUID in the URL. This will create a Bitstream with the
      * file provided in the request and attach this to the Item that matches the UUID in the URL.
@@ -90,8 +90,14 @@ public class WorkflowProcessReferenceDocController {
      *
      * @return The created BitstreamResource
      */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        discoverableEndpointsService
+                .register(this, Arrays.asList(Link.of("/api/" + WorkflowProcessReferenceDocRest.CATEGORY, WorkflowProcessReferenceDocRest.CATEGORY)));
+    }
+
     @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE})
+            produces = {MediaType.APPLICATION_JSON_VALUE},value = "/bitstream")
     @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
     public WorkflowProcessReferenceDocRest uploadBitstream(
             HttpServletRequest request,
@@ -122,7 +128,7 @@ public class WorkflowProcessReferenceDocController {
         return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc,utils.obtainProjection());
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET,value = "/test")
     public String test(
             HttpServletRequest request
     ) {
