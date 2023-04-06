@@ -35,7 +35,7 @@ public enum WorkFlowAction {
             WorkFlowProcessHistory workFlowAction=new WorkFlowProcessHistory();
             Optional<WorkflowProcessEperson> workflowProcessEpersonOptional= workflowProcess.getWorkflowProcessEpeople().stream().filter(s->s.getUsertype().getPrimaryvalue().equals(WorkFlowUserType.INITIATOR)).findFirst();
             if(!workflowProcessEpersonOptional.isPresent()){
-                throw new RuntimeException("initiator not  found");
+                throw new RuntimeException("initiator not  found.....");
             }
             WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
             WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
