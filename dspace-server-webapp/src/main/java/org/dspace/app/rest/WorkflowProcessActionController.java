@@ -90,10 +90,10 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction workFlowAction = WorkFlowAction.FORWARD;
             try {
-                String body=  jbpmServer.forwardTask(workFlowProcessRest, workFlowAction);
+                String body=  jbpmServer.forwardTask(workFlowProcessRest);
                 System.out.println("body:::"+body);
                 workflowProcessService.update(context, workFlowProcess);
-                storeHistory(context,workFlowAction,workFlowProcess);
+                //storeHistory(context,workFlowAction,workFlowProcess);
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error in BPM Server..");
@@ -117,9 +117,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction workFlowAction = WorkFlowAction.BACKWARD;
             try {
-                String body=  jbpmServer.backwardTask(workFlowProcessRest, workFlowAction);
+                String body=  jbpmServer.backwardTask(workFlowProcessRest);
                 System.out.println("body:::"+body);
-                storeHistory(context,workFlowAction,workFlowProcess);
+               // storeHistory(context,workFlowAction,workFlowProcess);
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error in BPM Server..");
@@ -146,7 +146,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             try {
                 String body=  jbpmServer.holdTask(workFlowProcessRest, workFlowAction);
                 System.out.println("body:::"+body);
-                storeHistory(context,workFlowAction,workFlowProcess);
+               // storeHistory(context,workFlowAction,workFlowProcess);
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error in BPM Server..");
@@ -173,7 +173,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             try {
                 String body=  jbpmServer.holdTask(workFlowProcessRest, workFlowAction);
                 System.out.println("body:::"+body);
-                storeHistory(context,workFlowAction,workFlowProcess);
+               // storeHistory(context,workFlowAction,workFlowProcess);
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error in BPM Server..");
@@ -184,16 +184,6 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
     }
-    public WorkFlowProcessHistory storeHistory(Context context,WorkFlowAction workFlowAction,WorkflowProcess workflowProcess) throws SQLException, AuthorizeException {
-        EPerson ePerson= context.getCurrentUser();
-        WorkFlowProcessHistory workFlowProcessHistory = new WorkFlowProcessHistory();
-        workFlowProcessHistory.setWorkflowProcess(workflowProcess);
-        Optional<WorkflowProcessEperson> workflowProcessEpersonPerfomerOption= workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getePerson().getID().equals(ePerson.getID())).findFirst();
-        if(workflowProcessEpersonPerfomerOption.isPresent()){
-            workFlowProcessHistory.setWorkflowProcessEpeople(workflowProcessEpersonPerfomerOption.get());
-            return workFlowAction.perfomeAction(context, workFlowProcessHistory);
-        }
-        return null;
-    }
+
 
 }
