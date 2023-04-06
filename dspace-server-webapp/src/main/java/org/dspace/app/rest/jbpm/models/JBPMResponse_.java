@@ -7,17 +7,13 @@
  */
 package org.dspace.app.rest.jbpm.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.aspectj.bridge.IMessage;
-
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JBPMResponse {
+public class JBPMResponse_ {
 
     private Integer count;
-    private List<Message> message =new ArrayList<>();
+    private String message ;
 
     private String next_user;
     private String performed_by;
@@ -29,11 +25,11 @@ public class JBPMResponse {
         this.count = count;
     }
 
-    public List<Message> getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(List<Message> message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -60,4 +56,5 @@ public class JBPMResponse {
     public void setPerformed_by(String performed_by) {
         this.performed_by = performed_by;
     }
+
 }
