@@ -122,7 +122,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setSubject(obj.getSubject());
         // set submitor...
         AtomicInteger index = new AtomicInteger(0);
-        workflowProcess.setWorkflowProcessEpeople(obj.getWorkflowProcessEpersonRests().stream().map(we -> {
+            workflowProcess.setWorkflowProcessEpeople(obj.getWorkflowProcessEpersonRests().stream().map(we -> {
             try {
                 if (we.getUserType() == null) {
                     we.setIndex(index.incrementAndGet());
