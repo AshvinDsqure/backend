@@ -44,7 +44,7 @@ public class JbpmServerImpl {
         return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
-    public String forwardTask(WorkFlowProcessRest workflowProcess, WorkFlowAction workFlowAction) throws  RuntimeException{
+    public String forwardTask(WorkFlowProcessRest workflowProcess) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
@@ -59,7 +59,7 @@ public class JbpmServerImpl {
         return restTemplate.exchange(baseurl+ JBPM.FORWARDPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
-    public String backwardTask(WorkFlowProcessRest workflowProcess, WorkFlowAction workFlowAction) throws  RuntimeException{
+    public String backwardTask(WorkFlowProcessRest workflowProcess) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());

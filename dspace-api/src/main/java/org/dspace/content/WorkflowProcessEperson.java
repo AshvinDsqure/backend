@@ -63,7 +63,8 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     private Date assignDate = new Date();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcessEpeople", cascade = {CascadeType.ALL})
     private List<WorkFlowProcessHistory> workFlowProcessHistories = new ArrayList<>();
-
+    @Column(name = "isowner")
+    private  Boolean isOwner;
     @Override
     public int getType() {
         return 0;
@@ -153,5 +154,13 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
 
     public void setWorkFlowProcessHistories(List<WorkFlowProcessHistory> workFlowProcessHistories) {
         this.workFlowProcessHistories = workFlowProcessHistories;
+    }
+
+    public Boolean getOwner() {
+        return isOwner;
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
     }
 }

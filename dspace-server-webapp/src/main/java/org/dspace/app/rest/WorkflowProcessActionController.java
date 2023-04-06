@@ -56,7 +56,7 @@ import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFI
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  */
 @RestController
-@RequestMapping("/api/" + WorkFlowProcessRest.CATEGORY + "/" + WorkFlowProcessRest.PLURAL_NAME
+@RequestMapping("/api/" + WorkFlowProcessRest.CATEGORY
         + REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID)
 public class WorkflowProcessActionController extends AbstractDSpaceRestRepository
         implements LinkRestRepository {
