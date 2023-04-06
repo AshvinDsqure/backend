@@ -128,6 +128,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
                     we.setIndex(index.incrementAndGet());
                 }
                 WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, we);
+                workflowProcessEperson.setOwner(false);
                 workflowProcessEperson.setWorkflowProcess(workflowProcess);
                 return workflowProcessEperson;
             } catch (SQLException e) {

@@ -62,7 +62,7 @@ public class WorkflowProcessEpersonServiceImpl extends DSpaceObjectServiceImpl<W
 
     @Override
     public WorkflowProcessEperson find(Context context, UUID uuid) throws SQLException {
-       return null;
+        return workflowProcessEpersonDAO.findByID(context,WorkflowProcessEperson.class,uuid);
     }
 
     @Override

@@ -30,7 +30,7 @@ public interface WorkflowProcessEpersonService extends DSpaceObjectService<Workf
      * inside of this method.
      *
      * @param context DSpace context object
-     * @param WorkflowProcessEperson in progress workspace item
+     * @param workflowProcessEperson in progress workspace item
      *
      * @return the newly created item
      * @throws SQLException if database error
