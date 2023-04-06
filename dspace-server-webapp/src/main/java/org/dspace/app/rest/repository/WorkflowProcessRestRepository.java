@@ -139,16 +139,10 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workFlowProcessRest=workFlowProcessConverter.convert(workflowProcess,utils.obtainProjection());
             try {
                 if(isDraft) {
-                    String jbpmResponce = jbpmServer.startProcess(workFlowProcessRest);
-                    storeHistory(context,workflowProcess,WorkFlowAction.CREATE,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get());
+                    WorkFlowAction.CREATE.perfomeAction(context,workflowProcess,workFlowProcessRest);
                 }else{
-                    String jbpmResponce = jbpmServer.startProcess(workFlowProcessRest);
-                    System.out.println("jbpmResponce create"+jbpmResponce);
-                    WorkFlowAction workFlowAction= WorkFlowAction.FORWARD;
-                    String forwardResponce=jbpmServer.forwardTask(workFlowProcessRest,workFlowAction);
-                    System.out.println("jbpmResponce create"+forwardResponce);
-                    storeHistory(context,workflowProcess,WorkFlowAction.CREATE,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==0).findFirst().get());
-                    storeHistory(context,workflowProcess,workFlowAction,workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getIndex()==1).findFirst().get());
+                    WorkFlowAction.CREATE.perfomeAction(context,workflowProcess,workFlowProcessRest);
+                    WorkFlowAction.FORWARD.perfomeAction(context,workflowProcess,workFlowProcessRest);
                 }
                 context.commit();
             }catch (RuntimeException e){
@@ -160,12 +154,6 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
         }
         return workFlowProcessRest;
-    }
-    private WorkFlowProcessHistory storeHistory(Context context,WorkflowProcess workflowProcess,WorkFlowAction workFlowAction,WorkflowProcessEperson workflowProcessEperson) throws SQLException, AuthorizeException {
-        WorkFlowProcessHistory workFlowProcessHistory=new WorkFlowProcessHistory();
-        workFlowProcessHistory.setWorkflowProcessEpeople(workflowProcessEperson);
-        workFlowProcessHistory.setWorkflowProcess(workflowProcess);
-        return workFlowAction.perfomeAction(context,workFlowProcessHistory);
     }
     private WorkflowProcess createworkflowProcessFromRestObject(Context context, WorkFlowProcessRest workFlowProcessRest) throws AuthorizeException {
         WorkflowProcess workflowProcess =null;
@@ -206,14 +194,6 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             throw new RuntimeException(e.getMessage(), e);
         }
         return workflowProcess;
-    }
-    private WorkflowProcess forward(Context context, WorkFlowProcessRest workFlowProcessRest) throws AuthorizeException {
-        try{
-            // jbpmServer.startProcess(workflowProcess);
-        }catch (Exception e){
-            throw new RuntimeException(e.getMessage(), e);
-        }
-        return  null;
     }
 
 }

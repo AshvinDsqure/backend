@@ -30,9 +30,18 @@ import java.util.*;
 @Entity
 @Table(name = "workflowprocesshistory")
 public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObjectLegacySupport {
+    public WorkFlowProcessHistory() {
+    }
+
+    public WorkFlowProcessHistory(WorkflowProcessEperson workflowProcessEpeople, WorkflowProcess workflowProcess) {
+        this.workflowProcessEpeople = workflowProcessEpeople;
+        this.workflowProcess = workflowProcess;
+    }
+
     /**
      * Wild card for Dublin Core metadata qualifiers/languages
      */
+
     public static final String ANY = "*";
     @Column(name = "workflowhistory_id", insertable = false, updatable = false)
     private Integer legacyId;

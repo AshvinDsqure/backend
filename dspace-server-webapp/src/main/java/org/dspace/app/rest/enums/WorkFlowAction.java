@@ -7,10 +7,10 @@
  */
 package org.dspace.app.rest.enums;
 
+import org.dspace.app.rest.jbpm.JbpmServerImpl;
+import org.dspace.app.rest.model.WorkFlowProcessRest;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.WorkFlowProcessHistory;
-import org.dspace.content.WorkFlowProcessMaster;
-import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.*;
 import org.dspace.content.service.WorkFlowProcessHistoryService;
 import org.dspace.content.service.WorkFlowProcessMasterService;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
@@ -20,16 +20,67 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.Optional;
 
 public enum WorkFlowAction {
-    MASTER("Action") {
-
+    MASTER("Action"),
+    CREATE("Create"){
+        @Override
+        public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+            String jbpmResponce = this.getJbpmServer().startProcess(workFlowProcessRest);
+            System.out.println("jbpmResponce:::"+jbpmResponce);
+            WorkFlowProcessHistory workFlowAction=new WorkFlowProcessHistory();
+            Optional<WorkflowProcessEperson> workflowProcessEpersonOptional= workflowProcess.getWorkflowProcessEpeople().stream().filter(s->s.getUsertype().getPrimaryvalue().equals(WorkFlowUserType.INITIATOR)).findFirst();
+            if(!workflowProcessEpersonOptional.isPresent()){
+                throw new RuntimeException("initiator not  found");
+            }
+            WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
+            WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
+            workFlowAction.setActionDate(new Date());
+            workFlowAction.setAction(workFlowProcessMasterValue);
+            workFlowAction.setWorkflowProcess(workflowProcess);
+            return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
+        }
     },
-    CREATE("Create"),
-    FORWARD("Forward"),
-    BACKWARD("Backward"),
+    FORWARD("Forward"){
+        @Override
+        public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess,WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+            String forwardResponce=this.getJbpmServer().forwardTask(workFlowProcessRest);
+            System.out.println("jbpmResponce create"+forwardResponce);
+            WorkFlowProcessHistory workFlowAction=new WorkFlowProcessHistory();
+            Optional<WorkflowProcessEperson> workflowProcessEpersonOptional= workflowProcess.getWorkflowProcessEpeople().stream().max(Comparator.comparing(WorkflowProcessEperson::getIndex));
+            if(!workflowProcessEpersonOptional.isPresent()){
+                throw new RuntimeException("user not  found");
+            }
+            WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
+            WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
+            workFlowAction.setActionDate(new Date());
+            workFlowAction.setAction(workFlowProcessMasterValue);
+            workFlowAction.setWorkflowProcess(workflowProcess);
+            return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
+        }
+    },
+    BACKWARD("Backward"){
+        @Override
+        public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess,WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+            String forwardResponce=this.getJbpmServer().backwardTask(workFlowProcessRest);
+            System.out.println("jbpmResponce create"+forwardResponce);
+            WorkFlowProcessHistory workFlowAction=new WorkFlowProcessHistory();
+            Optional<WorkflowProcessEperson> workflowProcessEpersonOptional= workflowProcess.getWorkflowProcessEpeople().stream().max(Comparator.comparing(WorkflowProcessEperson::getIndex));
+            if(!workflowProcessEpersonOptional.isPresent()){
+                throw new RuntimeException("user not  found");
+            }
+            WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
+            WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
+            workFlowAction.setActionDate(new Date());
+            workFlowAction.setAction(workFlowProcessMasterValue);
+            workFlowAction.setWorkflowProcess(workflowProcess);
+            return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
+        }
+    },
     REFER("Refer"),
     HOLD("Hold"),
     UNHOLD("UnHold");
@@ -37,6 +88,7 @@ public enum WorkFlowAction {
     private WorkFlowProcessHistoryService workFlowProcessHistoryService;
     private WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
     private WorkFlowProcessMasterService workFlowProcessMasterService;
+    private  JbpmServerImpl jbpmServer;
     @Component
     public static class ServiceInjector {
         @Autowired
@@ -45,6 +97,8 @@ public enum WorkFlowAction {
         private WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
         @Autowired
         private WorkFlowProcessMasterService workFlowProcessMasterService;
+        @Autowired
+        JbpmServerImpl jbpmServer;
 
         @PostConstruct
         public void postConstruct() {
@@ -52,6 +106,7 @@ public enum WorkFlowAction {
                 rt.setWorkFlowProcessHistoryService(workFlowProcessHistoryService);
                 rt.setWorkFlowProcessMasterValueService(workFlowProcessMasterValueService);
                 rt.setWorkFlowProcessMasterService(workFlowProcessMasterService);
+                rt.setJbpmServer(jbpmServer);
             }
         }
     }
@@ -62,7 +117,8 @@ public enum WorkFlowAction {
     public String getAction() {
         return action;
     }
-    public WorkFlowProcessHistory perfomeAction(Context context, WorkFlowProcessHistory workFlowAction) throws SQLException, AuthorizeException {
+    public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess,WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+        WorkFlowProcessHistory workFlowAction=new WorkFlowProcessHistory();
         System.out.println("Action::::" + this.getAction() +this.getWorkFlowProcessMasterService());
         WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
         System.out.println("workFlowProcessMaster Master Name::"+workFlowProcessMaster.getMastername());
@@ -103,5 +159,13 @@ public enum WorkFlowAction {
 
     public  void setWorkFlowProcessMasterService(WorkFlowProcessMasterService workFlowProcessMasterService) {
         this.workFlowProcessMasterService = workFlowProcessMasterService;
+    }
+
+    public JbpmServerImpl getJbpmServer() {
+        return jbpmServer;
+    }
+
+    public void setJbpmServer(JbpmServerImpl jbpmServer) {
+        this.jbpmServer = jbpmServer;
     }
 }
