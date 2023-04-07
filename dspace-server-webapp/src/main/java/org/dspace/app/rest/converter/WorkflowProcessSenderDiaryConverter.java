@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.converter;
@@ -15,6 +15,8 @@ import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.WorkflowProcessDefinition;
 import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -27,50 +29,30 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
         return WorkflowProcessSenderDiary.class;
     }
 
+    @Autowired
+    ModelMapper modelMapper;
+
+
     @Override
     protected WorkflowProcessSenderDiaryRest newInstance() {
         return new WorkflowProcessSenderDiaryRest();
     }
+
     @Override
     public WorkflowProcessSenderDiaryRest convert(WorkflowProcessSenderDiary obj, Projection projection) {
         WorkflowProcessSenderDiaryRest rest = new WorkflowProcessSenderDiaryRest();
-        rest.setCity(obj.getCity());
-        rest.setCountry(obj.getCountry());
-        rest.setOrganization(obj.getOrganization());
-        rest.setLegacyId(obj.getLegacyId());
-        rest.setName(obj.getName());
-        rest.setDesignation(obj.getDesignation());
-        rest.setContactNumber(obj.getContactNumber());
-        rest.setEmail(obj.getEmail());
-        rest.setAddress(obj.getAddress());
+        rest = modelMapper.map(obj, WorkflowProcessSenderDiaryRest.class);
         rest.setUuid(obj.getID().toString());
         return rest;
     }
-
-    public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiary rest, WorkflowProcessSenderDiaryRest obj) {
-        rest.setCity(obj.getCity());
-        rest.setCountry(obj.getCountry());
-        rest.setOrganization(obj.getOrganization());
-        rest.setLegacyId(obj.getLegacyId());
-        rest.setSendername(obj.getSendername());
-        rest.setDesignation(obj.getDesignation());
-        rest.setContactNumber(obj.getContactNumber());
-        rest.setEmail(obj.getEmail());
-        rest.setAddress(obj.getAddress());
-        return rest;
+    public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiary obj, WorkflowProcessSenderDiaryRest rest) {
+        obj = modelMapper.map(rest, WorkflowProcessSenderDiary.class);
+        return obj;
     }
     public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiaryRest rest) {
-        WorkflowProcessSenderDiary workflowProcessSenderDiary=new WorkflowProcessSenderDiary();
-        workflowProcessSenderDiary.setCity(rest.getCity());
-        workflowProcessSenderDiary.setCountry(rest.getCountry());
-        workflowProcessSenderDiary.setOrganization(rest.getOrganization());
-        workflowProcessSenderDiary.setLegacyId(rest.getLegacyId());
-        workflowProcessSenderDiary.setSendername(rest.getSendername());
-        workflowProcessSenderDiary.setDesignation(rest.getDesignation());
-        workflowProcessSenderDiary.setContactNumber(rest.getContactNumber());
-        workflowProcessSenderDiary.setEmail(rest.getEmail());
-        workflowProcessSenderDiary.setAddress(rest.getAddress());
-        return workflowProcessSenderDiary;
+        WorkflowProcessSenderDiary obj = new WorkflowProcessSenderDiary();
+        obj = modelMapper.map(rest, WorkflowProcessSenderDiary.class);
+        return obj;
     }
 
 }

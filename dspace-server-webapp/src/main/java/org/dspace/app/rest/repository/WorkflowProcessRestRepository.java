@@ -90,13 +90,9 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     @Override
     public Page<WorkFlowProcessRest> findAll(Context context, Pageable pageable) {
         try {
-            String uuid=context.getCurrentUser().getID().toString();
-            String jbpmResponce=jbpmServer.gettasklist(uuid);
-            JBPMResponse jbpmResponse=new JBPMResponse();
-            jbpmResponse=modelMapper.map(jbpmResponce,JBPMResponse.class);
-            List<String> ides=jbpmResponse.getMessage().stream().map(Message->Message.getQueueid()).collect(Collectors.toList());
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkFlowProcessIds(context,ides,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
-            return converter.toRestPage(workflowProcesses, pageable, jbpmResponse.getCount(), utils.obtainProjection());
+            int count=workflowProcessService.countfindByWorkflowProcessId(context,context.getCurrentUser().getID());
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkflowProcessId(context,context.getCurrentUser().getID(),Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
         }catch (Exception e){
             throw  new RuntimeException(e.getMessage(),e);
         }

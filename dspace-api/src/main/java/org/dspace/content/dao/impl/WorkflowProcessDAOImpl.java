@@ -43,7 +43,6 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
 
     @Override
     public List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit) throws SQLException {
-
         try {
             String s = WorkFlowProcessIds.toString().replace("[", "");
             String id = s.replace("]", "");
@@ -62,5 +61,32 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
             System.out.println("in error " + e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public List<WorkflowProcess> findByWorkflowProcessId(Context context,UUID eperson,Integer offset, Integer limit) throws SQLException {
+        Query query = createQuery(context, "" +
+                "SELECT wp FROM WorkflowProcess as wp " +
+                "join wp.workflowProcessEpeople as ep join ep.ePerson as p  where ep.isOwner=:isOwner and p.id=:eperson");
+        query.setParameter("isOwner",true);
+        query.setParameter("eperson",eperson);
+
+        if (0 <= offset) {
+            query.setFirstResult(offset);
+        }if (0 <= limit) {
+            query.setMaxResults(limit);
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    public int countfindByWorkflowProcessId(Context context, UUID eperson) throws SQLException {
+        Query query = createQuery(context, "" +
+                "SELECT count(wp) FROM WorkflowProcess as wp " +
+                "join wp.workflowProcessEpeople as ep join ep.ePerson as p  where ep.isOwner=:isOwner and p.id=:eperson");
+        query.setParameter("isOwner",true);
+        query.setParameter("eperson",eperson);
+
+        return count(query);
     }
 }

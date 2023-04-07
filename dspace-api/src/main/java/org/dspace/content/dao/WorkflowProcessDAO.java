@@ -12,6 +12,7 @@ import org.dspace.core.Context;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Database Access Object interface class for the Item object.
@@ -22,5 +23,7 @@ import java.util.List;
  */
 public interface WorkflowProcessDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcess> {
     List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit)throws SQLException;
+    List<WorkflowProcess> findByWorkflowProcessId(Context context, UUID eperson, Integer offset, Integer limit)throws SQLException;
+    int countfindByWorkflowProcessId(Context context, UUID eperson)throws SQLException;
 
 }
