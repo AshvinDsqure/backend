@@ -66,9 +66,12 @@ public enum WorkFlowAction {
             if (!workflowProcessEpersonOptional.isPresent()) {
                 throw new RuntimeException("user not  found");
             }
-            WorkflowProcessEperson workflowProcessEpersonOwner = this.getWorkflowProcessEpersonService().find(context, UUID.fromString(jbpmResponse.getNext_user()));
+            WorkflowProcessEperson currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by()))).findFirst().get();
+            currentOwner.setOwner(false);
+            WorkflowProcessEperson workflowProcessEpersonOwner= workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getID().equals(UUID.fromString(jbpmResponse.getNext_user()))).findFirst().get();
             workflowProcessEpersonOwner.setOwner(true);
             getWorkflowProcessEpersonService().update(context, workflowProcessEpersonOwner);
+            getWorkflowProcessEpersonService().update(context, currentOwner);
             WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
             WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
             workFlowAction.setActionDate(new Date());
@@ -88,9 +91,12 @@ public enum WorkFlowAction {
             if (!workflowProcessEpersonOptional.isPresent()) {
                 throw new RuntimeException("user not  found");
             }
-            WorkflowProcessEperson workflowProcessEpersonOwner = getWorkflowProcessEpersonService().find(context, UUID.fromString(jbpmResponse.getNext_user()));
+            WorkflowProcessEperson currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by()))).findFirst().get();
+            currentOwner.setOwner(false);
+            WorkflowProcessEperson workflowProcessEpersonOwner= workflowProcess.getWorkflowProcessEpeople().stream().filter(we->we.getID().equals(UUID.fromString(jbpmResponse.getNext_user()))).findFirst().get();
             workflowProcessEpersonOwner.setOwner(true);
             getWorkflowProcessEpersonService().update(context, workflowProcessEpersonOwner);
+            getWorkflowProcessEpersonService().update(context, currentOwner);
             WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
             WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
             workFlowAction.setActionDate(new Date());

@@ -81,9 +81,9 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @JoinColumn(name = "dispatchmode_id")
     private WorkFlowProcessMasterValue dispatchmode = null;
 
-    /*@Column(name = "date", columnDefinition = "timestamp with time zone")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date assignDueDate = new Date();*/
+//    @Column(name = "assignduedate", columnDefinition = "timestamp with time zone")
+//    @Temporal(TemporalType.TIMESTAMP)
+//    private Date assignDueDate;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
     private List<WorkFlowProcessHistory> WorkFlowProcessHistory = new ArrayList<>();

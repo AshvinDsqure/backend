@@ -71,6 +71,13 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         if (obj.getEligibleForFiling() != null) {
             workFlowProcessRest.setEligibleForFilingRest(workFlowProcessMasterValueConverter.convert(obj.getEligibleForFiling(), projection));
         }
+        if (obj.getWorkflowType() != null) {
+            workFlowProcessRest.setWorkflowType(workFlowProcessMasterValueConverter.convert(obj.getWorkflowType(), projection));
+        }
+        if (obj.getWorkflowStatus()!= null) {
+            workFlowProcessRest.setWorkflowStatus(workFlowProcessMasterValueConverter.convert(obj.getWorkflowStatus(), projection));
+        }
+
         if (obj.getEligibleForFiling() != null) {
             workFlowProcessRest.setItemRest(itemConverter.convertNameOnly(obj.getItem(), projection));
         }
@@ -89,9 +96,9 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         if (obj.getPriority() != null) {
             workFlowProcessRest.setPriority(obj.getPriority().getPriorityName());
         }
+
         if (obj.getDispatchmode() != null)
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
-
 
         return workFlowProcessRest;
     }
@@ -103,7 +110,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
         workflowProcess.setItem(itemConverter.convert(obj.getItemRest(),context));
-       WorkFlowType workFlowType=WorkFlowType.valueOf(obj.getWorkflowTypeStr());
+          WorkFlowType workFlowType=WorkFlowType.valueOf(obj.getWorkflowTypeStr());
        if(workFlowType != null){
           Optional<WorkFlowProcessMasterValue> workFlowProcessMasterValue=workFlowType.getUserTypeFromMasterValue(context);
           if(workFlowProcessMasterValue.isPresent()) {

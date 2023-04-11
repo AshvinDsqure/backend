@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -63,9 +64,10 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
+        /*if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
             jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
-        }
+        }*/
+        jbpmProcess.setUsers(new ArrayList<>());
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();

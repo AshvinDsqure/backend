@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.dspace.content.WorkflowProcessEperson;
@@ -55,6 +56,7 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests=new ArrayList<>();
     @JsonProperty
     private Date InitDate = new Date();
+
 
     @JsonProperty
     private String priority;
@@ -190,4 +192,5 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     public void setWorkflowTypeStr(String workflowTypeStr) {
         this.workflowTypeStr = workflowTypeStr;
     }
+
 }

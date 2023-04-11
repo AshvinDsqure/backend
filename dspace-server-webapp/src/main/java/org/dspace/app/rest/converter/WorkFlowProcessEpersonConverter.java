@@ -53,6 +53,7 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         if (obj.getUsertype() != null) {
             workflowProcessDefinitionEpersonRest.setUserType(workFlowProcessMasterValueConverter.convert(obj.getUsertype(), projection));
         }
+        workflowProcessDefinitionEpersonRest.setAssignDate(obj.getAssignDate());
         System.out.println("obj.getIndex()::" + obj.getIndex());
         workflowProcessDefinitionEpersonRest.setIndex(obj.getIndex());
         return workflowProcessDefinitionEpersonRest;

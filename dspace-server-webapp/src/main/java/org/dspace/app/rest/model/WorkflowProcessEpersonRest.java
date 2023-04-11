@@ -7,10 +7,13 @@
  */
 package org.dspace.app.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.springframework.data.annotation.Transient;
+
+import java.util.Date;
 
 /**
  * The Item REST Resource
@@ -38,6 +41,10 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private WorkFlowProcessMasterValueRest userType = null;
     @Transient
     private WorkFlowUserType workFlowUserType;
+    @JsonFormat(pattern="dd/MM/yyyy")
+    private Date assignDate =null;
+
+
     @Override
     public String getCategory() {
         return CATEGORY;
@@ -50,6 +57,15 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     public Integer getIndex() {
         return index;
+    }
+
+
+    public Date getAssignDate() {
+        return assignDate;
+    }
+
+    public void setAssignDate(Date assignDate) {
+        this.assignDate = assignDate;
     }
 
     public void setIndex(Integer index) {
