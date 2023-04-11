@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.ConverterService;
+import org.dspace.app.rest.converter.WorkFlowProcessConverter;
 import org.dspace.app.rest.converter.WorkflowProcessReferenceDocConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.*;
@@ -26,6 +27,7 @@ import org.dspace.content.WorkflowProcessReferenceDoc;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.BundleService;
 import org.dspace.content.service.WorkflowProcessReferenceDocService;
+import org.dspace.content.service.WorkflowProcessService;
 import org.dspace.core.Context;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.InitializingBean;
@@ -68,21 +70,25 @@ import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFI
  */
 @RestController
 @RequestMapping("/api/" + WorkflowProcessReferenceDocRest.CATEGORY)
-public class WorkflowProcessReferenceDocController  implements InitializingBean {
+public class WorkflowProcessReferenceDocController implements InitializingBean {
 
     private static final Logger log = LogManager.getLogger();
     @Autowired
-    ModelMapper modelMapper ;
+    ModelMapper modelMapper;
     @Autowired
     protected Utils utils;
     @Autowired
     private BundleRestRepository bundleRestRepository;
     @Autowired
     private WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
+
+    @Autowired
+    private WorkflowProcessService workflowProcessService;
     @Autowired
     private WorkflowProcessReferenceDocService workflowProcessReferenceDocService;
     @Autowired
     private DiscoverableEndpointsService discoverableEndpointsService;
+
     /**
      * Method to upload a Bitstream to a Bundle with the given UUID in the URL. This will create a Bitstream with the
      * file provided in the request and attach this to the Item that matches the UUID in the URL.
@@ -96,39 +102,46 @@ public class WorkflowProcessReferenceDocController  implements InitializingBean 
                 .register(this, Arrays.asList(Link.of("/api/" + WorkflowProcessReferenceDocRest.CATEGORY, WorkflowProcessReferenceDocRest.CATEGORY)));
     }
 
-    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_JSON_VALUE},value = "/bitstream")
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/bitstream")
     @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
     public WorkflowProcessReferenceDocRest uploadBitstream(
             HttpServletRequest request,
-            MultipartFile file,String workflowProcessReferenceDocRestStr) throws SQLException, AuthorizeException, IOException {
-        WorkflowProcessReferenceDoc workflowProcessReferenceDoc=null;
+            MultipartFile file, String workflowProcessReferenceDocRestStr) throws SQLException, AuthorizeException, IOException {
+        WorkflowProcessReferenceDoc workflowProcessReferenceDoc = null;
         try {
             Context context = ContextUtil.obtainContext(request);
             ObjectMapper mapper = new ObjectMapper();
             InputStream fileInputStream = null;
-            WorkflowProcessReferenceDocRest workFlowProcessMasterValueRest=mapper.readValue(workflowProcessReferenceDocRestStr,WorkflowProcessReferenceDocRest.class);
-            workflowProcessReferenceDoc= workflowProcessReferenceDocConverter.convert(workFlowProcessMasterValueRest,context);
-            System.out.println("workflowProcessReferenceDocRest::" + workFlowProcessMasterValueRest.getReferenceNumber());
+            WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest = mapper.readValue(workflowProcessReferenceDocRestStr, WorkflowProcessReferenceDocRest.class);
+            workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDocRest, context);
+            System.out.println("workflowProcessReferenceDocRest::" + workflowProcessReferenceDocRest.getReferenceNumber());
+
+            if (workflowProcessReferenceDocRest.getWorkFlowProcessRest()!= null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()!= null) {
+                workflowProcessReferenceDoc.setWorkflowProcess(workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid())));
+            }
+
             try {
                 fileInputStream = file.getInputStream();
             } catch (IOException e) {
                 log.error("Something went wrong when trying to read the inputstream from the given file in the request",
                         e);
-                throw new UnprocessableEntityException("The InputStream from the file couldn't be read", e);            }
+                throw new UnprocessableEntityException("The InputStream from the file couldn't be read", e);
+            }
             Bitstream bitstream = bundleRestRepository.processBitstreamCreationWithoutBundle(
                     context, fileInputStream, "", file.getOriginalFilename());
             System.out.println("bitstream::" + bitstream.getName());
             workflowProcessReferenceDoc.setBitstream(bitstream);
-            workflowProcessReferenceDoc= workflowProcessReferenceDocService.create(context,workflowProcessReferenceDoc);
+            workflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
             context.commit();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc,utils.obtainProjection());
+        return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
+
     }
 
-    @RequestMapping(method = RequestMethod.GET,value = "/test")
+    @RequestMapping(method = RequestMethod.GET, value = "/test")
     public String test(
             HttpServletRequest request
     ) {
