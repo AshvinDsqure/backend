@@ -12,6 +12,7 @@ import org.dspace.content.enums.Dispatch;
 import org.dspace.content.enums.Priority;
 import org.dspace.eperson.EPerson;
 import org.hibernate.annotations.Where;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -70,6 +71,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @Column(name = "workflow_id", insertable = false, updatable = false)
     private Integer legacyId;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
+    @OrderBy("index desc")
     private List<WorkflowProcessEperson> workflowProcessEpeople;
     @Column(name = "init_date", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)

@@ -14,6 +14,7 @@ import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
 import org.dspace.content.WorkflowProcess;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class JBPMProcess implements Serializable {
     private Integer jbpmprocid;
     private Integer jbpmtaskid;
     private  String procstatus;
+    private String workflowType ="Inward";
     public JBPMProcess(){
 
     }
@@ -39,7 +41,7 @@ public class JBPMProcess implements Serializable {
             this.initiator="Dsquare";
         }
         this.dispatch = workflowProcess.getDispatchModeRest().getPrimaryvalue();
-        this.users = workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList());
+        this.users = new ArrayList<>();
     }
 
     public String getQueueid() {
@@ -97,5 +99,13 @@ public class JBPMProcess implements Serializable {
 
     public void setProcstatus(String procstatus) {
         this.procstatus = procstatus;
+    }
+
+    public String getWorkflowType() {
+        return workflowType;
+    }
+
+    public void setWorkflowType(String workflowType) {
+        this.workflowType = workflowType;
     }
 }

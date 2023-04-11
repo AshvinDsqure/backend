@@ -23,10 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,9 +32,10 @@ public class JbpmServerImpl {
     public RestTemplate restTemplate;
     @Autowired
     private ConfigurationService configurationService;
-    public String startProcess(WorkFlowProcessRest workflowProcessw) throws  RuntimeException{
+    public String startProcess(WorkFlowProcessRest workflowProcessw,List<String> users) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess(workflowProcessw);
+        jbpmProcess.setUsers(users);
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -45,13 +43,11 @@ public class JbpmServerImpl {
         return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
-    public String forwardTask(WorkFlowProcessRest workflowProcess) throws  RuntimeException{
+    public String forwardTask(WorkFlowProcessRest workflowProcess,List<String> users) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
-        }
+        jbpmProcess.setUsers(users);
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
@@ -64,9 +60,6 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        /*if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
-            jbpmProcess.setUsers(workflowProcess.getWorkflowProcessEpersonRests().stream().map(w -> w.getUuid()).collect(Collectors.toList()));
-        }*/
         jbpmProcess.setUsers(new ArrayList<>());
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));

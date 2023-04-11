@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.WorkFlowProcessConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessEpersonConverter;
 import org.dspace.app.rest.enums.WorkFlowAction;
+import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
 import org.dspace.app.rest.model.WorkFlowProcessRest;
@@ -22,6 +23,7 @@ import org.dspace.app.rest.repository.LinkRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkFlowProcessHistory;
+import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.WorkflowProcess;
 import org.dspace.content.WorkflowProcessEperson;
 import org.dspace.content.service.WorkflowProcessEpersonService;
@@ -38,6 +40,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -82,29 +86,36 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
     public WorkFlowProcessRest forword(@PathVariable UUID uuid,
                                        HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
-        WorkFlowProcessRest workFlowProcessRest=null;
+        WorkFlowProcessRest workFlowProcessRest = null;
         try {
             Context context = ContextUtil.obtainContext(request);
             ObjectMapper mapper = new ObjectMapper();
             workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
-            System.out.println("workFlowProcessRest"+new Gson().toJson(workflowProcessEpersonRest));
+            System.out.println("workFlowProcessRest" + new Gson().toJson(workflowProcessEpersonRest));
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
-            WorkflowProcessEperson workflowProcessEperson=  workFlowProcessEpersonConverter.convert(context,workflowProcessEpersonRest);
+            WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
+
+            WorkflowProcessEperson workflowProcessEpersonmax = workFlowProcess.getWorkflowProcessEpeople().stream().max(Comparator.comparing(WorkflowProcessEperson::getIndex)).orElseThrow(NoSuchElementException::new);
+            System.out.println("workflowProcessEpersonmax.getIndex() index::" + workflowProcessEpersonmax.getIndex());
+            workflowProcessEperson.setIndex(workflowProcessEpersonmax.getIndex() + 1);
             workflowProcessEperson.setWorkflowProcess(workFlowProcess);
-            workflowProcessEperson=   workflowProcessEpersonService.create(context,workflowProcessEperson);
-            workFlowProcessRest= workFlowProcessConverter.convert(workFlowProcess,utils.obtainProjection());
-           // workFlowProcessRest.getWorkflowProcessEpersonRests().clear();
-            workFlowProcessRest.getWorkflowProcessEpersonRests().add( workFlowProcessEpersonConverter.convert(workflowProcessEperson,utils.obtainProjection()));
-            WorkFlowAction.FORWARD.perfomeAction(context,workFlowProcess, workFlowProcessRest);
+            Optional<WorkFlowProcessMasterValue> userTypeOption = WorkFlowUserType.NORMAL.getUserTypeFromMasterValue(context);
+            if (userTypeOption.isPresent()) {
+                workflowProcessEperson.setUsertype(userTypeOption.get());
+            }
+            workflowProcessEperson = workflowProcessEpersonService.create(context, workflowProcessEperson);
+            workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
+            WorkFlowAction.FORWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             return workFlowProcessRest;
         } catch (RuntimeException e) {
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
     }
+
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD}, value = "backward")
     public WorkFlowProcessRest backward(@PathVariable UUID uuid,
-                                       HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+                                        HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
         try {
@@ -112,19 +123,20 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             ObjectMapper mapper = new ObjectMapper();
             workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
-            WorkflowProcessEperson workflowProcessEperson=  workFlowProcessEpersonConverter.convert(context,workflowProcessEpersonRest);
+            WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
             workflowProcessEperson.setWorkflowProcess(workFlowProcess);
-            workFlowProcessRest= workFlowProcessConverter.convert(workFlowProcess,utils.obtainProjection());
-            WorkFlowAction.BACKWARD.perfomeAction(context,workFlowProcess,workFlowProcessRest);
+            workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
+            WorkFlowAction.BACKWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             return workFlowProcessRest;
         } catch (RuntimeException e) {
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
     }
+
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD}, value = "suspend")
     public WorkFlowProcessRest suspend(@PathVariable UUID uuid,
-                                        HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+                                       HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
         WorkFlowProcessRest workFlowProcessRest = null;
         try {
             Context context = ContextUtil.obtainContext(request);
@@ -135,9 +147,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction workFlowAction = WorkFlowAction.HOLD;
             try {
-                String body=  jbpmServer.holdTask(workFlowProcessRest, workFlowAction);
-                System.out.println("body:::"+body);
-               // storeHistory(context,workFlowAction,workFlowProcess);
+                String body = jbpmServer.holdTask(workFlowProcessRest, workFlowAction);
+                System.out.println("body:::" + body);
+                // storeHistory(context,workFlowAction,workFlowProcess);
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error in BPM Server..");
@@ -148,10 +160,11 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
     }
+
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD}, value = "resumetask")
     public WorkFlowProcessRest resumetask(@PathVariable UUID uuid,
-                                       HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+                                          HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
         WorkFlowProcessRest workFlowProcessRest = null;
         try {
             Context context = ContextUtil.obtainContext(request);
@@ -162,9 +175,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction workFlowAction = WorkFlowAction.UNHOLD;
             try {
-                String body=  jbpmServer.holdTask(workFlowProcessRest, workFlowAction);
-                System.out.println("body:::"+body);
-               // storeHistory(context,workFlowAction,workFlowProcess);
+                String body = jbpmServer.holdTask(workFlowProcessRest, workFlowAction);
+                System.out.println("body:::" + body);
+                // storeHistory(context,workFlowAction,workFlowProcess);
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error in BPM Server..");

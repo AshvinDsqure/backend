@@ -27,6 +27,7 @@ import java.util.Optional;
 public enum WorkFlowUserType {
     MASTER("Workflow User Type"),
     INITIATOR("Initiator"),
+    NORMAL("Normal"),
     REFER("Refer"),
     CLOSER("Closer");
     private String userType;

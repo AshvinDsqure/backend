@@ -96,7 +96,6 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         if (obj.getPriority() != null) {
             workFlowProcessRest.setPriority(obj.getPriority().getPriorityName());
         }
-
         if (obj.getDispatchmode() != null)
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
 
@@ -135,6 +134,10 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
                     we.setIndex(index.incrementAndGet());
                 }
                 WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, we);
+                Optional<WorkFlowProcessMasterValue> workFlowUserTypOptional = WorkFlowUserType.NORMAL.getUserTypeFromMasterValue(context);
+                if(we.getUserType() == null){
+                    workflowProcessEperson.setUsertype(workFlowUserTypOptional.get());
+                }
                 workflowProcessEperson.setOwner(false);
                 workflowProcessEperson.setWorkflowProcess(workflowProcess);
                 return workflowProcessEperson;
