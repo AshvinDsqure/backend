@@ -79,6 +79,9 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         if (rest.getUserType() != null) {
             workflowProcessEperson.setUsertype(workFlowProcessMasterValueConverter.convert(context, rest.getUserType()));
         }
+        if(rest.getAssignDate() != null){
+            workflowProcessEperson.setAssignDate(rest.getAssignDate());
+        }
         return workflowProcessEperson;
     }
 

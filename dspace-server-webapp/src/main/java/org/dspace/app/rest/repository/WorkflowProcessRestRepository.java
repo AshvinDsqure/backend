@@ -134,11 +134,9 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workflowProcess= createworkflowProcessFromRestObject(context,workFlowProcessRest);
             workFlowProcessRest=workFlowProcessConverter.convert(workflowProcess,utils.obtainProjection());
             try {
-                if(isDraft) {
+                System.out.println("isDraft:::"+isDraft);
+                if(!isDraft) {
                     WorkFlowAction.CREATE.perfomeAction(context,workflowProcess,workFlowProcessRest);
-                }else{
-                    WorkFlowAction.CREATE.perfomeAction(context,workflowProcess,workFlowProcessRest);
-                    WorkFlowAction.FORWARD.perfomeAction(context,workflowProcess,workFlowProcessRest);
                 }
                 context.commit();
             }catch (RuntimeException e){
