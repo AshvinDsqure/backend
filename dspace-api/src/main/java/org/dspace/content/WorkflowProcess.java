@@ -169,6 +169,13 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     public List<WorkflowProcessEperson> getWorkflowProcessEpeople() {
         return workflowProcessEpeople;
     }
+    public void setnewUser(WorkflowProcessEperson workflowProcessEperson) {
+        WorkflowProcessEperson workflowProcessEpersonmax = this.workflowProcessEpeople.stream().max(Comparator.comparing(WorkflowProcessEperson::getIndex)).orElseThrow(NoSuchElementException::new);
+        var nextindex=workflowProcessEpersonmax.getIndex()+1;
+        workflowProcessEperson.setIndex(nextindex);
+        this.workflowProcessEpeople.add(workflowProcessEperson);
+        System.out.println("workflowProcessEpersonmax index::"+workflowProcessEpersonmax.getIndex());
+    }
 
     public void setWorkflowProcessEpeople(List<WorkflowProcessEperson> workflowProcessEpeople) {
         this.workflowProcessEpeople = workflowProcessEpeople;

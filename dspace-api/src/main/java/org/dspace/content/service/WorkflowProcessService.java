@@ -68,4 +68,5 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
     int countfindByWorkflowProcessId(Context context, UUID eperson)throws SQLException;
 
     List<WorkflowProcess> findByWorkFlowProcessIds(Context context,List<String> WorkFlowProcessIds,Integer offset, Integer limit)throws SQLException;
+
 }
