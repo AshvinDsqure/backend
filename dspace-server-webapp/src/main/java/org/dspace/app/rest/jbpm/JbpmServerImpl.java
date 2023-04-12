@@ -56,6 +56,19 @@ public class JbpmServerImpl {
         return restTemplate.exchange(baseurl+ JBPM.FORWARDPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
+    public String completeTask(WorkFlowProcessRest workflowProcess,List<String> users) throws  RuntimeException{
+        String baseurl=configurationService.getProperty("jbpm.server");
+        JBPMProcess jbpmProcess=new JBPMProcess();
+        jbpmProcess.setQueueid(workflowProcess.getId());
+        jbpmProcess.setUsers(users);
+        jbpmProcess.setProcstatus("completed");
+        System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
+        return restTemplate.exchange(baseurl+ JBPM.FORWARDPROCESS, HttpMethod.POST, entity, String.class).getBody();
+
+    }
     public String backwardTask(WorkFlowProcessRest workflowProcess) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();

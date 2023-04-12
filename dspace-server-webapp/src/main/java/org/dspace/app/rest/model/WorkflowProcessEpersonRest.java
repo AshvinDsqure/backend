@@ -39,6 +39,8 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private WorkFlowProcessMasterValueRest officeRest = null;
     @JsonProperty
     private WorkFlowProcessMasterValueRest userType = null;
+    @JsonProperty
+    private String comment = null;
     @Transient
     private WorkFlowUserType workFlowUserType;
     @JsonFormat(pattern="dd/MM/yyyy")
@@ -118,5 +120,13 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     public void setWorkFlowUserType(WorkFlowUserType workFlowUserType) {
         this.workFlowUserType = workFlowUserType;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

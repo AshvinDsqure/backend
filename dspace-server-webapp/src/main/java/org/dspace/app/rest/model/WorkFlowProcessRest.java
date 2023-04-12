@@ -42,6 +42,10 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private WorkFlowProcessMasterValueRest eligibleForFilingRest = null;
     @JsonProperty
+    private WorkflowProcessEpersonRest owner = null;
+    @JsonProperty
+    private WorkflowProcessEpersonRest sender = null;
+    @JsonProperty
     private ItemRest itemRest;
     @JsonProperty
     private String Subject;
@@ -193,4 +197,19 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
         this.workflowTypeStr = workflowTypeStr;
     }
 
+    public WorkflowProcessEpersonRest getOwner() {
+        return owner;
+    }
+
+    public void setOwner(WorkflowProcessEpersonRest owner) {
+        this.owner = owner;
+    }
+
+    public WorkflowProcessEpersonRest getSender() {
+        return sender;
+    }
+
+    public void setSender(WorkflowProcessEpersonRest sender) {
+        this.sender = sender;
+    }
 }

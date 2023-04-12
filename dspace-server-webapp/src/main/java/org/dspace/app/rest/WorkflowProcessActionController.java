@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.WorkFlowProcessConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessEpersonConverter;
 import org.dspace.app.rest.enums.WorkFlowAction;
+import org.dspace.app.rest.enums.WorkFlowStatus;
+import org.dspace.app.rest.enums.WorkFlowType;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
@@ -22,15 +24,14 @@ import org.dspace.app.rest.repository.AbstractDSpaceRestRepository;
 import org.dspace.app.rest.repository.LinkRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.WorkFlowProcessHistory;
-import org.dspace.content.WorkFlowProcessMasterValue;
-import org.dspace.content.WorkflowProcess;
-import org.dspace.content.WorkflowProcessEperson;
+import org.dspace.content.*;
+import org.dspace.content.service.BundleService;
 import org.dspace.content.service.WorkflowProcessEpersonService;
 import org.dspace.content.service.WorkflowProcessService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,10 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID;
 
@@ -79,6 +77,8 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
     @Autowired
     WorkflowProcessEpersonService workflowProcessEpersonService;
     @Autowired
+    private BundleService bundleService;
+    @Autowired
     JbpmServerImpl jbpmServer;
 
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
@@ -94,7 +94,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             System.out.println("workFlowProcessRest" + new Gson().toJson(workflowProcessEpersonRest));
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
-            System.out.println("workFlowProcess.getWorkflowProcessEpeople()::"+workFlowProcess.getWorkflowProcessEpeople().size());
+            System.out.println("workFlowProcess.getWorkflowProcessEpeople()::" + workFlowProcess.getWorkflowProcessEpeople().size());
             workflowProcessEperson.setWorkflowProcess(workFlowProcess);
             Optional<WorkFlowProcessMasterValue> userTypeOption = WorkFlowUserType.NORMAL.getUserTypeFromMasterValue(context);
             if (userTypeOption.isPresent()) {
@@ -103,7 +103,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcess.setnewUser(workflowProcessEperson);
             workflowProcessService.create(context, workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
-            WorkFlowAction.FORWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            WorkFlowAction action= WorkFlowAction.FORWARD;
+            action.setComment(workflowProcessEpersonRest.getComment());
+            action.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
         } catch (RuntimeException e) {
@@ -128,6 +130,56 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         } catch (RuntimeException e) {
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
+    }
+
+    @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
+    @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD}, value = "completed")
+    public WorkFlowProcessRest complete(@PathVariable UUID uuid,
+                                        HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+        WorkFlowProcessRest workFlowProcessRest = null;
+        WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
+        try {
+            Context context = ContextUtil.obtainContext(request);
+            WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context);
+            if (workFlowTypeStatus.isPresent()) {
+                workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
+            }
+            if (workFlowProcess.getEligibleForFiling().getPrimaryvalue() == "Yes" && workFlowProcess.getItem() == null) {
+                throw new ResourceNotFoundException("Item ID not found");
+            }
+            Item item = workFlowProcess.getItem();
+            if (item != null) {
+                Bundle finalBundle = null;
+                List<Bundle> bundles = item.getBundles("ORIGINAL");
+                if (bundles.size() == 0) {
+                    bundleService.create(context, item, "ORIGINAL");
+                } else {
+                    finalBundle = bundles.stream().findFirst().get();
+                }
+                System.out.println("bundle name::"+finalBundle.getName());
+                Bundle finalBundle1 = finalBundle;
+                workFlowProcess.getWorkflowProcessReferenceDocs().forEach(wd -> {
+                    try {
+                        System.out.println("bitstream name::"+wd.getBitstream().getName());
+                        bundleService.addBitstream(context, finalBundle1, wd.getBitstream());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    } catch (AuthorizeException e) {
+                        e.printStackTrace();
+                        throw new RuntimeException(e);
+                    }
+                });
+
+            }
+            workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
+            WorkFlowAction.COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            context.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return workFlowProcessRest;
     }
 
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
