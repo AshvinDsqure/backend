@@ -94,20 +94,20 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             System.out.println("workFlowProcessRest" + new Gson().toJson(workflowProcessEpersonRest));
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
-
-            WorkflowProcessEperson workflowProcessEpersonmax = workFlowProcess.getWorkflowProcessEpeople().stream().max(Comparator.comparing(WorkflowProcessEperson::getIndex)).orElseThrow(NoSuchElementException::new);
-            System.out.println("workflowProcessEpersonmax.getIndex() index::" + workflowProcessEpersonmax.getIndex());
-            workflowProcessEperson.setIndex(workflowProcessEpersonmax.getIndex() + 1);
+            System.out.println("workFlowProcess.getWorkflowProcessEpeople()::"+workFlowProcess.getWorkflowProcessEpeople().size());
             workflowProcessEperson.setWorkflowProcess(workFlowProcess);
             Optional<WorkFlowProcessMasterValue> userTypeOption = WorkFlowUserType.NORMAL.getUserTypeFromMasterValue(context);
             if (userTypeOption.isPresent()) {
                 workflowProcessEperson.setUsertype(userTypeOption.get());
             }
-            workflowProcessEperson = workflowProcessEpersonService.create(context, workflowProcessEperson);
+            workFlowProcess.setnewUser(workflowProcessEperson);
+            workflowProcessService.create(context, workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction.FORWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            context.commit();
             return workFlowProcessRest;
         } catch (RuntimeException e) {
+            e.printStackTrace();
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
     }
@@ -120,13 +120,10 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
         try {
             Context context = ContextUtil.obtainContext(request);
-            ObjectMapper mapper = new ObjectMapper();
-            workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
-            WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
-            workflowProcessEperson.setWorkflowProcess(workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction.BACKWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            context.commit();
             return workFlowProcessRest;
         } catch (RuntimeException e) {
             throw new UnprocessableEntityException("error in forwardTask Server..");

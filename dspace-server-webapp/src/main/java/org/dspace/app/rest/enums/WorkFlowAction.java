@@ -77,8 +77,8 @@ public enum WorkFlowAction {
         @Override
         public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
             String forwardResponce = this.getJbpmServer().backwardTask(workFlowProcessRest);
-            JBPMResponse jbpmResponse = getModelMapper().map(forwardResponce, JBPMResponse.class);
-            Optional<WorkflowProcessEperson> workflowProcessEpersonOptional = workflowProcess.getWorkflowProcessEpeople().stream().filter(d -> d.getID().toString().equals(jbpmResponse.getPerformed_by())).findFirst();
+            JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
+            System.out.println("jbpmResponse:: Backward"+new Gson().toJson(jbpmResponse));
             WorkflowProcessEperson currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by()))).findFirst().get();
             currentOwner.setOwner(false);
             WorkflowProcessEperson workflowProcessEpersonOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getNext_user()))).findFirst().get();
