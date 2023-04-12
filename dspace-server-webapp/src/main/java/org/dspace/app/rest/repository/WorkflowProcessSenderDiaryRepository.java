@@ -9,18 +9,13 @@ package org.dspace.app.rest.repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkflowProcessSenderDiaryConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.DocumentTypeRest;
-import org.dspace.app.rest.model.ItemRest;
-import org.dspace.app.rest.model.LatterCategoryRest;
 import org.dspace.app.rest.model.WorkflowProcessSenderDiaryRest;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.Item;
-import org.dspace.content.LatterCategory;
 import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.content.service.WorkflowProcessSenderDiaryService;
 import org.dspace.core.Context;

@@ -65,6 +65,8 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     private List<WorkFlowProcessHistory> workFlowProcessHistories = new ArrayList<>();
     @Column(name = "isowner")
     private  Boolean isOwner;
+    @Column(name = "issender")
+    private  Boolean isSender=false;
     @Override
     public int getType() {
         return 0;
@@ -163,4 +165,13 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     public void setOwner(Boolean owner) {
         isOwner = owner;
     }
+
+    public Boolean getSender() {
+        return isSender;
+    }
+
+    public void setSender(Boolean sender) {
+        isSender = sender;
+    }
+
 }

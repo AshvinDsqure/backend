@@ -49,10 +49,6 @@ import org.dspace.eperson.EPerson;
         @LinkRest(
                 name = ItemRest.THUMBNAIL,
                 method = "getThumbnail"
-        ),
-        @LinkRest(
-                name = ItemRest.THUMBNAIL,
-                method = "download"
         )
 })
     public class ItemRest extends DSpaceObjectRest {

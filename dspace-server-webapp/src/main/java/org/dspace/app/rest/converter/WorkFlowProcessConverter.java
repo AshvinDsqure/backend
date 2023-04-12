@@ -98,7 +98,14 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         }
         if (obj.getDispatchmode() != null)
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
-
+        Optional<WorkflowProcessEperson> ownerRest=obj.getWorkflowProcessEpeople().stream().filter(w->w.getOwner()).findFirst();
+        if(ownerRest.isPresent()){
+            workFlowProcessRest.setOwner(workFlowProcessEpersonConverter.convert(ownerRest.get(), projection));
+        }
+        Optional<WorkflowProcessEperson> senderRest=obj.getWorkflowProcessEpeople().stream().filter(w->w.getSender()).findFirst();
+        if(senderRest.isPresent()){
+            workFlowProcessRest.setSender(workFlowProcessEpersonConverter.convert(senderRest.get(), projection));
+        }
         return workFlowProcessRest;
     }
 
