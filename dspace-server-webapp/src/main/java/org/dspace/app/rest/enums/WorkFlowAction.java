@@ -177,14 +177,19 @@ public enum WorkFlowAction {
 
     }
     public WorkflowProcessEperson changeOwnership(Context context,JBPMResponse_ jbpmResponse,WorkflowProcess workflowProcess) throws SQLException, AuthorizeException {
-        WorkflowProcessEperson currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by()))).findFirst().get();
-        currentOwner.setOwner(false);
-        currentOwner.setSender(true);
-        WorkflowProcessEperson workflowProcessEpersonOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getNext_user()))).findFirst().get();
-        workflowProcessEpersonOwner.setOwner(true);
-        workflowProcessEpersonOwner.setSender(false);
-        this.getWorkflowProcessEpersonService().update(context, workflowProcessEpersonOwner);
-        this.getWorkflowProcessEpersonService().update(context, currentOwner);
+        WorkflowProcessEperson currentOwner =null;
+        if(jbpmResponse.getNext_user() != null) {
+            currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by()))).findFirst().get();
+            currentOwner.setOwner(false);
+            currentOwner.setSender(true);
+            this.getWorkflowProcessEpersonService().update(context, currentOwner);
+        }
+        if(jbpmResponse.getNext_user() != null) {
+            WorkflowProcessEperson workflowProcessEpersonOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getNext_user()))).findFirst().get();
+            workflowProcessEpersonOwner.setOwner(true);
+            workflowProcessEpersonOwner.setSender(false);
+            this.getWorkflowProcessEpersonService().update(context, workflowProcessEpersonOwner);
+        }
         return  currentOwner;
 
     }
