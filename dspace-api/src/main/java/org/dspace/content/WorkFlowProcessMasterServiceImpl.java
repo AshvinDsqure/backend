@@ -12,7 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkFlowProcessMasterDAO;
 import org.dspace.content.service.WorkFlowProcessMasterService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -43,7 +45,9 @@ public class WorkFlowProcessMasterServiceImpl extends DSpaceObjectServiceImpl<Wo
     }
     @Override
     public void updateLastModified(Context context, WorkFlowProcessMaster dso) throws SQLException, AuthorizeException {
-
+        update(context, dso);
+        //Also fire a modified event since the item HAS been modified
+        context.addEvent(new org.dspace.event.Event(Event.MODIFY, Constants.ITEM, dso.getID(), null, getIdentifiers(context, dso)));
     }
     @Override
     public void delete(Context context, WorkFlowProcessMaster dso) throws SQLException, AuthorizeException, IOException {

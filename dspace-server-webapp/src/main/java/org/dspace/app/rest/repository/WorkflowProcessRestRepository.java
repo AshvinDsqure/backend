@@ -88,12 +88,16 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     }
 
     @Override
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
     public Page<WorkFlowProcessRest> findAll(Context context, Pageable pageable) {
         try {
+            UUID statusid=WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get().getID();
+            System.out.println("status id:"+statusid);
             int count=workflowProcessService.countfindByWorkflowProcessId(context,context.getCurrentUser().getID());
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkflowProcessId(context,context.getCurrentUser().getID(),Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkflowProcessId(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
         }catch (Exception e){
+            e.printStackTrace();
             throw  new RuntimeException(e.getMessage(),e);
         }
     }
@@ -111,9 +115,12 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcess workflowProcess=null;
 
+
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
             boolean isDraft=workFlowProcessRest.getDraft();
+            String comment= workFlowProcessRest.getComment();
+
             if(isDraft){
                 workFlowProcessRest.getWorkflowProcessEpersonRests().clear();
                 //clear user if workflowis Draft
@@ -136,7 +143,10 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             try {
                 System.out.println("isDraft:::"+isDraft);
                 if(!isDraft) {
-                    WorkFlowAction.CREATE.perfomeAction(context,workflowProcess,workFlowProcessRest);
+                   WorkFlowAction create= WorkFlowAction.CREATE;
+                    create.setComment(comment);
+                    create.perfomeAction(context,workflowProcess,workFlowProcessRest);
+
                 }
                 context.commit();
             }catch (RuntimeException e){
@@ -160,15 +170,18 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
             System.out.println("workflowProcess sender diariy::"+workflowProcess.getWorkflowProcessSenderDiary().getEmail());
-            Optional<WorkFlowProcessMasterValue> workflowstatusopOptionalWorkFlowProcessMasterValue=null;
-            System.out.println("workFlowProcessRest.getDraft()::"+workFlowProcessRest.getDraft());
+            WorkFlowProcessMasterValue workflowstatusopOptionalWorkFlowProcessMasterValue=null;
+                System.out.println("workFlowProcessRest.getDraft()::"+workFlowProcessRest.getDraft());
             if(!workFlowProcessRest.getDraft()){
-                workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.INPROGRESS.getUserTypeFromMasterValue(context);
+                System.out.println(">>>>>>>>>>>>>>>>>>>>"+WorkFlowStatus.INPROGRESS.getUserTypeFromMasterValue(context).get().getPrimaryvalue());
+                workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.INPROGRESS.getUserTypeFromMasterValue(context).get();
             }else{
-                workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.SUSPEND.getUserTypeFromMasterValue(context);
+                workflowstatusopOptionalWorkFlowProcessMasterValue =WorkFlowStatus.SUSPEND.getUserTypeFromMasterValue(context).get();
             }
-            if(workflowstatusopOptionalWorkFlowProcessMasterValue.isPresent()) {
-                workflowProcess.setWorkflowStatus(workflowstatusopOptionalWorkFlowProcessMasterValue.get());
+            if(workflowstatusopOptionalWorkFlowProcessMasterValue!=null) {
+                System.out.println(">>>>>>>>>>>>>>>>>{{}}>>>"+workflowstatusopOptionalWorkFlowProcessMasterValue.getPrimaryvalue());
+
+                workflowProcess.setWorkflowStatus(workflowstatusopOptionalWorkFlowProcessMasterValue);
             }
             workflowProcess = workflowProcessService.create(context,workflowProcess);
             WorkflowProcess finalWorkflowProcess = workflowProcess;

@@ -49,6 +49,8 @@ public class WorkFlowProcessHistoryConverter extends DSpaceObjectConverter<WorkF
             rest.setWorkflowProcessEpersonRest(workFlowProcessEpersonConverter.convert(obj.getWorkflowProcessEpeople(),projection));
         }
         rest.setUuid(obj.getID().toString());
+        rest.setComment(obj.getComment());
+        rest.setActionDate(obj.getActionDate());
         return rest;
     }
 
@@ -56,6 +58,7 @@ public class WorkFlowProcessHistoryConverter extends DSpaceObjectConverter<WorkF
         WorkFlowProcessHistory workFlowProcessHistory=new WorkFlowProcessHistory();
         workFlowProcessHistory.setAction(workFlowProcessMasterValueConverter.convert(context, obj.getAction()));
         workFlowProcessHistory.setWorkflowProcessEpeople(workFlowProcessEpersonConverter.convert(context, obj.getWorkflowProcessEpersonRest()));
+        workFlowProcessHistory.setComment(obj.getComment());
         return workFlowProcessHistory;
     }
 

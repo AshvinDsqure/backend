@@ -54,6 +54,8 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private  Boolean isDraft=false;
     @JsonProperty
+    private  String comment;
+    @JsonProperty
     List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests;
 
     @JsonProperty
@@ -211,5 +213,13 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setSender(WorkflowProcessEpersonRest sender) {
         this.sender = sender;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

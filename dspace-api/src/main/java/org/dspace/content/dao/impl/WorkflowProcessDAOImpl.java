@@ -41,35 +41,18 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
         super();
     }
 
-    @Override
-    public List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit) throws SQLException {
-        try {
-            String s = WorkFlowProcessIds.toString().replace("[", "");
-            String id = s.replace("]", "");
-            StringBuilder queryBuilder = new StringBuilder("SELECT s from  WorkflowProcess as s where id in (:WorkFlowProcessIds)");
-            Query query = createQuery(context, queryBuilder.toString());
-            query.setParameter("WorkFlowProcessIds", id);
-            if (0 <= offset) {
-                query.setFirstResult(offset);
-            }
-            if (0 <= limit) {
-                query.setMaxResults(limit);
-            }
 
-            return query.getResultList();
-        } catch (Exception e) {
-            System.out.println("in error " + e.getMessage());
-            return null;
-        }
-    }
 
     @Override
-    public List<WorkflowProcess> findByWorkflowProcessId(Context context,UUID eperson,Integer offset, Integer limit) throws SQLException {
-        Query query = createQuery(context, "" +
+    public List<WorkflowProcess> findByWorkflowProcessId(Context context,UUID eperson,UUID statusid,Integer offset, Integer limit) throws SQLException {
+    Query query = createQuery(context, "" +
                 "SELECT wp FROM WorkflowProcess as wp " +
-                "join wp.workflowProcessEpeople as ep join ep.ePerson as p  where ep.isOwner=:isOwner and p.id=:eperson");
+                "join wp.workflowProcessEpeople as ep " +
+                "join ep.ePerson as p  " +
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id NOT IN(:statusid)");
         query.setParameter("isOwner",true);
         query.setParameter("eperson",eperson);
+        query.setParameter("statusid",statusid);
 
         if (0 <= offset) {
             query.setFirstResult(offset);

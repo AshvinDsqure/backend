@@ -17,5 +17,6 @@ import java.util.UUID;
 
 public interface WorkFlowProcessHistoryDAO extends DSpaceObjectLegacySupportDAO<WorkFlowProcessHistory>{
     int countRows(Context context) throws SQLException;
-    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate , String enddate)  throws SQLException;
+    public int countHistory(Context context, UUID workflowprocessid) throws SQLException;
+    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid)  throws SQLException;
 }

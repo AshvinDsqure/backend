@@ -37,7 +37,7 @@ public class WorkFlowProcessMaster extends DSpaceObject implements DSpaceObjectL
     private String mastername;
 
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowprocessmaster",cascade = { CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowprocessmaster",cascade = { CascadeType.REMOVE})
     private List<WorkFlowProcessMasterValue> workflowprocessmastervalue =new ArrayList<>();
 
 

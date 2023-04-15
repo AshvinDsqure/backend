@@ -118,7 +118,6 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
             WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest = mapper.readValue(workflowProcessReferenceDocRestStr, WorkflowProcessReferenceDocRest.class);
             workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDocRest, context);
             System.out.println("workflowProcessReferenceDocRest::" + workflowProcessReferenceDocRest.getReferenceNumber());
-
             if (workflowProcessReferenceDocRest.getWorkFlowProcessRest()!= null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()!= null) {
                 workflowProcessReferenceDoc.setWorkflowProcess(workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid())));
             }

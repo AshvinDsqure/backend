@@ -40,7 +40,7 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     @JsonProperty
     private WorkFlowProcessMasterValueRest userType = null;
     @JsonProperty
-    private String comment = null;
+    private String comment;
     @Transient
     private WorkFlowUserType workFlowUserType;
     @JsonFormat(pattern="dd/MM/yyyy")

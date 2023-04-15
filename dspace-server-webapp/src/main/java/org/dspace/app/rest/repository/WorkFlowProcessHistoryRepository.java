@@ -154,18 +154,14 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
 
     @SearchRestMethod(name = "getHistory")
     public Page<WorkFlowProcessHistoryRest> getHistory(
-
-            @Parameter(value = "epersionid", required = true) UUID epersionid,
-            @Parameter(value = "workflowid", required = true) UUID workflowid,
-            @Parameter(value = "startdate", required = true) String startdate,
-            @Parameter(value = "enddate", required = true) String enddate,
+            @Parameter(value = "workflowprocessid", required = true) UUID workflowprocessid,
             Pageable pageable) {
         try {
             Context context = obtainContext();
-          //  long total = itemService.countTotal(context, startdate, enddate);
+          long total = workFlowProcessHistoryService.countHistory(context,workflowprocessid);
             List<WorkFlowProcessHistory> witems = workFlowProcessHistoryService.getHistory(
-                    context,workflowid,epersionid, startdate, enddate);
-            return converter.toRestPage(witems, pageable, 10, utils.obtainProjection());
+                    context,workflowprocessid);
+            return converter.toRestPage(witems, pageable,total, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

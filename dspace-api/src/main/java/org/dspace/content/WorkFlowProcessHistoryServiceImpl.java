@@ -12,7 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkFlowProcessHistoryDAO;
 import org.dspace.content.service.WorkFlowProcessHistoryService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -51,7 +53,9 @@ public class WorkFlowProcessHistoryServiceImpl extends DSpaceObjectServiceImpl<W
 
     @Override
     public void updateLastModified(Context context, WorkFlowProcessHistory dso) throws SQLException, AuthorizeException {
-
+        update(context, dso);
+        //Also fire a modified event since the item HAS been modified
+        context.addEvent(new org.dspace.event.Event(Event.MODIFY, Constants.ITEM, dso.getID(), null, getIdentifiers(context, dso)));
     }
 
     @Override
@@ -88,8 +92,13 @@ public class WorkFlowProcessHistoryServiceImpl extends DSpaceObjectServiceImpl<W
     }
 
     @Override
-    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate, String enddate) throws SQLException {
-        return workFlowProcessHistoryDAO.getHistory(context,workflowprocessid,epersonid,startdate,enddate);
+    public int countHistory(Context context, UUID workflowprocessid) throws SQLException {
+        return workFlowProcessHistoryDAO.countHistory(context,workflowprocessid);
+    }
+
+    @Override
+    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid) throws SQLException {
+        return workFlowProcessHistoryDAO.getHistory(context,workflowprocessid);
     }
 
     @Override

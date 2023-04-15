@@ -30,6 +30,8 @@ public interface WorkFlowProcessHistoryService extends DSpaceObjectService<WorkF
     public List<WorkFlowProcessHistory> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
 
-    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate , String enddate)  throws SQLException;
+    public int countHistory(Context context, UUID workflowprocessid) throws SQLException;
+
+    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid )  throws SQLException;
 
 }

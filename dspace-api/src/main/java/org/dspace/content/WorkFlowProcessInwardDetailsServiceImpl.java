@@ -12,7 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkFlowProcessInwardDetailsDAO;
 import org.dspace.content.service.WorkFlowProcessInwardDetailsService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -51,7 +53,9 @@ public class WorkFlowProcessInwardDetailsServiceImpl extends DSpaceObjectService
 
     @Override
     public void updateLastModified(Context context, WorkFlowProcessInwardDetails dso) throws SQLException, AuthorizeException {
-
+        update(context, dso);
+        //Also fire a modified event since the item HAS been modified
+        context.addEvent(new org.dspace.event.Event(Event.MODIFY, Constants.ITEM, dso.getID(), null, getIdentifiers(context, dso)));
     }
 
     @Override

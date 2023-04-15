@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.converter;
@@ -74,7 +74,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         if (obj.getWorkflowType() != null) {
             workFlowProcessRest.setWorkflowType(workFlowProcessMasterValueConverter.convert(obj.getWorkflowType(), projection));
         }
-        if (obj.getWorkflowStatus()!= null) {
+        if (obj.getWorkflowStatus() != null) {
             workFlowProcessRest.setWorkflowStatus(workFlowProcessMasterValueConverter.convert(obj.getWorkflowStatus(), projection));
         }
 
@@ -98,14 +98,15 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         }
         if (obj.getDispatchmode() != null)
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
-        Optional<WorkflowProcessEperson> ownerRest=obj.getWorkflowProcessEpeople().stream().filter(w->w.getOwner()).findFirst();
-        if(ownerRest.isPresent()){
+        Optional<WorkflowProcessEperson> ownerRest = obj.getWorkflowProcessEpeople().stream().filter(w -> w.getOwner() != null).filter(w -> w.getOwner()).findFirst();
+        if (ownerRest.isPresent()) {
             workFlowProcessRest.setOwner(workFlowProcessEpersonConverter.convert(ownerRest.get(), projection));
         }
-        Optional<WorkflowProcessEperson> senderRest=obj.getWorkflowProcessEpeople().stream().filter(w->w.getSender()).findFirst();
-        if(senderRest.isPresent()){
+        Optional<WorkflowProcessEperson> senderRest = obj.getWorkflowProcessEpeople().stream().filter(wn -> wn.getSender() != null).filter(w -> w.getSender()).findFirst();
+        if (senderRest.isPresent()) {
             workFlowProcessRest.setSender(workFlowProcessEpersonConverter.convert(senderRest.get(), projection));
         }
+
         return workFlowProcessRest;
     }
 
@@ -115,14 +116,14 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
-        workflowProcess.setItem(itemConverter.convert(obj.getItemRest(),context));
-          WorkFlowType workFlowType=WorkFlowType.valueOf(obj.getWorkflowTypeStr());
-       if(workFlowType != null){
-          Optional<WorkFlowProcessMasterValue> workFlowProcessMasterValue=workFlowType.getUserTypeFromMasterValue(context);
-          if(workFlowProcessMasterValue.isPresent()) {
-              workflowProcess.setWorkflowType(workFlowProcessMasterValue.get());
-          }
-       }
+        workflowProcess.setItem(itemConverter.convert(obj.getItemRest(), context));
+        WorkFlowType workFlowType = WorkFlowType.valueOf(obj.getWorkflowTypeStr());
+        if (workFlowType != null) {
+            Optional<WorkFlowProcessMasterValue> workFlowProcessMasterValue = workFlowType.getUserTypeFromMasterValue(context);
+            if (workFlowProcessMasterValue.isPresent()) {
+                workflowProcess.setWorkflowType(workFlowProcessMasterValue.get());
+            }
+        }
         /*workflowProcess.setWorkflowProcessReferenceDocs(obj.getWorkflowProcessReferenceDocRests().stream().map(d -> {
             try {
                 WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, d);
@@ -135,17 +136,18 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setSubject(obj.getSubject());
         // set submitor...
         AtomicInteger index = new AtomicInteger(0);
-            workflowProcess.setWorkflowProcessEpeople(obj.getWorkflowProcessEpersonRests().stream().map(we -> {
+        workflowProcess.setWorkflowProcessEpeople(obj.getWorkflowProcessEpersonRests().stream().map(we -> {
             try {
                 if (we.getUserType() == null) {
                     we.setIndex(index.incrementAndGet());
                 }
                 WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, we);
                 Optional<WorkFlowProcessMasterValue> workFlowUserTypOptional = WorkFlowUserType.NORMAL.getUserTypeFromMasterValue(context);
-                if(we.getUserType() == null){
+                if (we.getUserType() == null) {
                     workflowProcessEperson.setUsertype(workFlowUserTypOptional.get());
                 }
                 workflowProcessEperson.setOwner(false);
+                workflowProcessEperson.setSender(false);
                 workflowProcessEperson.setWorkflowProcess(workflowProcess);
                 return workflowProcessEperson;
             } catch (SQLException e) {

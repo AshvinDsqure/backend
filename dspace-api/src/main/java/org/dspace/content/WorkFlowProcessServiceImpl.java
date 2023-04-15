@@ -11,8 +11,10 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkflowProcessDAO;
 import org.dspace.content.service.*;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
 
+import org.dspace.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -37,6 +39,10 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     @Autowired(required = true)
     protected WorkflowProcessDAO workflowProcessDAO;
 
+    protected WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
+
+    protected WorkFlowProcessMasterService workFlowProcessMasterServicee;
+
     protected WorkFlowProcessServiceImpl() {
         super();
     }
@@ -58,7 +64,9 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
 
     @Override
     public void updateLastModified(Context context, WorkflowProcess dso) throws SQLException, AuthorizeException {
-
+        update(context, dso);
+        //Also fire a modified event since the item HAS been modified
+        context.addEvent(new org.dspace.event.Event(Event.MODIFY, Constants.ITEM, dso.getID(), null, getIdentifiers(context, dso)));
     }
 
     @Override
@@ -89,17 +97,12 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     }
 
     @Override
-    public List<WorkflowProcess> findByWorkflowProcessId(Context context, UUID eperson, Integer offset, Integer limit) throws SQLException {
-        return workflowProcessDAO.findByWorkflowProcessId(context,eperson,offset,limit);
+    public List<WorkflowProcess> findByWorkflowProcessId(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit) throws SQLException {
+       return workflowProcessDAO.findByWorkflowProcessId(context,eperson,statusid,offset,limit);
     }
 
     @Override
     public int countfindByWorkflowProcessId(Context context, UUID eperson) throws SQLException {
         return workflowProcessDAO.countfindByWorkflowProcessId(context,eperson);
-    }
-
-    @Override
-    public List<WorkflowProcess> findByWorkFlowProcessIds(Context context, List<String> WorkFlowProcessIds, Integer offset, Integer limit) throws SQLException {
-        return workflowProcessDAO.findByWorkFlowProcessIds(context,WorkFlowProcessIds,offset,limit);
     }
 }

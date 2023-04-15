@@ -31,6 +31,18 @@ public class WorkFlowProcessHistoryRest extends  DSpaceObjectRest{
     private WorkflowProcessEpersonRest workflowProcessEpersonRest;
     private WorkFlowProcessMasterValueRest action;
 
+    private String comment;
+
+    private Date actionDate;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     public WorkFlowProcessMasterValueRest getAction() {
         return action;
     }
@@ -66,4 +78,11 @@ public class WorkFlowProcessHistoryRest extends  DSpaceObjectRest{
     }
 
 
+    public Date getActionDate() {
+        return actionDate;
+    }
+
+    public void setActionDate(Date actionDate) {
+        this.actionDate = actionDate;
+    }
 }

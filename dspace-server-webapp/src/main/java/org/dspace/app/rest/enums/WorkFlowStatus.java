@@ -22,7 +22,7 @@ import java.util.Optional;
 
 public enum WorkFlowStatus {
     MASTER("Workflow Status"),
-    INPROGRESS("Inprogress"),
+    INPROGRESS("In Progress"),
     SUSPEND("Suspend"),
     DRAFT("Draft"),
     CLOSE("Close");

@@ -10,6 +10,7 @@ package org.dspace.content;
 import lombok.Data;
 import org.dspace.content.enums.Dispatch;
 import org.dspace.content.enums.Priority;
+import org.dspace.content.service.WorkflowProcessEpersonService;
 import org.dspace.eperson.EPerson;
 import org.hibernate.annotations.Where;
 import org.springframework.core.annotation.Order;
@@ -63,6 +64,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "workflowProcess")
     private List<WorkflowProcessReferenceDoc> workflowProcessReferenceDocs = new ArrayList<>();
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
+    @OrderBy("actionDate")
     private List<WorkFlowProcessHistory> workFlowProcessHistories = new ArrayList<>();
     /* Office   Details*/
     @Column(name = "subject")

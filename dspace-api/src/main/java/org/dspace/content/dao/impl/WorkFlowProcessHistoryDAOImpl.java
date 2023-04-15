@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.content.dao.impl;
@@ -18,11 +18,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlowProcessHistory> implements WorkFlowProcessHistoryDAO {
+public class WorkFlowProcessHistoryDAOImpl extends AbstractHibernateDAO<WorkFlowProcessHistory> implements WorkFlowProcessHistoryDAO {
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(WorkFlowProcessHistoryDAOImpl.class);
+
     protected WorkFlowProcessHistoryDAOImpl() {
         super();
     }
+
     @Override
     public WorkFlowProcessHistory findByLegacyId(Context context, int legacyId, Class<WorkFlowProcessHistory> clazz) throws SQLException {
         return null;
@@ -34,41 +36,29 @@ public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlo
     }
 
     @Override
-    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate, String enddate) throws SQLException {
-
-        if(workflowprocessid!=null){
-            System.out.println("in getHistory workflowprocessid:::::::::::::::::::::::::::>>>> ");
-            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
-                    "join history.workflowProcess  as wp " +
-                    "WHERE wp.id=:workflowprocessid ");
-            query.setParameter("workflowprocessid", workflowprocessid);
-
-            return query.getResultList();
-        }else  if(epersonid!=null){
-            System.out.println("in getHistory epersonid:::::::::::::::::::::::::::>>>> ");
+    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid) throws SQLException {
 
 
-            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
-                    "join history.workflowProcess  as wp " +
-                    "WHERE history.epersonid.id=:epersonid ");
-            query.setParameter("epersonid", epersonid);
-            return query.getResultList();
+        System.out.println("in getHistory workflowprocessid:::::::::::::::::::::::::::>>>> ");
+        Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
+                "join history.workflowProcess  as wp " +
+                "WHERE wp.id=:workflowprocessid ");
+        query.setParameter("workflowprocessid", workflowprocessid);
+        return query.getResultList();
 
-        }else{
-            System.out.println("in getHistory Daterange:::::::::::::::::::::::::::>>>> ");
-
-            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
-                    "join history.workflowProcess  as wp " +
-                    "WHERE history.epersonid.id=:epersonid " +
-                    "OR wp.id=:workflowprocessid "+
-                    "OR STR(history.actionDate) >= :startdate " +
-                    "AND STR(history.actionDate) <= :endDate ");
-            query.setParameter("workflowprocessid", workflowprocessid);
-            query.setParameter("epersonid", epersonid);
-            query.setParameter("startdate", startdate);
-            query.setParameter("endDate", enddate);
-            return query.getResultList();
-        }
 
     }
+    public int countHistory(Context context, UUID workflowprocessid) throws SQLException {
+
+
+        System.out.println("in getHistory workflowprocessid:::::::::::::::::::::::::::>>>> ");
+        Query query = createQuery(context, "SELECT count(history) FROM WorkFlowProcessHistory as history " +
+                "join history.workflowProcess  as wp " +
+                "WHERE wp.id=:workflowprocessid ");
+        query.setParameter("workflowprocessid", workflowprocessid);
+        return count(query);
+
+
+    }
+
 }
