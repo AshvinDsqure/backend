@@ -115,7 +115,6 @@ public class BundleServiceImpl extends DSpaceObjectServiceImpl<Bundle> implement
 
         return bundle;
     }
-
     @Override
     public Bitstream getBitstreamByName(Bundle bundle, String name) {
         Bitstream target = null;

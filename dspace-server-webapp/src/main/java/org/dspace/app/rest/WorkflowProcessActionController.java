@@ -173,6 +173,8 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
                 });
 
             }
+            workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
+            workflowProcessService.create(context,workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction.COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();

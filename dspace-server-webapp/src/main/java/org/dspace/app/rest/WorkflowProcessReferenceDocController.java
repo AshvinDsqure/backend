@@ -88,6 +88,8 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
     private WorkflowProcessReferenceDocService workflowProcessReferenceDocService;
     @Autowired
     private DiscoverableEndpointsService discoverableEndpointsService;
+    @Autowired
+    private BundleService bundleService;
 
     /**
      * Method to upload a Bitstream to a Bundle with the given UUID in the URL. This will create a Bitstream with the
