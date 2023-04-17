@@ -40,7 +40,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
      */
     public static final String ANY = "*";
     @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
-    @JoinColumn(name = "workflowprocessinwarddetails_id")
+    @JoinColumn(name = "workflowprocessinwarddetails_idf")
     private WorkFlowProcessInwardDetails workFlowProcessInwardDetails = null;
     @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "workflowprocesssenderdiary")

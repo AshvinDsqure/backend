@@ -161,6 +161,7 @@ public enum WorkFlowAction {
         WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
         workFlowAction.setActionDate(new Date());
         workFlowAction.setAction(workFlowProcessMasterValue);
+        workFlowAction.setComment(this.getComment());
         return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
     }
 

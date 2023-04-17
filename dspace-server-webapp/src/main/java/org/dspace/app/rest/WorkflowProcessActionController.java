@@ -91,6 +91,8 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             Context context = ContextUtil.obtainContext(request);
             ObjectMapper mapper = new ObjectMapper();
             workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
+
+            String comment=workflowProcessEpersonRest.getComment();
             System.out.println("workFlowProcessRest" + new Gson().toJson(workflowProcessEpersonRest));
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
@@ -104,7 +106,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workflowProcessService.create(context, workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction action= WorkFlowAction.FORWARD;
-            action.setComment(workflowProcessEpersonRest.getComment());
+            action.setComment(comment);
             action.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
@@ -121,10 +123,16 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
         try {
+
+            ObjectMapper mapper = new ObjectMapper();
+            workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
+            String comment=workflowProcessEpersonRest.getComment();
             Context context = ContextUtil.obtainContext(request);
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
-            WorkFlowAction.BACKWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            WorkFlowAction backward=WorkFlowAction.BACKWARD;
+            backward.setComment(comment);
+            backward.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
         } catch (RuntimeException e) {
@@ -140,6 +148,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
         try {
             Context context = ContextUtil.obtainContext(request);
+            ObjectMapper mapper = new ObjectMapper();
+            workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
+            String comment=workflowProcessEpersonRest.getComment();
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context);
             if (workFlowTypeStatus.isPresent()) {
@@ -176,7 +187,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
             workflowProcessService.create(context,workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
-            WorkFlowAction.COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            WorkFlowAction complete= WorkFlowAction.COMPLETE;
+            complete.setComment(comment);
+            complete.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
         }catch (Exception e){
             e.printStackTrace();
