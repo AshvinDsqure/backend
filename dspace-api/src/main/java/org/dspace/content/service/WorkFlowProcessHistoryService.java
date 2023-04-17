@@ -29,9 +29,8 @@ public interface WorkFlowProcessHistoryService extends DSpaceObjectService<WorkF
     public WorkFlowProcessHistory create(Context context, WorkFlowProcessHistory workFlowProcessHistory) throws SQLException, AuthorizeException;
     public List<WorkFlowProcessHistory> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
+    public int countHistory(Context contex,UUID workflowprocessid) throws SQLException;
 
-    public int countHistory(Context context, UUID workflowprocessid) throws SQLException;
-
-    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid )  throws SQLException;
+    List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid)  throws SQLException;
 
 }

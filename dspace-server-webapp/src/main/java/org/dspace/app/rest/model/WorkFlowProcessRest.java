@@ -66,6 +66,9 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     @JsonProperty
     private String priority;
+    @JsonProperty
+    private String comment;
+
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;

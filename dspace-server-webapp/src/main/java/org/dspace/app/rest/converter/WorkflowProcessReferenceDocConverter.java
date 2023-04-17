@@ -53,6 +53,12 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
         if(obj.getLatterCategory() != null){
             workflowProcessDefinitionRest.setLatterCategoryRest(workFlowProcessMasterValueConverter.convert(obj.getLatterCategory(),projection));
         }
+        if(obj.getSubject()!=null){
+            workflowProcessDefinitionRest.setSubject(obj.getSubject());
+        }
+        if(obj.getReferenceNumber()!=null){
+            workflowProcessDefinitionRest.setReferenceNumber(obj.getReferenceNumber());
+        }
         return workflowProcessDefinitionRest;
     }
     public WorkflowProcessReferenceDocRest convertForWorkFlow(WorkflowProcessReferenceDoc obj, Projection projection) {
