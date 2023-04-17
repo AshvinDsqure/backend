@@ -25,9 +25,7 @@ import org.dspace.app.rest.repository.LinkRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
-import org.dspace.content.service.BundleService;
-import org.dspace.content.service.WorkflowProcessEpersonService;
-import org.dspace.content.service.WorkflowProcessService;
+import org.dspace.content.service.*;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +78,10 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
     private BundleService bundleService;
     @Autowired
     JbpmServerImpl jbpmServer;
-
+    @Autowired
+    BitstreamService bitstreamService;
+    @Autowired
+    MetadataFieldService metadataFieldService;
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD}, value = "forward")
     public WorkFlowProcessRest forword(@PathVariable UUID uuid,
@@ -92,6 +93,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             ObjectMapper mapper = new ObjectMapper();
             workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
             System.out.println("workFlowProcessRest" + new Gson().toJson(workflowProcessEpersonRest));
+            String comment=workflowProcessEpersonRest.getComment();
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             WorkflowProcessEperson workflowProcessEperson = workFlowProcessEpersonConverter.convert(context, workflowProcessEpersonRest);
             System.out.println("workFlowProcess.getWorkflowProcessEpeople()::" + workFlowProcess.getWorkflowProcessEpeople().size());
@@ -104,7 +106,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workflowProcessService.create(context, workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction action= WorkFlowAction.FORWARD;
-            action.setComment(workflowProcessEpersonRest.getComment());
+            action.setComment(comment);
             action.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
@@ -121,10 +123,16 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
         try {
+
             Context context = ContextUtil.obtainContext(request);
+            ObjectMapper mapper = new ObjectMapper();
+            workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
+            String comment=workflowProcessEpersonRest.getComment();
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
-            WorkFlowAction.BACKWARD.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            WorkFlowAction backward= WorkFlowAction.BACKWARD;
+            backward.setComment(comment);
+            backward.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
         } catch (RuntimeException e) {
@@ -140,6 +148,10 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
         try {
             Context context = ContextUtil.obtainContext(request);
+            ObjectMapper mapper = new ObjectMapper();
+            workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
+            String comment=workflowProcessEpersonRest.getComment();
+
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context);
             if (workFlowTypeStatus.isPresent()) {
@@ -150,24 +162,12 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             }
             Item item = workFlowProcess.getItem();
             if (item != null) {
-                Bundle finalBundle = null;
-                List<Bundle> bundles = item.getBundles("ORIGINAL");
-                if (bundles.size() == 0) {
-                    bundleService.create(context, item, "ORIGINAL");
-                } else {
-                    finalBundle = bundles.stream().findFirst().get();
-                }
-                System.out.println("bundle name::"+finalBundle.getName());
-                Bundle finalBundle1 = finalBundle;
                 workFlowProcess.getWorkflowProcessReferenceDocs().forEach(wd -> {
                     try {
-                        System.out.println("bitstream name::"+wd.getBitstream().getName());
-                        bundleService.addBitstream(context, finalBundle1, wd.getBitstream());
+                        this.storeWorkFlowMataDataTOBitsream(context,wd,item);
                     } catch (SQLException e) {
-                        e.printStackTrace();
                         throw new RuntimeException(e);
                     } catch (AuthorizeException e) {
-                        e.printStackTrace();
                         throw new RuntimeException(e);
                     }
                 });
@@ -176,9 +176,13 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
             workflowProcessService.create(context,workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
-            WorkFlowAction.COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            WorkFlowAction COMPLETE= WorkFlowAction.COMPLETE;
+            COMPLETE.setComment(comment);
+            COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
+            workflowProcessService.create(context,workFlowProcess);
             context.commit();
-        }catch (Exception e){
+        }catch (RuntimeException e){
             e.printStackTrace();
         }
         return workFlowProcessRest;
@@ -238,6 +242,37 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         } catch (RuntimeException e) {
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
+    }
+    public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc,Item item) throws SQLException, AuthorizeException {
+        Bitstream bitstream= workflowProcessReferenceDoc.getBitstream();
+        if(bitstream != null) {
+            List<Bundle> bundles = item.getBundles("ORIGINAL");
+            Bundle finalBundle = null;
+            if (bundles.size() == 0) {
+                finalBundle = bundleService.create(context, item, "ORIGINAL");
+            } else {
+                finalBundle = bundles.stream().findFirst().get();
+            }
+            Bundle finalBundle1 = finalBundle;
+            bundleService.addBitstream(context, finalBundle1, bitstream);
+            if (workflowProcessReferenceDoc.getWorkFlowProcessReferenceDocType() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "doc", "type", null, workflowProcessReferenceDoc.getWorkFlowProcessReferenceDocType().getPrimaryvalue());
+            }
+            if (workflowProcessReferenceDoc.getReferenceNumber() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "ref", "number", null, workflowProcessReferenceDoc.getReferenceNumber());
+            }
+            if (workflowProcessReferenceDoc.getSubject() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "description", null, null, workflowProcessReferenceDoc.getSubject());
+            }
+            if (workflowProcessReferenceDoc.getLatterCategory() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "letter", "category", null, workflowProcessReferenceDoc.getLatterCategory().getPrimaryvalue());
+                bitstreamService.addMetadata(context, bitstream, "dc", "letter", "categoryhi", null, workflowProcessReferenceDoc.getLatterCategory().getSecondaryvalue());
+            }
+            if (workflowProcessReferenceDoc.getInitdate() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "date", null, null, workflowProcessReferenceDoc.getInitdate().toString());
+            }
+        }
+
     }
 
 

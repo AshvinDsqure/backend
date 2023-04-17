@@ -59,6 +59,8 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
     @Column(name = "actiondate", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actionDate = new Date();
+    @Column(name = "comment")
+    private String comment;
 
     public WorkFlowProcessMasterValue getAction() {
         return action;
@@ -109,5 +111,12 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
 
     public void setWorkflowProcess(WorkflowProcess workflowProcess) {
         this.workflowProcess = workflowProcess;
+    }
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

@@ -39,17 +39,11 @@ public enum WorkFlowAction {
                 String jbpmResponce = this.getJbpmServer().startProcess(workFlowProcessRest, usersUuid);
                 JBPMResponse_ jbpmResponse = new Gson().fromJson(jbpmResponce, JBPMResponse_.class);
                 System.out.println("jbpm responce create" + new Gson().toJson(jbpmResponse));
-                Optional<WorkflowProcessEperson> workflowProcessEpersonOptionalInitiator = workflowProcess.getWorkflowProcessEpeople().stream().filter(wei -> wei.getID().toString().equals(jbpmResponse.getPerformed_by())).findFirst();
-                Optional<WorkflowProcessEperson> workflowProcessEpersonOptionalnextUser = workflowProcess.getWorkflowProcessEpeople().stream().filter(wei -> wei.getID().toString().equals(jbpmResponse.getNext_user())).findFirst();
-                WorkFlowProcessHistory workFlowActionInit = this.storeWorkFlowHistory(context, workflowProcess, workflowProcessEpersonOptionalInitiator.get());
-                WorkFlowProcessHistory workFlowActionForward = FORWARD.storeWorkFlowHistory(context, workflowProcess, workflowProcessEpersonOptionalInitiator.get());
-                if(workflowProcessEpersonOptionalnextUser.isPresent()) {
-                    WorkflowProcessEperson nextuser=workflowProcessEpersonOptionalnextUser.get();
-                    nextuser.setOwner(true);
-                    getWorkflowProcessEpersonService().update(context, nextuser);
-                }
-                this.getWorkFlowProcessHistoryService().create(context, workFlowActionForward);
-                return this.getWorkFlowProcessHistoryService().create(context, workFlowActionInit);
+                WorkflowProcessEperson currentOwner =  this.changeOwnership(context,jbpmResponse,workflowProcess);
+                WorkFlowProcessHistory workFlowActionInit = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+                WorkFlowProcessHistory workFlowActionForward = FORWARD.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+                this.getWorkFlowProcessHistoryService().create(context, workFlowActionInit);
+                return this.getWorkFlowProcessHistoryService().create(context, workFlowActionForward);
             } else {
                 throw new RuntimeException("initiator not  found.....");
             }
@@ -179,7 +173,7 @@ public enum WorkFlowAction {
     }
     public WorkflowProcessEperson changeOwnership(Context context,JBPMResponse_ jbpmResponse,WorkflowProcess workflowProcess) throws SQLException, AuthorizeException {
         WorkflowProcessEperson currentOwner =null;
-        if(jbpmResponse.getNext_user() != null) {
+        if(jbpmResponse.getPerformed_by() != null) {
             currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by()))).findFirst().get();
             currentOwner.setOwner(false);
             currentOwner.setSender(true);
