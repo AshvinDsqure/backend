@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
@@ -71,10 +71,11 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
 
         return converter.toRest(workFlowProcessHistory, utils.obtainProjection());
     }
+
     private WorkFlowProcessHistory createWorkFlowProcessHistoryFromRestObject(Context context, WorkFlowProcessHistoryRest workFlowProcessHistoryRest) throws AuthorizeException {
         WorkFlowProcessHistory workFlowProcessHistory = new WorkFlowProcessHistory();
         try {
-            workFlowProcessHistory=workFlowProcessHistoryConverter.convert(context,workFlowProcessHistoryRest );
+            workFlowProcessHistory = workFlowProcessHistoryConverter.convert(context, workFlowProcessHistoryRest);
             workFlowProcessHistoryService.create(context, workFlowProcessHistory);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -84,42 +85,32 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
 
     @Override
     protected WorkFlowProcessHistoryRest put(Context context, HttpServletRequest request, String apiCategory, String model, UUID id,
-                                     JsonNode jsonNode) throws SQLException, AuthorizeException {
+                                             JsonNode jsonNode) throws SQLException, AuthorizeException {
         log.info("::::::start::::put::::::::::");
-        WorkFlowProcessHistoryRest workFlowProcessHistoryRest  = new Gson().fromJson(jsonNode.toString(), WorkFlowProcessHistoryRest.class);
-
+        WorkFlowProcessHistoryRest workFlowProcessHistoryRest = new Gson().fromJson(jsonNode.toString(), WorkFlowProcessHistoryRest.class);
         WorkFlowProcessHistory workFlowProcessHistory = workFlowProcessHistoryService.find(context, id);
         if (workFlowProcessHistory == null) {
-            System.out.println("workFlowProcessHistoryrest id ::: is Null  workFlowProcessHistoryrest tye null"+id);
+            System.out.println("workFlowProcessHistoryrest id ::: is Null  workFlowProcessHistoryrest tye null" + id);
             throw new ResourceNotFoundException("workFlowProcessHistoryrest  field with id: " + id + " not found");
         }
-        workFlowProcessHistory=workFlowProcessHistoryConverter.convert(context,workFlowProcessHistoryRest);
-       workFlowProcessHistoryService.update(context, workFlowProcessHistory);
+        workFlowProcessHistory = workFlowProcessHistoryConverter.convert(context, workFlowProcessHistoryRest);
+        workFlowProcessHistoryService.update(context, workFlowProcessHistory);
         context.commit();
-        log.info("::::::End::::put::::::::::");
-
         return converter.toRest(workFlowProcessHistory, utils.obtainProjection());
     }
-
-
     @Override
     public WorkFlowProcessHistoryRest findOne(Context context, UUID uuid) {
-        WorkFlowProcessHistoryRest workFlowProcessHistoryRest =null;
-        log.info("::::::start::::findOne::::::::::");
-
+        WorkFlowProcessHistoryRest workFlowProcessHistoryRest = null;
         try {
             Optional<WorkFlowProcessHistory> workFlowProcessHistory = Optional.ofNullable(workFlowProcessHistoryService.find(context, uuid));
             if (workFlowProcessHistory.isPresent()) {
                 workFlowProcessHistoryRest = converter.toRest(workFlowProcessHistory.get(), utils.obtainProjection());
             }
         } catch (Exception e) {
-            log.info("::::::error::::findOne::::::::::");
             e.printStackTrace();
         }
-        log.info("::::::End::::findOne::::::::::");
         return workFlowProcessHistoryRest;
     }
-
     @Override
     public Page<WorkFlowProcessHistoryRest> findAll(Context context, Pageable pageable) throws SQLException {
         int total = workFlowProcessHistoryService.countRows(context);
@@ -128,17 +119,13 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
         return converter.toRestPage(workFlowProcessHistories, pageable, total, utils.obtainProjection());
 
     }
-
     protected void delete(Context context, UUID id) throws AuthorizeException {
-        log.info("::::::in::::delete::::::::::");
         WorkFlowProcessHistory workFlowProcessHistory = null;
         try {
             workFlowProcessHistory = workFlowProcessHistoryService.find(context, id);
             if (workFlowProcessHistory == null) {
-                log.info("::::::id not found::::delete::::::::::");
                 throw new ResourceNotFoundException(WorkFlowProcessHistoryRest.CATEGORY + "." + WorkFlowProcessHistoryRest.NAME +
                         " with id: " + id + " not found");
-
             }
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -146,34 +133,21 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
         try {
             workFlowProcessHistoryService.delete(context, workFlowProcessHistory);
             context.commit();
-            log.info(":::::completed:::delete::::::::::");
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-
     @SearchRestMethod(name = "getHistory")
-    public Page<WorkFlowProcessHistoryRest> getHistory(
-
-            @Parameter(value = "epersionid", required = true) UUID epersionid,
-            @Parameter(value = "workflowid", required = true) UUID workflowid,
-            @Parameter(value = "startdate", required = true) String startdate,
-            @Parameter(value = "enddate", required = true) String enddate,
-            Pageable pageable) {
+    public Page<WorkFlowProcessHistoryRest> getHistory(@Parameter(value = "workflowprocessid", required = true) UUID workflowprocessid, Pageable pageable) {
         try {
             Context context = obtainContext();
-          //  long total = itemService.countTotal(context, startdate, enddate);
-            List<WorkFlowProcessHistory> witems = workFlowProcessHistoryService.getHistory(
-                    context,workflowid,epersionid, startdate, enddate);
-            return converter.toRestPage(witems, pageable, 10, utils.obtainProjection());
+            long total = workFlowProcessHistoryService.countHistory(context, workflowprocessid);
+            List<WorkFlowProcessHistory> witems = workFlowProcessHistoryService.getHistory(context, workflowprocessid);
+            return converter.toRestPage(witems, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
-
-
-
-
     @Override
     public Class<WorkFlowProcessHistoryRest> getDomainClass() {
         return null;

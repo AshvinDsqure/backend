@@ -88,8 +88,13 @@ public class WorkFlowProcessHistoryServiceImpl extends DSpaceObjectServiceImpl<W
     }
 
     @Override
-    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid, UUID epersonid, String startdate, String enddate) throws SQLException {
-        return workFlowProcessHistoryDAO.getHistory(context,workflowprocessid,epersonid,startdate,enddate);
+    public int countHistory(Context contex, UUID workflowprocessid) throws SQLException {
+        return workFlowProcessHistoryDAO.countHistory(contex,workflowprocessid);
+    }
+
+    @Override
+    public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid) throws SQLException {
+        return workFlowProcessHistoryDAO.getHistory(context,workflowprocessid);
     }
 
     @Override

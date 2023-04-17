@@ -64,6 +64,9 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     @JsonProperty
     private String priority;
+    @JsonProperty
+    private String comment;
+
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
@@ -211,5 +214,13 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setSender(WorkflowProcessEpersonRest sender) {
         this.sender = sender;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
