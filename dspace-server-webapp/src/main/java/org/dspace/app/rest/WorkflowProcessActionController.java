@@ -179,7 +179,6 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             WorkFlowAction COMPLETE= WorkFlowAction.COMPLETE;
             COMPLETE.setComment(comment);
             COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
-            workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
             workflowProcessService.create(context,workFlowProcess);
             context.commit();
         }catch (RuntimeException e){

@@ -8,6 +8,10 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.dspace.app.rest.model.helper.MyDateConverter;
 
 import java.util.Date;
 
@@ -21,9 +25,9 @@ public class WorkFlowProcessInwardDetailsRest extends  DSpaceObjectRest{
     private Integer legacyId;
 
     private String inwardNumber;
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonDeserialize(converter = MyDateConverter.class)
     private Date inwardDate;
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonDeserialize(converter = MyDateConverter.class)
     private Date receivedDate;
 
     public String getInwardNumber() {

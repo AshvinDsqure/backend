@@ -8,9 +8,12 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dspace.app.rest.enums.WorkFlowUserType;
+import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.springframework.data.annotation.Transient;
 
 import java.util.Date;
@@ -43,7 +46,8 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private String comment;
     @Transient
     private WorkFlowUserType workFlowUserType;
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonProperty
+    @JsonDeserialize(converter = MyDateConverter.class)
     private Date assignDate =null;
 
 

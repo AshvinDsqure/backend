@@ -50,8 +50,11 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
         return obj;
     }
     public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiaryRest rest) {
-        WorkflowProcessSenderDiary obj = new WorkflowProcessSenderDiary();
-        obj = modelMapper.map(rest, WorkflowProcessSenderDiary.class);
+        WorkflowProcessSenderDiary obj =null;
+        if(rest != null) {
+            obj = new WorkflowProcessSenderDiary();
+            obj = modelMapper.map(rest, WorkflowProcessSenderDiary.class);
+        }
         return obj;
     }
 

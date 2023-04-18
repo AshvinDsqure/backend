@@ -65,7 +65,11 @@ public class ItemConverter
     }
     public Item convert(ItemRest obj,Context context) throws SQLException {
         System.out.println("Iteam idddd::"+obj.getUuid());
-       return itemService.find(context, UUID.fromString(obj.getUuid()));
+        Item item=null;
+        if(obj.getUuid() !=null && obj.getUuid().trim().length() !=0){
+            item=itemService.find(context, UUID.fromString(obj.getUuid()));
+        }
+       return item;
     }
 
     /**

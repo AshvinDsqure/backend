@@ -20,11 +20,14 @@ import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
+import org.dspace.app.rest.exception.WorkFlowValiDationException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
 import org.dspace.app.rest.jbpm.models.JBPMResponse;
 import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.app.rest.repository.handler.service.UriListHandlerService;
+import org.dspace.app.rest.validation.WorkflowProcessValid;
+import org.dspace.app.rest.validation.impl.ValidWorkFlowProcessCheck;
 import org.dspace.app.util.AuthorizeUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
@@ -44,6 +47,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ValidatorFactory;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -77,6 +82,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     JbpmServerImpl jbpmServer;
     @Autowired
     ModelMapper modelMapper ;
+    @Autowired
+    private ValidatorFactory validatorFactory;
     public WorkflowProcessRestRepository(WorkflowProcessService dsoService) {
         super(dsoService);
     }
@@ -114,10 +121,12 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         ObjectMapper mapper = new ObjectMapper();
         WorkFlowProcessRest workFlowProcessRest = null;
         WorkflowProcess workflowProcess=null;
-
-
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
+            Set<ConstraintViolation<WorkFlowProcessRest>> violations=validatorFactory.getValidator().validate(workFlowProcessRest);
+            if (!violations.isEmpty()){
+                throw new WorkFlowValiDationException(violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
+            }
             boolean isDraft=workFlowProcessRest.getDraft();
             String comment= workFlowProcessRest.getComment();
 
@@ -126,7 +135,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
                 //clear user if workflowis Draft
             }
             //set submitorUser
-            if(context.getCurrentUser() != null){
+            if(context.getCurrentUser() != null && !isDraft){
                 WorkflowProcessEpersonRest workflowProcessEpersonSubmitor=new WorkflowProcessEpersonRest();
                 EPersonRest ePersonRest=new EPersonRest();
                 ePersonRest.setUuid(context.getCurrentUser().getID().toString());
@@ -149,13 +158,15 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
                 }
                 context.commit();
-            }catch (RuntimeException e){
+            }catch (RuntimeException | SQLException e){
                 e.printStackTrace();
                 throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
             }
-        } catch (Exception e1) {
+        } catch (RuntimeException | IOException e1) {
             e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         return workFlowProcessRest;
     }
@@ -166,10 +177,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workflowProcess=workFlowProcessConverter.convert(workFlowProcessRest,context);
             Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional=Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context,workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
             if(workflowProcessSenderDiaryOptional.isPresent()){
-                System.out.println("is diari presenttttttt");
                 workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
             }
-            System.out.println("workflowProcess sender diariy::"+workflowProcess.getWorkflowProcessSenderDiary().getEmail());
             WorkFlowProcessMasterValue workflowstatusopOptionalWorkFlowProcessMasterValue=null;
                 System.out.println("workFlowProcessRest.getDraft()::"+workFlowProcessRest.getDraft());
             if(!workFlowProcessRest.getDraft()){

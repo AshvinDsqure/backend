@@ -8,7 +8,10 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.dspace.content.WorkFlowProcessMasterValue;
 
 import java.util.ArrayList;
@@ -37,7 +40,8 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     private WorkFlowProcessMasterValueRest workFlowProcessReferenceDocType;
     @JsonProperty
     private WorkFlowProcessMasterValueRest latterCategoryRest;
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonProperty
+    @JsonDeserialize(converter = MyDateConverter.class)
     private Date initdate = new Date();
     @JsonProperty
     private WorkFlowProcessRest workFlowProcessRest;

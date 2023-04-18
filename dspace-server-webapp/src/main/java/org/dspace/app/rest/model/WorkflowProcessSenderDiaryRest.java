@@ -11,6 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dspace.app.rest.RestResourceController;
 
 import javax.persistence.Column;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class WorkflowProcessSenderDiaryRest  extends  DSpaceObjectRest{
@@ -24,6 +27,9 @@ public class WorkflowProcessSenderDiaryRest  extends  DSpaceObjectRest{
     private String sendername;
     private String designation;
     private String contactNumber;
+    @NotEmpty
+    @Size(min=5)
+    @Email
     private String email;
     private String organization;
     private String address;

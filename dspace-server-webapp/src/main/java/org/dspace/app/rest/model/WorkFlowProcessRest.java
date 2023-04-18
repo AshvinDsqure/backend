@@ -8,8 +8,12 @@
 package org.dspace.app.rest.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
+import org.dspace.app.rest.model.helper.MyDateConverter;
+import org.dspace.app.rest.validation.WorkflowProcessValid;
 import org.dspace.content.WorkflowProcessEperson;
 
 import java.util.ArrayList;
@@ -24,7 +28,7 @@ import java.util.List;
 @LinksRest(links = {
 
 })
-@Data
+@WorkflowProcessValid
 public class WorkFlowProcessRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocesse";
     public static final String PLURAL_NAME = "workflowprocess";
@@ -61,6 +65,7 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests=new ArrayList<>();
     @JsonProperty
+    @JsonDeserialize(converter = MyDateConverter.class)
     private Date InitDate = new Date();
 
 

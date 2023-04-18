@@ -116,7 +116,9 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
-        workflowProcess.setItem(itemConverter.convert(obj.getItemRest(), context));
+        if(obj.getItemRest() != null) {
+            workflowProcess.setItem(itemConverter.convert(obj.getItemRest(), context));
+        }
         WorkFlowType workFlowType = WorkFlowType.valueOf(obj.getWorkflowTypeStr());
         if (workFlowType != null) {
             Optional<WorkFlowProcessMasterValue> workFlowProcessMasterValue = workFlowType.getUserTypeFromMasterValue(context);
@@ -124,15 +126,6 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
                 workflowProcess.setWorkflowType(workFlowProcessMasterValue.get());
             }
         }
-        /*workflowProcess.setWorkflowProcessReferenceDocs(obj.getWorkflowProcessReferenceDocRests().stream().map(d -> {
-            try {
-                WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, d);
-                workflowProcessReferenceDoc.setWorkflowProcess(workflowProcess);
-                return workflowProcessReferenceDoc;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }).collect(Collectors.toList()))*/
         workflowProcess.setSubject(obj.getSubject());
         // set submitor...
         AtomicInteger index = new AtomicInteger(0);
@@ -155,11 +148,10 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
             }
         }).collect(Collectors.toList()));
         workflowProcess.setInitDate(obj.getInitDate());
-        if (obj.getPriority() != null) {
+        if (obj.getPriority() != null && obj.getPriority().length() !=0) {
             workflowProcess.setPriority(Priority.valueOf(obj.getPriority()));
         }
         if (obj.getDispatchModeRest() != null) {
-            System.out.println("obj.getWorkflowProcessReferenceDocRests()::" + obj.getDispatchModeRest().getId());
             workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         }
         return workflowProcess;
