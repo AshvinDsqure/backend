@@ -62,4 +62,18 @@ public class WorkflowProcessSenderDiaryDAOImpl extends AbstractHibernateDSODAO<W
             return null;
         }
     }
+
+    @Override
+    public WorkflowProcessSenderDiary searchSenderDiary(Context context,String name, String email) throws SQLException {
+        try {
+            Query query = createQuery(context,"SELECT s from  WorkflowProcessSenderDiary as s where lower(s.sendername)  like :name And lower(s.email) like :email");
+            query.setParameter("name","%"+name.toLowerCase()+"%");
+            query.setParameter("email","%"+email.toLowerCase()+"%");
+            return (WorkflowProcessSenderDiary) query.getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("in error " + e.getMessage());
+            return null;
+        }
+    }
 }

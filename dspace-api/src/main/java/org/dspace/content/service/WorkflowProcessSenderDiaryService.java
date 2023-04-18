@@ -13,6 +13,7 @@ import org.dspace.content.*;
 import org.dspace.core.Context;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 public interface WorkflowProcessSenderDiaryService extends DSpaceObjectService<WorkflowProcessSenderDiary>, DSpaceObjectLegacySupportService<WorkflowProcessSenderDiary> {
@@ -33,5 +34,7 @@ public interface WorkflowProcessSenderDiaryService extends DSpaceObjectService<W
      */
     public List<WorkflowProcessSenderDiary> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     public int countRows(Context context) throws SQLException;
+    WorkflowProcessSenderDiary searchSenderDiary(Context context,String name, String email) throws SQLException;
+
     public WorkflowProcessSenderDiary findByEmailID(Context context, String emailID) throws SQLException;
 }

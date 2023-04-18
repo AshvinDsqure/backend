@@ -84,6 +84,7 @@ public enum WorkFlowAction {
             System.out.println("jbpmResponse:: Backward"+new Gson().toJson(jbpmResponse));
             WorkflowProcessEperson currentOwner =  this.changeOwnership(context,jbpmResponse,workflowProcess);
             WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+            workFlowAction.setComment(this.getComment());
             return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
         }
     };
@@ -167,7 +168,10 @@ public enum WorkFlowAction {
         workFlowAction.setActionDate(new Date());
         workFlowAction.setAction(workFlowProcessMasterValue);
         workFlowAction.setWorkflowProcess(workflowProcess);
-        //this.getComment()
+        System.out.println("comment::::::" + this.getComment());
+        if(this.getComment()!=null){
+            workFlowAction.setComment(this.getComment());
+        }
         return workFlowAction;
 
     }

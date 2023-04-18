@@ -40,9 +40,6 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
     protected WorkflowProcessDAOImpl() {
         super();
     }
-
-
-
     @Override
     public List<WorkflowProcess> findByWorkflowProcessId(Context context,UUID eperson,UUID statusid,Integer offset, Integer limit) throws SQLException {
     Query query = createQuery(context, "" +

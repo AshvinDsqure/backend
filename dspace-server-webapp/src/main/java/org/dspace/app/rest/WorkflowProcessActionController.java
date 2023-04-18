@@ -14,7 +14,6 @@ import org.dspace.app.rest.converter.WorkFlowProcessConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessEpersonConverter;
 import org.dspace.app.rest.enums.WorkFlowAction;
 import org.dspace.app.rest.enums.WorkFlowStatus;
-import org.dspace.app.rest.enums.WorkFlowType;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
@@ -27,7 +26,6 @@ import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
 import org.dspace.content.service.*;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,7 +37,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID;
 
@@ -106,7 +106,9 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workflowProcessService.create(context, workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction action= WorkFlowAction.FORWARD;
-            action.setComment(comment);
+            if(comment!=null) {
+                action.setComment(comment);
+            }
             action.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
@@ -131,7 +133,8 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction backward= WorkFlowAction.BACKWARD;
-            backward.setComment(comment);
+            if(comment!=null) {
+                backward.setComment(comment);}
             backward.perfomeAction(context, workFlowProcess, workFlowProcessRest);
             context.commit();
             return workFlowProcessRest;
@@ -177,8 +180,11 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             workflowProcessService.create(context,workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction COMPLETE= WorkFlowAction.COMPLETE;
-            COMPLETE.setComment(comment);
+            if(comment!=null) {
+                COMPLETE.setComment(comment);
+            }
             COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
             workflowProcessService.create(context,workFlowProcess);
             context.commit();
         }catch (RuntimeException e){

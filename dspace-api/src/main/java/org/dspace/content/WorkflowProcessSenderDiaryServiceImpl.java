@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Service implementation for the Item object.
@@ -97,6 +94,11 @@ public class WorkflowProcessSenderDiaryServiceImpl extends DSpaceObjectServiceIm
     @Override
     public int countRows(Context context) throws SQLException {
         return workflowProcessSenderDiaryDAO.countRows(context);
+    }
+
+    @Override
+    public WorkflowProcessSenderDiary searchSenderDiary(Context context,String name, String email) throws SQLException {
+        return workflowProcessSenderDiaryDAO.searchSenderDiary(context,name,email);
     }
 
     @Override

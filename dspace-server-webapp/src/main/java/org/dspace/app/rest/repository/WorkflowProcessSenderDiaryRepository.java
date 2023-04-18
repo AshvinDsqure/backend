@@ -14,7 +14,10 @@ import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkflowProcessSenderDiaryConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.DocumentTypeRest;
+import org.dspace.app.rest.model.ItemRest;
+import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
 import org.dspace.app.rest.model.WorkflowProcessSenderDiaryRest;
+import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkflowProcessSenderDiary;
 import org.dspace.content.service.WorkflowProcessSenderDiaryService;
@@ -25,13 +28,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This is the repository responsible to manage Item Rest object
@@ -164,14 +167,17 @@ public class WorkflowProcessSenderDiaryRepository extends DSpaceObjectRestReposi
 
     }
 
+
     @SearchRestMethod(name = "search")
     public WorkflowProcessSenderDiaryRest search(
-            @Parameter(value = "search", required = true) String search,
+            @Parameter(value = "name", required = true) String name,
+            @Parameter(value = "email", required = true) String email,
             Pageable pageable) {
-        WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest = null;
-        Context context = obtainContext();
+            WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest = null;
         try {
-            Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiary = Optional.ofNullable(workflowProcessSenderDiaryService.findByEmailID(context, search));
+            System.out.println("sear>>>>>>>>>>>" + name);
+            Context context = obtainContext();
+            Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiary = Optional.ofNullable(workflowProcessSenderDiaryService.searchSenderDiary(context, name,email));
             if (workflowProcessSenderDiary.isPresent()) {
                 workflowProcessSenderDiaryRest = converter.toRest(workflowProcessSenderDiary.get(), utils.obtainProjection());
             }
