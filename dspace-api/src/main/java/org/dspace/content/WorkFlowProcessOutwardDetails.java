@@ -7,6 +7,8 @@
  */
 package org.dspace.content;
 
+import org.dspace.eperson.Group;
+
 import javax.persistence.Entity;
 import javax.persistence.*;
 import java.util.*;
@@ -39,13 +41,15 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     @Column(name = "outwarddate", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date outwardDate;
-    @Column(name = "outwardmedium_id")
-    private UUID outwardmediumid;
-    @Column(name = "outwarddepartment_id")
-    private UUID outwarddepartmentid;
-
-    @Column(name = "outwardmode_id")
-    private UUID outwardmodeid;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "outwardmedium_id")
+    private WorkFlowProcessMasterValue outwardmedium;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "outwardepersongroup_id")
+    private Group outwardEpersonGroup;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "outwardmode_id")
+    private WorkFlowProcessMasterValue outwardmode;
 
 
     public String getOutwardNumber() {
@@ -64,30 +68,6 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
         this.outwardDate = outwardDate;
     }
 
-    public UUID getOutwardmediumid() {
-        return outwardmediumid;
-    }
-
-    public void setOutwardmediumid(UUID outwardmediumid) {
-        this.outwardmediumid = outwardmediumid;
-    }
-
-    public UUID getOutwarddepartmentid() {
-        return outwarddepartmentid;
-    }
-
-    public void setOutwarddepartmentid(UUID outwarddepartmentid) {
-        this.outwarddepartmentid = outwarddepartmentid;
-    }
-
-    public UUID getOutwardmodeid() {
-        return outwardmodeid;
-    }
-
-    public void setOutwardmodeid(UUID outwardmodeid) {
-        this.outwardmodeid = outwardmodeid;
-    }
-
     @Override
     public int getType() {
         return 0;
@@ -104,5 +84,29 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     }
     public void setLegacyId(Integer legacyId) {
         this.legacyId = legacyId;
+    }
+
+    public WorkFlowProcessMasterValue getOutwardmedium() {
+        return outwardmedium;
+    }
+
+    public void setOutwardmedium(WorkFlowProcessMasterValue outwardmedium) {
+        this.outwardmedium = outwardmedium;
+    }
+
+    public Group getOutwardEpersonGroup() {
+        return outwardEpersonGroup;
+    }
+
+    public void setOutwardEpersonGroup(Group outwardEpersonGroup) {
+        this.outwardEpersonGroup = outwardEpersonGroup;
+    }
+
+    public WorkFlowProcessMasterValue getOutwardmode() {
+        return outwardmode;
+    }
+
+    public void setOutwardmode(WorkFlowProcessMasterValue outwardmode) {
+        this.outwardmode = outwardmode;
     }
 }
