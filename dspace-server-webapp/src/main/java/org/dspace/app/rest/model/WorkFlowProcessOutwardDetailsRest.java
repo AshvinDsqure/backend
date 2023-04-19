@@ -7,6 +7,12 @@
  */
 package org.dspace.app.rest.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.dspace.app.rest.model.helper.MyDateConverter;
+import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.eperson.Group;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,13 +24,12 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     public static final String GROUPS = "groups";
 
     private Integer legacyId;
-
     private String outwardNumber;
+    @JsonDeserialize(converter = MyDateConverter.class)
     private Date outwardDate;
-    private UUID outwardmediumid;
-    private UUID outwarddepartmentid;
-
-    private UUID outwardmodeid;
+    private WorkFlowProcessMasterValue outwardmediumRest;
+    private Group outwardEpersonGroupRest;
+    private WorkFlowProcessMasterValue outwardmodeRest;
 
     public String getOutwardNumber() {
         return outwardNumber;
@@ -40,30 +45,6 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
 
     public void setOutwardDate(Date outwardDate) {
         this.outwardDate = outwardDate;
-    }
-
-    public UUID getOutwardmediumid() {
-        return outwardmediumid;
-    }
-
-    public void setOutwardmediumid(UUID outwardmediumid) {
-        this.outwardmediumid = outwardmediumid;
-    }
-
-    public UUID getOutwarddepartmentid() {
-        return outwarddepartmentid;
-    }
-
-    public void setOutwarddepartmentid(UUID outwarddepartmentid) {
-        this.outwarddepartmentid = outwarddepartmentid;
-    }
-
-    public UUID getOutwardmodeid() {
-        return outwardmodeid;
-    }
-
-    public void setOutwardmodeid(UUID outwardmodeid) {
-        this.outwardmodeid = outwardmodeid;
     }
 
     public Integer getLegacyId() {
@@ -85,4 +66,27 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     }
 
 
+    public WorkFlowProcessMasterValue getOutwardmediumRest() {
+        return outwardmediumRest;
+    }
+
+    public void setOutwardmediumRest(WorkFlowProcessMasterValue outwardmediumRest) {
+        this.outwardmediumRest = outwardmediumRest;
+    }
+
+    public Group getOutwardEpersonGroupRest() {
+        return outwardEpersonGroupRest;
+    }
+
+    public void setOutwardEpersonGroupRest(Group outwardEpersonGroupRest) {
+        this.outwardEpersonGroupRest = outwardEpersonGroupRest;
+    }
+
+    public WorkFlowProcessMasterValue getOutwardmodeRest() {
+        return outwardmodeRest;
+    }
+
+    public void setOutwardmodeRest(WorkFlowProcessMasterValue outwardmodeRest) {
+        this.outwardmodeRest = outwardmodeRest;
+    }
 }
