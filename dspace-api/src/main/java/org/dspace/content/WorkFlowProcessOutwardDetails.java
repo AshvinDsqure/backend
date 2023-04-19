@@ -45,7 +45,7 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     @JoinColumn(name = "outwardmedium_id")
     private WorkFlowProcessMasterValue outwardmedium;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "outwarddepartment")
+    @JoinColumn(name = "outwarddepartment_id")
     private Group outwardDepartment;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outwardmode_id")
