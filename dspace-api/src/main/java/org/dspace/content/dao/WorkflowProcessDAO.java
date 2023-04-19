@@ -22,7 +22,7 @@ import java.util.UUID;
  * @author kevinvandevelde at atmire.com
  */
 public interface WorkflowProcessDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcess> {
-    List<WorkflowProcess> findByWorkflowProcessId(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit)throws SQLException;
-    int countfindByWorkflowProcessId(Context context, UUID eperson)throws SQLException;
+    List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit)throws SQLException;
+    int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid)throws SQLException;
 
 }

@@ -100,8 +100,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         try {
             UUID statusid=WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get().getID();
             System.out.println("status id:"+statusid);
-            int count=workflowProcessService.countfindByWorkflowProcessId(context,context.getCurrentUser().getID());
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkflowProcessId(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            int count=workflowProcessService.countfindNotCompletedByUser(context,context.getCurrentUser().getID(),statusid);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findNotCompletedByUser(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
         }catch (Exception e){
             e.printStackTrace();

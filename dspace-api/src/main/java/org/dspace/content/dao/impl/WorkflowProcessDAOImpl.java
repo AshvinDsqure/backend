@@ -41,7 +41,7 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
         super();
     }
     @Override
-    public List<WorkflowProcess> findByWorkflowProcessId(Context context,UUID eperson,UUID statusid,Integer offset, Integer limit) throws SQLException {
+    public List<WorkflowProcess> findNotCompletedByUser(Context context,UUID eperson,UUID statusid,Integer offset, Integer limit) throws SQLException {
     Query query = createQuery(context, "" +
                 "SELECT wp FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
@@ -60,12 +60,15 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
     }
 
     @Override
-    public int countfindByWorkflowProcessId(Context context, UUID eperson) throws SQLException {
+    public int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid) throws SQLException {
         Query query = createQuery(context, "" +
                 "SELECT count(wp) FROM WorkflowProcess as wp " +
-                "join wp.workflowProcessEpeople as ep join ep.ePerson as p  where ep.isOwner=:isOwner and p.id=:eperson");
+                "join wp.workflowProcessEpeople as ep " +
+                "join ep.ePerson as p  " +
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id NOT IN(:statusid)");
         query.setParameter("isOwner",true);
         query.setParameter("eperson",eperson);
+        query.setParameter("statusid",statusid);
 
         return count(query);
     }

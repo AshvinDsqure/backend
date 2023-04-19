@@ -97,12 +97,12 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     }
 
     @Override
-    public List<WorkflowProcess> findByWorkflowProcessId(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit) throws SQLException {
-       return workflowProcessDAO.findByWorkflowProcessId(context,eperson,statusid,offset,limit);
+    public List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit) throws SQLException {
+       return workflowProcessDAO.findNotCompletedByUser(context,eperson,statusid,offset,limit);
     }
 
     @Override
-    public int countfindByWorkflowProcessId(Context context, UUID eperson) throws SQLException {
-        return workflowProcessDAO.countfindByWorkflowProcessId(context,eperson);
+    public int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid) throws SQLException {
+        return workflowProcessDAO.countfindNotCompletedByUser(context,eperson,statusid);
     }
 }

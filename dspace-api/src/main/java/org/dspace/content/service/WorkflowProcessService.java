@@ -64,6 +64,6 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
      * @throws SQLException if database error
      */
     public List<WorkflowProcess> findAll(Context context, Integer limit, Integer offset) throws SQLException;
-    List<WorkflowProcess> findByWorkflowProcessId(Context context, UUID eperson, UUID statusid,Integer offset, Integer limit)throws SQLException;
-    int countfindByWorkflowProcessId(Context context, UUID eperson)throws SQLException;
+    List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit)throws SQLException;
+    int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid)throws SQLException;
 }
