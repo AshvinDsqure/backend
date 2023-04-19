@@ -44,6 +44,9 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @JoinColumn(name = "workflowprocessinwarddetails_id")
     private WorkFlowProcessInwardDetails workFlowProcessInwardDetails = null;
     @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinColumn(name = "workflowprocessoutwarddetails_idf")
+    private WorkFlowProcessOutwardDetails workFlowProcessOutwardDetails = null;
+    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "workflowprocesssenderdiary")
     private WorkflowProcessSenderDiary workflowProcessSenderDiary = null;
     /* Filling Details*/
@@ -229,5 +232,13 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     public void setWorkflowType(WorkFlowProcessMasterValue workflowType) {
         this.workflowType = workflowType;
+    }
+
+    public WorkFlowProcessOutwardDetails getWorkFlowProcessOutwardDetails() {
+        return workFlowProcessOutwardDetails;
+    }
+
+    public void setWorkFlowProcessOutwardDetails(WorkFlowProcessOutwardDetails workFlowProcessOutwardDetails) {
+        this.workFlowProcessOutwardDetails = workFlowProcessOutwardDetails;
     }
 }

@@ -16,6 +16,7 @@ import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.springframework.data.annotation.Transient;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -33,12 +34,15 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     @JsonProperty
     private Integer index;
     @JsonProperty()
+    @NotBlank
     private EPersonRest ePersonRest = null;
     @JsonProperty()
     private WorkFlowProcessDefinitionRest workflowProcessReferenceDocRest;
     @JsonProperty
+    @NotBlank
     private WorkFlowProcessMasterValueRest departmentRest = null;
     @JsonProperty
+    @NotBlank
     private WorkFlowProcessMasterValueRest officeRest = null;
     @JsonProperty
     private WorkFlowProcessMasterValueRest userType = null;

@@ -7,8 +7,10 @@
  */
 package org.dspace.app.rest.converter;
 
+import org.dspace.app.rest.model.WorkFlowProcessInwardDetailsRest;
 import org.dspace.app.rest.model.WorkFlowProcessOutwardDetailsRest;
 import org.dspace.app.rest.projection.Projection;
+import org.dspace.content.WorkFlowProcessInwardDetails;
 import org.dspace.content.WorkFlowProcessOutwardDetails;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +36,21 @@ public class WorkFlowProcessOutwardDetailsConverter extends DSpaceObjectConverte
     @Override
     public WorkFlowProcessOutwardDetailsRest convert(WorkFlowProcessOutwardDetails obj, Projection projection) {
         WorkFlowProcessOutwardDetailsRest rest = new WorkFlowProcessOutwardDetailsRest();
-        rest=modelMapper.map(obj,WorkFlowProcessOutwardDetailsRest.class);
         rest.setUuid(obj.getID().toString());
+        rest.setOutwardDate(obj.getOutwardDate());
+        rest.setOutwardNumber(obj.getOutwardNumber());
+        rest.setOutwardmediumRest(obj.getOutwardmedium());
+        rest.setOutwardmodeRest(obj.getOutwardmode());
+        rest.setOutwardDepartmentRest(obj.getOutwardDepartment());
         return rest;
     }
 
-    public WorkFlowProcessOutwardDetails convert(WorkFlowProcessOutwardDetails obj, WorkFlowProcessOutwardDetailsRest rest) {
-        obj=modelMapper.map(rest,WorkFlowProcessOutwardDetails.class);
-        return obj;
+
+    public WorkFlowProcessOutwardDetails convert(WorkFlowProcessOutwardDetailsRest rest) {
+        if(rest!= null) {
+            return modelMapper.map(rest, WorkFlowProcessOutwardDetails.class);
+        }
+        return  null;
     }
 
 }

@@ -28,7 +28,6 @@ public class WorkflowProcessSenderDiaryRest  extends  DSpaceObjectRest{
     private String designation;
     private String contactNumber;
     @NotEmpty
-    @Size(min=5)
     @Email
     private String email;
     private String organization;

@@ -13,9 +13,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import org.dspace.app.rest.model.helper.MyDateConverter;
+import org.dspace.app.rest.validation.WorkflowProcessMasterValueValid;
 import org.dspace.app.rest.validation.WorkflowProcessValid;
 import org.dspace.content.WorkflowProcessEperson;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,16 +33,22 @@ import java.util.List;
 @LinksRest(links = {
 
 })
-@WorkflowProcessValid
 public class WorkFlowProcessRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocesse";
     public static final String PLURAL_NAME = "workflowprocess";
     public static final String CATEGORY = RestAddressableModel.WORKFLOWPROCESS;
+    public static final String  CATEGORY_INWARD= "inward";
+    public static final String  CATEGORY_OUTWARE= "outward";
     @JsonProperty
     private WorkFlowProcessInwardDetailsRest workFlowProcessInwardDetailsRest;
     @JsonProperty
+    private WorkFlowProcessOutwardDetailsRest workFlowProcessOutwardDetailsRest;
+    @JsonProperty
+    @Valid
     private  WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest;
     @JsonProperty
+    @Valid
+    @NotNull
     private WorkFlowProcessMasterValueRest dispatchModeRest = null;
     @JsonProperty
     private WorkFlowProcessMasterValueRest workflowStatus = null;
@@ -52,6 +63,7 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private ItemRest itemRest;
     @JsonProperty
+    @NotBlank
     private String Subject;
     @JsonProperty
     private String workflowTypeStr;
@@ -60,9 +72,10 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private  String comment;
     @JsonProperty
-    List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests;
+    List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests=new ArrayList<>();
 
     @JsonProperty
+    @NotEmpty(message = "Input WorkflowProcessEpersonRest list cannot be empty.")
     private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests=new ArrayList<>();
     @JsonProperty
     @JsonDeserialize(converter = MyDateConverter.class)
@@ -228,5 +241,13 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public WorkFlowProcessOutwardDetailsRest getWorkFlowProcessOutwardDetailsRest() {
+        return workFlowProcessOutwardDetailsRest;
+    }
+
+    public void setWorkFlowProcessOutwardDetailsRest(WorkFlowProcessOutwardDetailsRest workFlowProcessOutwardDetailsRest) {
+        this.workFlowProcessOutwardDetailsRest = workFlowProcessOutwardDetailsRest;
     }
 }

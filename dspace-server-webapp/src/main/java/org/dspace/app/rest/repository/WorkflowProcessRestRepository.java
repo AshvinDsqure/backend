@@ -125,7 +125,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
             Set<ConstraintViolation<WorkFlowProcessRest>> violations=validatorFactory.getValidator().validate(workFlowProcessRest);
             if (!violations.isEmpty()){
-                throw new WorkFlowValiDationException(violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
+                //throw new WorkFlowValiDationException(violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
             }
             boolean isDraft=workFlowProcessRest.getDraft();
             String comment= workFlowProcessRest.getComment();

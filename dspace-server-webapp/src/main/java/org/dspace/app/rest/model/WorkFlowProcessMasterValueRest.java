@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.model;
 
+import org.dspace.app.rest.validation.WorkflowProcessMasterValueValid;
 import org.dspace.content.WorkFlowProcessMaster;
 import org.dspace.content.WorkFlowProcessMasterValue;
 

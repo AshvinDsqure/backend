@@ -57,8 +57,7 @@ public class WorkFlowProcessMasterValueConverter extends DSpaceObjectConverter<W
 
     public WorkFlowProcessMasterValue convert(Context context, WorkFlowProcessMasterValueRest rest) throws SQLException {
         WorkFlowProcessMasterValue workFlowProcessMasterValue=null;
-        System.out.println("rest.getUuid() ::"+rest.getUuid() +"size::"+rest.getUuid().trim().length());
-        if(rest.getUuid() != null  && rest.getUuid().trim().length() !=0) {
+        if(rest!= null && rest.getUuid() != null  && rest.getUuid().trim().length() !=0) {
             workFlowProcessMasterValue = masterValueService.find(context, UUID.fromString(rest.getUuid()));
         }
         return workFlowProcessMasterValue;

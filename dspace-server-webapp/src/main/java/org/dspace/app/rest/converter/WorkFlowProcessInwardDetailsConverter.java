@@ -46,7 +46,10 @@ public class WorkFlowProcessInwardDetailsConverter extends DSpaceObjectConverter
         return obj;
     }
     public WorkFlowProcessInwardDetails convert(WorkFlowProcessInwardDetailsRest rest) {
-       return modelMapper.map(rest,WorkFlowProcessInwardDetails.class);
+        if(rest!= null) {
+            return modelMapper.map(rest, WorkFlowProcessInwardDetails.class);
+        }
+        return  null;
     }
 
 }

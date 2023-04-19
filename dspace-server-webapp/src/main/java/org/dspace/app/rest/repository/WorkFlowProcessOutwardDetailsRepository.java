@@ -75,7 +75,7 @@ public class WorkFlowProcessOutwardDetailsRepository extends DSpaceObjectRestRep
         log.info("::::::start::::createWorkFlowProcessOutwardDetailsFromRestObject::::::::::");
         WorkFlowProcessOutwardDetails workFlowProcessOutwardDetails = new WorkFlowProcessOutwardDetails();
         try {
-            workFlowProcessOutwardDetails=workFlowProcessOutwardDetailsConverter.convert(workFlowProcessOutwardDetails,workFlowProcessOutwardDetailsRest );
+            //workFlowProcessOutwardDetails=workFlowProcessOutwardDetailsConverter.convert(workFlowProcessOutwardDetails,workFlowProcessOutwardDetailsRest );
             workFlowProcessOutwardDetailsService.create(context, workFlowProcessOutwardDetails);
         } catch (Exception e) {
             log.info("::::::error::::createWorkFlowProcessOutwardDetailsFromRestObject::::::::::");
@@ -96,8 +96,7 @@ public class WorkFlowProcessOutwardDetailsRepository extends DSpaceObjectRestRep
             System.out.println("workFlowProcessOutwardDetails id ::: is Null  workFlowProcessOutwardDetails tye null"+id);
             throw new ResourceNotFoundException("workFlowProcessOutwardDetails  field with id: " + id + " not found");
         }
-
-        workFlowProcessOutwardDetails=workFlowProcessOutwardDetailsConverter.convert(workFlowProcessOutwardDetails,workFlowProcessOutwardDetailsRest);
+        //workFlowProcessOutwardDetails=workFlowProcessOutwardDetailsConverter.convert(workFlowProcessOutwardDetails,context);
         workFlowProcessOutwardDetailsService.update(context, workFlowProcessOutwardDetails);
         context.commit();
         log.info("::::::End::::put::::::::::");

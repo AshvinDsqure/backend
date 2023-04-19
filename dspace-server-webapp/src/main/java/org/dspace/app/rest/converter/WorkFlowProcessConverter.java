@@ -49,6 +49,8 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
     @Autowired
     WorkFlowProcessInwardDetailsConverter workFlowProcessInwardDetailsConverter;
     @Autowired
+    WorkFlowProcessOutwardDetailsConverter workFlowProcessOutwardDetailsConverter;
+    @Autowired
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
     @Autowired
     WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
@@ -63,6 +65,9 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         }
         if (obj.getWorkFlowProcessInwardDetails() != null) {
             workFlowProcessRest.setWorkFlowProcessInwardDetailsRest(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetails(), projection));
+        }
+        if (obj.getWorkFlowProcessOutwardDetails() != null) {
+            workFlowProcessRest.setWorkFlowProcessOutwardDetailsRest(workFlowProcessOutwardDetailsConverter.convert(obj.getWorkFlowProcessOutwardDetails(), projection));
         }
         if (obj.getDispatchmode() != null) {
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
@@ -114,6 +119,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         WorkflowProcess workflowProcess = new WorkflowProcess();
         workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryConverter.convert(obj.getWorkflowProcessSenderDiaryRest()));
         workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
+        workflowProcess.setWorkFlowProcessOutwardDetails(workFlowProcessOutwardDetailsConverter.convert(obj.getWorkFlowProcessOutwardDetailsRest()));
         workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
         if(obj.getItemRest() != null) {
