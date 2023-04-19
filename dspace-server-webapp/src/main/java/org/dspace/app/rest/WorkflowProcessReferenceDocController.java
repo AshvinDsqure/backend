@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -133,6 +134,28 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
                     context, fileInputStream, "", file.getOriginalFilename());
             System.out.println("bitstream::" + bitstream.getName());
             workflowProcessReferenceDoc.setBitstream(bitstream);
+            workflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
+            context.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
+
+    }
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/outward")
+    @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
+    public WorkflowProcessReferenceDocRest uploadBitstreamoutward(
+            HttpServletRequest request,
+           @Valid WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest) throws SQLException, AuthorizeException, IOException {
+        WorkflowProcessReferenceDoc workflowProcessReferenceDoc = null;
+        try {
+            Context context = ContextUtil.obtainContext(request);
+            workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDocRest, context);
+            System.out.println("workflowProcessReferenceDocRest::" + workflowProcessReferenceDocRest.getReferenceNumber());
+            if (workflowProcessReferenceDocRest.getWorkFlowProcessRest()!= null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()!= null) {
+                workflowProcessReferenceDoc.setWorkflowProcess(workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid())));
+            }
             workflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
             context.commit();
         } catch (Exception e) {

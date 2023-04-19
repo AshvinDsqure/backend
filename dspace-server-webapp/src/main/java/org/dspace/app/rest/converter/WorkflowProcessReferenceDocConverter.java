@@ -98,6 +98,9 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
         if(obj.getLatterCategoryRest() != null) {
             workflowProcessReferenceDoc.setLatterCategory(workFlowProcessMasterValueConverter.convert(context, obj.getLatterCategoryRest()));
         }
+        if(obj.getBitstreamRest()!= null){
+            workflowProcessReferenceDoc.setBitstream(bitstreamService.find(context,UUID.fromString(obj.getBitstreamRest().getId())));
+        }
         return  workflowProcessReferenceDoc;
 
     }

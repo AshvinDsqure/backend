@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.dspace.content.WorkFlowProcessMasterValue;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,6 +34,7 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     public static final String PLURAL_NAME = "workflowprocessreferencedocs";
     public static final String CATEGORY = RestAddressableModel.WORKFLOWPROCESSREFERENCEDOC;
     @JsonProperty
+    @NotNull
     private BitstreamRest bitstreamRest;
     @JsonProperty
     private String subject;
