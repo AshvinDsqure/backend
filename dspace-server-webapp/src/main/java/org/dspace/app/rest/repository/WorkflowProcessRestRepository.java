@@ -109,19 +109,46 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             throw  new RuntimeException(e.getMessage(),e);
         }
     }
-    @Override
+
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
-    @SearchRestMethod(name = "history")
-    public Page<WorkFlowProcessRest> history(Context context, Pageable pageable) {
+    @SearchRestMethod(name = "getHistoryByNotOwnerAndNotDraft")
+    public Page<WorkFlowProcessRest> getHistoryByNotOwnerAndNotDraft(Context context, Pageable pageable) {
         try {
-            int count=workflowProcessService.countfindByWorkflowProcessId(context,context.getCurrentUser().getID());
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findByWorkflowProcessId(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            UUID statusid = null;
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
+            if(workFlowTypeStatus.isPresent()){
+                statusid=workFlowTypeStatus.get().getID();
+            }
+            System.out.println("Statis id isDraft"+statusid);
+            int count=workflowProcessService.countgetHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.getHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
         }catch (Exception e){
             e.printStackTrace();
             throw  new RuntimeException(e.getMessage(),e);
         }
     }
+
+
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
+    @SearchRestMethod(name = "getHistoryByOwnerAndIsDraft")
+    public Page<WorkFlowProcessRest> getHistoryByOwnerAndIsDraft(Context context, Pageable pageable) {
+        try {
+            UUID statusid = null;
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
+            if(workFlowTypeStatus.isPresent()){
+                statusid=workFlowTypeStatus.get().getID();
+            }
+            System.out.println("Statis id isDraft"+statusid);
+            int count=workflowProcessService.countgetHistoryByOwnerAndIsDraft(context,context.getCurrentUser().getID(),statusid);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.getHistoryByOwnerAndIsDraft(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new RuntimeException(e.getMessage(),e);
+        }
+    }
+
     @Override
     public Class<WorkFlowProcessRest> getDomainClass() {
         return null;

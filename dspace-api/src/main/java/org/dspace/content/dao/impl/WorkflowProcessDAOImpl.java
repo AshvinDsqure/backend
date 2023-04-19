@@ -58,17 +58,79 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
         }
         return query.getResultList();
     }
-
     @Override
     public int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid) throws SQLException {
         Query query = createQuery(context, "" +
                 "SELECT count(wp) FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
                 "join ep.ePerson as p  " +
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id not IN(:isDraft)");
+        query.setParameter("isOwner",false);
+        query.setParameter("eperson",eperson);
+        query.setParameter("notDraft",statusid);
+
+        return count(query);
+    }
+
+    @Override
+    public List<WorkflowProcess> getHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException {
+        Query query = createQuery(context, "" +
+                "SELECT wp FROM WorkflowProcess as wp " +
+                "join wp.workflowProcessEpeople as ep " +
+                "join ep.ePerson as p  " +
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id NOT IN(:notDraft)");
+        query.setParameter("isOwner",false);
+        query.setParameter("eperson",eperson);
+        query.setParameter("notDraft",statusid);
+        if (0 <= offset) {
+            query.setFirstResult(offset);
+        }if (0 <= limit) {
+            query.setMaxResults(limit);
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    public int countgetHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid) throws SQLException {
+        Query query = createQuery(context, "" +
+                "SELECT count(wp) FROM WorkflowProcess as wp " +
+                "join wp.workflowProcessEpeople as ep " +
+                "join ep.ePerson as p  " +
                 "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id NOT IN(:statusid)");
+        query.setParameter("isOwner",false);
+        query.setParameter("eperson",eperson);
+        query.setParameter("notDraft",statusid);
+        return count(query);
+    }
+
+    @Override
+    public List<WorkflowProcess> getHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException {
+        Query query = createQuery(context, "" +
+                "SELECT wp FROM WorkflowProcess as wp " +
+                "join wp.workflowProcessEpeople as ep " +
+                "join ep.ePerson as p  " +
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id IN(:isDraft)");
         query.setParameter("isOwner",true);
         query.setParameter("eperson",eperson);
-        query.setParameter("statusid",statusid);
+        query.setParameter("isDraft",statusid);
+        if (0 <= offset) {
+            query.setFirstResult(offset);
+        }if (0 <= limit) {
+            query.setMaxResults(limit);
+        }
+        return query.getResultList();
+    }
+
+    @Override
+    public int countgetHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid) throws SQLException {
+        Query query = createQuery(context, "" +
+                "SELECT wp FROM WorkflowProcess as wp " +
+                "join wp.workflowProcessEpeople as ep " +
+                "join ep.ePerson as p  " +
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id  IN(:isDraft)");
+        query.setParameter("isOwner",true);
+        query.setParameter("eperson",eperson);
+        query.setParameter("isDraft",statusid);
 
         return count(query);
     }

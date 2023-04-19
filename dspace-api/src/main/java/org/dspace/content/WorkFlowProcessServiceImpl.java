@@ -105,4 +105,24 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     public int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid) throws SQLException {
         return workflowProcessDAO.countfindNotCompletedByUser(context,eperson,statusid);
     }
+
+    @Override
+    public List<WorkflowProcess> getHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException {
+        return workflowProcessDAO.getHistoryByNotOwnerAndNotDraft(context,eperson,statusid,offset,limit);
+    }
+
+    @Override
+    public int countgetHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid) throws SQLException {
+        return workflowProcessDAO.countgetHistoryByNotOwnerAndNotDraft(context,eperson,statusid);
+    }
+
+    @Override
+    public List<WorkflowProcess> getHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException {
+        return workflowProcessDAO.getHistoryByOwnerAndIsDraft(context,eperson,statusid,offset,limit);
+    }
+
+    @Override
+    public int countgetHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid) throws SQLException {
+        return workflowProcessDAO.countgetHistoryByOwnerAndIsDraft(context,eperson,statusid);
+    }
 }

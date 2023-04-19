@@ -66,4 +66,13 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
     public List<WorkflowProcess> findAll(Context context, Integer limit, Integer offset) throws SQLException;
     List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit)throws SQLException;
     int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid)throws SQLException;
+
+    List<WorkflowProcess> getHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException;
+
+    int countgetHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid) throws SQLException;
+
+    List<WorkflowProcess> getHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException;
+
+    int countgetHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid) throws SQLException;
+
 }
