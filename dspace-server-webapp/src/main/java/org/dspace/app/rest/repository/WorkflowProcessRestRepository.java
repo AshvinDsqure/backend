@@ -111,8 +111,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     }
 
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
-    @SearchRestMethod(name = "getHistoryByNotOwnerAndNotDraft")
-    public Page<WorkFlowProcessRest> getHistoryByNotOwnerAndNotDraft(Context context, Pageable pageable) {
+    @SearchRestMethod(name = "gethistory")
+    public Page<WorkFlowProcessRest> gethistory(Context context, Pageable pageable) {
         try {
             UUID statusid = null;
             Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
@@ -131,8 +131,8 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
 
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
-    @SearchRestMethod(name = "getHistoryByOwnerAndIsDraft")
-    public Page<WorkFlowProcessRest> getHistoryByOwnerAndIsDraft(Context context, Pageable pageable) {
+    @SearchRestMethod(name = "getDraft")
+    public Page<WorkFlowProcessRest> getDraft(Context context, Pageable pageable) {
         try {
             UUID statusid = null;
             Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
