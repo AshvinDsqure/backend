@@ -28,7 +28,7 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date outwardDate;
     private WorkFlowProcessMasterValue outwardmediumRest;
-    private Group outwardEpersonGroupRest;
+    private Group outwardDepartmentRest;
     private WorkFlowProcessMasterValue outwardmodeRest;
 
     public String getOutwardNumber() {
@@ -74,12 +74,12 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
         this.outwardmediumRest = outwardmediumRest;
     }
 
-    public Group getOutwardEpersonGroupRest() {
-        return outwardEpersonGroupRest;
+    public Group getOutwardDepartmentRest() {
+        return outwardDepartmentRest;
     }
 
-    public void setOutwardEpersonGroupRest(Group outwardEpersonGroupRest) {
-        this.outwardEpersonGroupRest = outwardEpersonGroupRest;
+    public void setOutwardDepartmentRest(Group outwardDepartmentRest) {
+        this.outwardDepartmentRest = outwardDepartmentRest;
     }
 
     public WorkFlowProcessMasterValue getOutwardmodeRest() {

@@ -45,8 +45,8 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     @JoinColumn(name = "outwardmedium_id")
     private WorkFlowProcessMasterValue outwardmedium;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "outwardepersongroup_id")
-    private Group outwardEpersonGroup;
+    @JoinColumn(name = "outwarddepartment")
+    private Group outwardDepartment;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outwardmode_id")
     private WorkFlowProcessMasterValue outwardmode;
@@ -94,12 +94,12 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
         this.outwardmedium = outwardmedium;
     }
 
-    public Group getOutwardEpersonGroup() {
-        return outwardEpersonGroup;
+    public Group getOutwardDepartment() {
+        return outwardDepartment;
     }
 
-    public void setOutwardEpersonGroup(Group outwardEpersonGroup) {
-        this.outwardEpersonGroup = outwardEpersonGroup;
+    public void setOutwardDepartment(Group outwardDepartment) {
+        this.outwardDepartment = outwardDepartment;
     }
 
     public WorkFlowProcessMasterValue getOutwardmode() {
