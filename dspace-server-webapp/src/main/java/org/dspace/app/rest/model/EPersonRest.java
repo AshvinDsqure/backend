@@ -12,6 +12,9 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import org.dspace.app.rest.RestResourceController;
+import org.dspace.content.WorkFlowProcessMasterValue;
+
+import javax.persistence.Column;
 
 
 /**
@@ -42,7 +45,14 @@ public class EPersonRest extends DSpaceObjectRest {
     private boolean requireCertificate = false;
 
     private Boolean selfRegistered;
-
+    @JsonProperty
+    private  String  employeeid;
+    @JsonProperty
+    private  Integer  tablenumber;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest officeRest=null;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest departmentRest=null;
     @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
 
@@ -118,4 +128,35 @@ public class EPersonRest extends DSpaceObjectRest {
         return RestResourceController.class;
     }
 
+    public String getEmployeeid() {
+        return employeeid;
+    }
+
+    public void setEmployeeid(String employeeid) {
+        this.employeeid = employeeid;
+    }
+
+    public Integer getTablenumber() {
+        return tablenumber;
+    }
+
+    public void setTablenumber(Integer tablenumber) {
+        this.tablenumber = tablenumber;
+    }
+
+    public WorkFlowProcessMasterValueRest getOfficeRest() {
+        return officeRest;
+    }
+
+    public void setOfficeRest(WorkFlowProcessMasterValueRest officeRest) {
+        this.officeRest = officeRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getDepartmentRest() {
+        return departmentRest;
+    }
+
+    public void setDepartmentRest(WorkFlowProcessMasterValueRest departmentRest) {
+        this.departmentRest = departmentRest;
+    }
 }

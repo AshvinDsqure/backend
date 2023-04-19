@@ -11,6 +11,7 @@ import org.dspace.app.rest.model.EPersonRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.Item;
+import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ import org.springframework.stereotype.Component;
 public class EPersonConverter extends DSpaceObjectConverter<EPerson, org.dspace.app.rest.model.EPersonRest> {
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
     @Override
     public EPersonRest convert(EPerson obj, Projection projection) {
         EPersonRest eperson = super.convert(obj, projection);
@@ -35,7 +39,18 @@ public class EPersonConverter extends DSpaceObjectConverter<EPerson, org.dspace.
         eperson.setRequireCertificate(obj.getRequireCertificate());
         eperson.setSelfRegistered(obj.getSelfRegistered());
         eperson.setEmail(obj.getEmail());
-
+        if(obj.getTablenumber()!=null){
+        eperson.setTablenumber(obj.getTablenumber());
+        }
+        if(obj.getEmployeeid()!=null) {
+            eperson.setEmployeeid(obj.getEmployeeid());
+        }
+        if(obj.getDepartment()!=null && obj.getDepartment().getID()!=null){
+        eperson.setDepartmentRest(workFlowProcessMasterValueConverter.convert(obj.getDepartment(),projection));
+        }
+        if(obj.getOffice()!=null && obj.getOffice().getID()!=null){
+            eperson.setOfficeRest(workFlowProcessMasterValueConverter.convert(obj.getOffice(),projection));
+        }
         return eperson;
     }
     public EPerson convert(EPersonRest obj) {
@@ -45,7 +60,6 @@ public class EPersonConverter extends DSpaceObjectConverter<EPerson, org.dspace.
     protected EPersonRest newInstance() {
         return new EPersonRest();
     }
-
     @Override
     public Class<EPerson> getModelClass() {
         return EPerson.class;

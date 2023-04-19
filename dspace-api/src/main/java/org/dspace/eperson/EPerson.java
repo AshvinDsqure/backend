@@ -11,21 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.DSpaceObjectLegacySupport;
 import org.dspace.content.Item;
+import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.factory.EPersonServiceFactory;
@@ -79,6 +72,18 @@ public class EPerson extends DSpaceObject implements DSpaceObjectLegacySupport {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "epeople")
     private final List<Group> groups = new ArrayList<>();
+    @Column(name = "employeeid")
+    private  String  employeeid;
+    @Column(name = "tablenumber")
+    private  Integer  tablenumber;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "office_id")
+    private WorkFlowProcessMasterValue office;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private WorkFlowProcessMasterValue department;
+
 
     /**
      * The e-mail field (for sorting)
@@ -450,4 +455,33 @@ public class EPerson extends DSpaceObject implements DSpaceObjectLegacySupport {
         return StringUtils.isNotBlank(getPassword());
     }
 
+
+    public String getEmployeeid() {
+        return employeeid;
+    }
+
+    public void setEmployeeid(String employeeid) {
+        this.employeeid = employeeid;
+    }
+
+    public Integer getTablenumber() {
+        return tablenumber;
+    }
+
+    public void setTablenumber(Integer tablenumber) {
+        this.tablenumber = tablenumber;
+    }
+
+    public WorkFlowProcessMasterValue getOffice() {
+        return office;
+    }
+    public void setOffice(WorkFlowProcessMasterValue office) {
+        this.office = office;
+    }
+    public WorkFlowProcessMasterValue getDepartment() {
+        return department;
+    }
+    public void setDepartment(WorkFlowProcessMasterValue department) {
+        this.department = department;
+    }
 }

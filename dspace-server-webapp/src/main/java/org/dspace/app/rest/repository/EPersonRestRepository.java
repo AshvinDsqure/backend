@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.DiscoverableEndpointsService;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
+import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.EPersonNameNotProvidedException;
 import org.dspace.app.rest.exception.PasswordNotValidException;
@@ -66,6 +67,9 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
 
     @Autowired
     AuthorizeService authorizeService;
+
+    @Autowired
+    WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
 
     @Autowired
     DiscoverableEndpointsService discoverableEndpointsService;
@@ -125,6 +129,10 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
             eperson.setRequireCertificate(epersonRest.isRequireCertificate());
             eperson.setEmail(epersonRest.getEmail());
             eperson.setNetid(epersonRest.getNetid());
+            eperson.setTablenumber(epersonRest.getTablenumber());
+            eperson.setEmployeeid(epersonRest.getEmployeeid());
+            eperson.setDepartment(workFlowProcessMasterValueConverter.convert(context,epersonRest.getDepartmentRest()));
+            eperson.setOffice(workFlowProcessMasterValueConverter.convert(context,epersonRest.getOfficeRest()));
             if (epersonRest.getPassword() != null) {
                 if (!validatePasswordService.isPasswordValid(epersonRest.getPassword())) {
                     throw new PasswordNotValidException();
