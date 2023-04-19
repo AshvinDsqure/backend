@@ -128,6 +128,24 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             throw  new RuntimeException(e.getMessage(),e);
         }
     }
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
+    @SearchRestMethod(name = "dashboard")
+    public Page<WorkFlowProcessRest> dashboard(Context context, Pageable pageable) {
+        try {
+            UUID statusid = null;
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
+            if(workFlowTypeStatus.isPresent()){
+                statusid=workFlowTypeStatus.get().getID();
+            }
+            System.out.println("Statis id isDraft"+statusid);
+            int count=workflowProcessService.countgetHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.getHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new RuntimeException(e.getMessage(),e);
+        }
+    }
 
 
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")

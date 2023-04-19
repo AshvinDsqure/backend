@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
@@ -10,6 +10,7 @@ package org.dspace.app.rest.repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -32,10 +33,7 @@ import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
-import org.dspace.content.service.BitstreamService;
-import org.dspace.content.service.BundleService;
-import org.dspace.content.service.CollectionService;
-import org.dspace.content.service.CommunityService;
+import org.dspace.content.service.*;
 import org.dspace.core.Context;
 import org.dspace.handle.service.HandleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +57,8 @@ public class BitstreamRestRepository extends DSpaceObjectRestRepository<Bitstrea
 
     @Autowired
     BundleService bundleService;
+    @Autowired
+    ItemService itemService;
 
     @Autowired
     AuthorizeService authorizeService;
@@ -181,6 +181,27 @@ public class BitstreamRestRepository extends DSpaceObjectRestRepository<Bitstrea
             } else {
                 return converter.toRest(matchedBitstream, utils.obtainProjection());
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @SearchRestMethod(name = "getBitstreamsByItemID")
+    @PreAuthorize("hasPermission(#id, 'BITSTREAM', 'METADATA_READ')")
+    public Page<BitstreamRest> getBitstreamsByItemID(@Parameter(value = "handle", required = true) UUID itemid
+   ,Pageable pageable ) {
+        if (itemid != null && StringUtils.isBlank(itemid.toString())) {
+            throw new IllegalArgumentException("The request should include a sequence or a filename");
+        }
+        try {
+            Context context = obtainContext();
+            Item item = itemService.find(context, itemid);
+            List<Bundle> bundles = item.getBundles("ORIGINAL");
+            List<Bitstream> bitstreams=new ArrayList<>();
+            if (bundles.size() != 0) {
+               bitstreams=bundles.stream().findFirst().get().getBitstreams();
+            }
+            return  converter.toRestPage(bitstreams,pageable,bitstreams.size(),utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
