@@ -167,7 +167,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             if (item != null) {
                 workFlowProcess.getWorkflowProcessReferenceDocs().forEach(wd -> {
                     try {
-                        this.storeWorkFlowMataDataTOBitsream(context,wd,item);
+                        workflowProcessService.storeWorkFlowMataDataTOBitsream(context,wd,item);
                     } catch (SQLException e) {
                         throw new RuntimeException(e);
                     } catch (AuthorizeException e) {
@@ -247,37 +247,6 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
         } catch (RuntimeException e) {
             throw new UnprocessableEntityException("error in forwardTask Server..");
         }
-    }
-    public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc,Item item) throws SQLException, AuthorizeException {
-        Bitstream bitstream= workflowProcessReferenceDoc.getBitstream();
-        if(bitstream != null) {
-            List<Bundle> bundles = item.getBundles("ORIGINAL");
-            Bundle finalBundle = null;
-            if (bundles.size() == 0) {
-                finalBundle = bundleService.create(context, item, "ORIGINAL");
-            } else {
-                finalBundle = bundles.stream().findFirst().get();
-            }
-            Bundle finalBundle1 = finalBundle;
-            bundleService.addBitstream(context, finalBundle1, bitstream);
-            if (workflowProcessReferenceDoc.getWorkFlowProcessReferenceDocType() != null) {
-                bitstreamService.addMetadata(context, bitstream, "dc", "doc", "type", null, workflowProcessReferenceDoc.getWorkFlowProcessReferenceDocType().getPrimaryvalue());
-            }
-            if (workflowProcessReferenceDoc.getReferenceNumber() != null) {
-                bitstreamService.addMetadata(context, bitstream, "dc", "ref", "number", null, workflowProcessReferenceDoc.getReferenceNumber());
-            }
-            if (workflowProcessReferenceDoc.getSubject() != null) {
-                bitstreamService.addMetadata(context, bitstream, "dc", "description", null, null, workflowProcessReferenceDoc.getSubject());
-            }
-            if (workflowProcessReferenceDoc.getLatterCategory() != null) {
-                bitstreamService.addMetadata(context, bitstream, "dc", "letter", "category", null, workflowProcessReferenceDoc.getLatterCategory().getPrimaryvalue());
-                bitstreamService.addMetadata(context, bitstream, "dc", "letter", "categoryhi", null, workflowProcessReferenceDoc.getLatterCategory().getSecondaryvalue());
-            }
-            if (workflowProcessReferenceDoc.getInitdate() != null) {
-                bitstreamService.addMetadata(context, bitstream, "dc", "date", null, null, workflowProcessReferenceDoc.getInitdate().toString());
-            }
-        }
-
     }
 
 

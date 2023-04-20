@@ -74,5 +74,15 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
     List<WorkflowProcess> getHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException;
 
     int countgetHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid) throws SQLException;
+    /**
+     * Store Bbitstrea from  WorkflowProcessRefranceDoc
+     *
+     *
+     * @param context DSpace context object
+     * @param  item  item
+     * @param workflowProcessReferenceDoc  workflowProcessReferenceDoc
+     * @throws SQLException,AuthorizeException if database error
+     */
+    public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc,Item item) throws SQLException, AuthorizeException ;
 
 }
