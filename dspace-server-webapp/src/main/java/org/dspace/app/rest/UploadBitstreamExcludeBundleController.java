@@ -35,6 +35,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -100,15 +101,17 @@ public class UploadBitstreamExcludeBundleController {
      *
      * @return The created BitstreamResource
      */
-    @RequestMapping(method = RequestMethod.POST, headers = "content-type=multipart/form-data")
+    @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE},value = "/{uuid}")
     @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
     public ResponseEntity<RepresentationModel<?>> uploadBitstream(
+            @PathVariable("uuid") UUID uuid,
             HttpServletRequest request,
-            @PathVariable UUID uuid,
-            @RequestParam("file") MultipartFile uploadfile,
-            @RequestParam(value = "properties", required = false) String properties, String workflowProcessReferenceDocRest) {
+            MultipartFile file, String workflowProcessReferenceDocRestStr
+            ) {
 
         Context context = ContextUtil.obtainContext(request);
+        System.out.println("uuid:::"+uuid);
         Bitstream bitstream =null;
         try {
             Optional<Item> itemOptional = Optional.ofNullable(itemService.find(context, uuid));
@@ -116,11 +119,11 @@ public class UploadBitstreamExcludeBundleController {
                 throw new ResourceNotFoundException("Item not found");
             }
             ObjectMapper mapper = new ObjectMapper();
-            WorkflowProcessReferenceDocRest workflowProcessReferenceDocRestobj = mapper.readValue(workflowProcessReferenceDocRest, WorkflowProcessReferenceDocRest.class);
+            WorkflowProcessReferenceDocRest workflowProcessReferenceDocRestobj = mapper.readValue(workflowProcessReferenceDocRestStr, WorkflowProcessReferenceDocRest.class);
             InputStream fileInputStream = null;
-            fileInputStream = uploadfile.getInputStream();
+            fileInputStream = file.getInputStream();
             bitstream = bundleRestRepository.processBitstreamCreationWithoutBundle(
-                    context, fileInputStream, properties, uploadfile.getOriginalFilename());
+                    context, fileInputStream, "", file.getOriginalFilename());
             WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(context, workflowProcessReferenceDocRestobj);
             workflowProcessReferenceDoc.setBitstream(bitstream);
             workflowProcessService.storeWorkFlowMataDataTOBitsream(context, workflowProcessReferenceDoc, itemOptional.get());

@@ -409,7 +409,6 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
     public Page<ItemRest> searchByTitle(
             @Parameter(value = "searchtitle", required = true) String searchtitle,
             Pageable pageable) {
-
         try {
             Context context = obtainContext();
             List<Item> witems = itemService.searchItemByTitle(context, searchtitle);
