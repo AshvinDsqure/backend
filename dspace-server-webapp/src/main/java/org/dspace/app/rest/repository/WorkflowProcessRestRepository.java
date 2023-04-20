@@ -37,6 +37,7 @@ import org.dspace.content.service.*;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.RegistrationData;
+import org.dspace.util.SolrUtils;
 import org.dspace.util.UUIDUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,14 +113,12 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
     @SearchRestMethod(name = "gethistory")
-    public Page<WorkFlowProcessRest> gethistory(Context context, Pageable pageable) {
+    public Page<WorkFlowProcessRest> gethistory(Pageable pageable) {
+
         try {
-            UUID statusid = null;
-            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
-            if(workFlowTypeStatus.isPresent()){
-                statusid=workFlowTypeStatus.get().getID();
-            }
-            System.out.println("Statis id isDraft"+statusid);
+            Context context = obtainContext();
+            UUID statusid=WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context).get().getID();
+            System.out.println("Draft Id"+statusid);
             int count=workflowProcessService.countgetHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid);
             List<WorkflowProcess> workflowProcesses= workflowProcessService.getHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
@@ -132,11 +131,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     @SearchRestMethod(name = "dashboard")
     public Page<WorkFlowProcessRest> dashboard(Context context, Pageable pageable) {
         try {
-            UUID statusid = null;
-            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
-            if(workFlowTypeStatus.isPresent()){
-                statusid=workFlowTypeStatus.get().getID();
-            }
+            UUID statusid=WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context).get().getID();
             System.out.println("Statis id isDraft"+statusid);
             int count=workflowProcessService.countgetHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid);
             List<WorkflowProcess> workflowProcesses= workflowProcessService.getHistoryByNotOwnerAndNotDraft(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
@@ -150,14 +145,11 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
     @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
     @SearchRestMethod(name = "getDraft")
-    public Page<WorkFlowProcessRest> getDraft(Context context, Pageable pageable) {
+    public Page<WorkFlowProcessRest> getDraft(Pageable pageable) {
         try {
-            UUID statusid = null;
-            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
-            if(workFlowTypeStatus.isPresent()){
-                statusid=workFlowTypeStatus.get().getID();
-            }
-            System.out.println("Statis id isDraft"+statusid);
+            Context context = obtainContext();
+            UUID statusid=WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context).get().getID();
+            System.out.println("Draft Id"+statusid);
             int count=workflowProcessService.countgetHistoryByOwnerAndIsDraft(context,context.getCurrentUser().getID(),statusid);
             List<WorkflowProcess> workflowProcesses= workflowProcessService.getHistoryByOwnerAndIsDraft(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());

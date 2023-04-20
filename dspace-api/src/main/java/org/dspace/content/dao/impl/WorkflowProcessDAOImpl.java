@@ -64,10 +64,10 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
                 "SELECT count(wp) FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
                 "join ep.ePerson as p  " +
-                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id not IN(:isDraft)");
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id not IN(:statusid)");
         query.setParameter("isOwner",false);
         query.setParameter("eperson",eperson);
-        query.setParameter("notDraft",statusid);
+        query.setParameter("statusid",statusid);
 
         return count(query);
     }
@@ -96,7 +96,7 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
                 "SELECT count(wp) FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
                 "join ep.ePerson as p  " +
-                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id NOT IN(:statusid)");
+                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id NOT IN(:notDraft)");
         query.setParameter("isOwner",false);
         query.setParameter("eperson",eperson);
         query.setParameter("notDraft",statusid);
@@ -124,7 +124,7 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
     @Override
     public int countgetHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid) throws SQLException {
         Query query = createQuery(context, "" +
-                "SELECT wp FROM WorkflowProcess as wp " +
+                "SELECT count(wp) FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
                 "join ep.ePerson as p  " +
                 "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id  IN(:isDraft)");
