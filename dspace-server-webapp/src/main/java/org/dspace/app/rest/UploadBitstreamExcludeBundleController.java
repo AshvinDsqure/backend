@@ -120,6 +120,7 @@ public class UploadBitstreamExcludeBundleController {
             }
             ObjectMapper mapper = new ObjectMapper();
             WorkflowProcessReferenceDocRest workflowProcessReferenceDocRestobj = mapper.readValue(workflowProcessReferenceDocRestStr, WorkflowProcessReferenceDocRest.class);
+
             InputStream fileInputStream = null;
             fileInputStream = file.getInputStream();
             bitstream = bundleRestRepository.processBitstreamCreationWithoutBundle(
@@ -127,16 +128,20 @@ public class UploadBitstreamExcludeBundleController {
             WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(context, workflowProcessReferenceDocRestobj);
             workflowProcessReferenceDoc.setBitstream(bitstream);
             workflowProcessService.storeWorkFlowMataDataTOBitsream(context, workflowProcessReferenceDoc, itemOptional.get());
-
         } catch (SQLException e) {
+            e.printStackTrace();
             log.error("Something went wrong trying to find the Bundle with uuid: " + uuid, e);
         } catch (JsonMappingException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } catch (AuthorizeException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
         BitstreamRest bitstreamRest=bitstreamConverter.convert(bitstream,utils.obtainProjection());

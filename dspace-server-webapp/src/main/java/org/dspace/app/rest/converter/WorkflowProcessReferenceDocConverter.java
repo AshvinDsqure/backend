@@ -80,7 +80,13 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
         return WorkflowProcessReferenceDoc.class;
     }
     public WorkflowProcessReferenceDoc convert(Context context, WorkflowProcessReferenceDocRest rest) throws SQLException {
-        WorkflowProcessReferenceDoc workflowProcessReferenceDoc= modelMapper.map(rest,WorkflowProcessReferenceDoc.class) ;
+        WorkflowProcessReferenceDoc workflowProcessReferenceDoc=new WorkflowProcessReferenceDoc();
+        workflowProcessReferenceDoc.setReferenceNumber(rest.getReferenceNumber());
+        workflowProcessReferenceDoc.setInitdate(rest.getInitdate());
+        workflowProcessReferenceDoc.setSubject(rest.getSubject());
+        workflowProcessReferenceDoc.setLatterCategory(workFlowProcessMasterValueConverter.convert(context,rest.getLatterCategoryRest()));
+        workflowProcessReferenceDoc.setWorkFlowProcessReferenceDocType(workFlowProcessMasterValueConverter.convert(context,rest.getWorkFlowProcessReferenceDocType()));
+        if(rest.getBitstreamRest() != null)
         workflowProcessReferenceDoc.setBitstream(bitstreamService.find(context, UUID.fromString(rest.getBitstreamRest().getId())));
         return  workflowProcessReferenceDoc;
     }

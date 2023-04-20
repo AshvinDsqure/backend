@@ -54,7 +54,7 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     private WorkFlowProcessMasterValue workFlowProcessReferenceDocType;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lattercategory")
-    private WorkFlowProcessMasterValue latterCategory;
+        private WorkFlowProcessMasterValue latterCategory;
     @Column(name = "initdate", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date initdate = new Date();
