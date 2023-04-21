@@ -25,7 +25,8 @@ public enum WorkFlowStatus {
     INPROGRESS("In Progress"),
     SUSPEND("Suspend"),
     DRAFT("Draft"),
-    CLOSE("Close");
+    CLOSE("Close"),
+    DISPATCH("Dispatch Ready");
     private String status;
     private WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
     private WorkFlowProcessMasterService workFlowProcessMasterService;

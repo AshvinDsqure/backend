@@ -87,6 +87,18 @@ public enum WorkFlowAction {
             workFlowAction.setComment(this.getComment());
             return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
         }
+    },
+    DISPATCH("Dispatch Ready"){
+        @Override
+        public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+            String forwardResponce = this.getJbpmServer().completeTask(workFlowProcessRest,new ArrayList<>());
+            JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
+            System.out.println("jbpmResponse:: Backward"+new Gson().toJson(jbpmResponse));
+            WorkflowProcessEperson currentOwner =  this.changeOwnership(context,jbpmResponse,workflowProcess);
+            WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+            workFlowAction.setComment(this.getComment());
+            return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
+        }
     };
 
     private String action;

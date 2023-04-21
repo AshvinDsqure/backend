@@ -30,6 +30,7 @@ import org.dspace.content.service.WorkflowProcessReferenceDocService;
 import org.dspace.content.service.WorkflowProcessService;
 import org.dspace.core.Context;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ControllerUtils;
@@ -48,9 +49,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID;
 
@@ -145,26 +150,29 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
     @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/outward")
     @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
-    public WorkflowProcessReferenceDocRest uploadBitstreamoutward(
+    public List<WorkflowProcessReferenceDocRest> uploadBitstreamoutward(
             HttpServletRequest request,
-           @Valid WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest) throws SQLException, AuthorizeException, IOException {
-        WorkflowProcessReferenceDoc workflowProcessReferenceDoc = null;
+           String workflowProcessReferenceDocRestListstr) throws SQLException, AuthorizeException, IOException {
+        List<WorkflowProcessReferenceDocRest> rsponce=new ArrayList<>();
         try {
             Context context = ContextUtil.obtainContext(request);
-            workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDocRest, context);
-            System.out.println("workflowProcessReferenceDocRest::" + workflowProcessReferenceDocRest.getReferenceNumber());
-            if (workflowProcessReferenceDocRest.getWorkFlowProcessRest()!= null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()!= null) {
-                workflowProcessReferenceDoc.setWorkflowProcess(workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid())));
-            }
-            workflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
+            Type listType = new TypeToken<ArrayList<WorkflowProcessReferenceDocRest>>(){}.getType();
+            List<WorkflowProcessReferenceDocRest>  workflowProcessReferenceDocRestList=new Gson().fromJson(workflowProcessReferenceDocRestListstr,listType);
+            rsponce= workflowProcessReferenceDocRestList.stream().map(wrd->{
+                try {
+                   WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(wrd, context);
+                    workflowProcessReferenceDoc= workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
+                   return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList());
             context.commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
-
+        return rsponce;
     }
-
     @RequestMapping(method = RequestMethod.GET, value = "/test")
     public String test(
             HttpServletRequest request

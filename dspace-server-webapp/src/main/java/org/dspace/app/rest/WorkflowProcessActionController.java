@@ -154,14 +154,13 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
             ObjectMapper mapper = new ObjectMapper();
             workflowProcessEpersonRest = mapper.readValue(request.getInputStream(), WorkflowProcessEpersonRest.class);
             String comment=workflowProcessEpersonRest.getComment();
-
             WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
-            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context);
-            if (workFlowTypeStatus.isPresent()) {
-                workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
-            }
             if (workFlowProcess.getEligibleForFiling().getPrimaryvalue() == "Yes" && workFlowProcess.getItem() == null) {
                 throw new ResourceNotFoundException("Item ID not found");
+            }
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context);
+            if (workFlowTypeStatus.isPresent()) {
+                workFlowProcess.setWorkflowStatus(workFlowTypeStatus.get());
             }
             Item item = workFlowProcess.getItem();
             if (item != null) {
@@ -176,7 +175,7 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
                 });
 
             }
-            workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
+            workFlowProcess.setWorkflowStatus(workFlowTypeStatus.get());
             workflowProcessService.create(context,workFlowProcess);
             workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             WorkFlowAction COMPLETE= WorkFlowAction.COMPLETE;
@@ -184,7 +183,39 @@ public class WorkflowProcessActionController extends AbstractDSpaceRestRepositor
                 COMPLETE.setComment(comment);
             }
             COMPLETE.perfomeAction(context, workFlowProcess, workFlowProcessRest);
-            workFlowProcess.setWorkflowStatus(WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get());
+            context.commit();
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        }
+        return workFlowProcessRest;
+    }
+    @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
+    @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD}, value = "dispatch")
+    public WorkFlowProcessRest dispatch(@PathVariable UUID uuid,
+                                        HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+        WorkFlowProcessRest workFlowProcessRest = null;
+        WorkflowProcessEpersonRest workflowProcessEpersonRest = null;
+        try {
+            Context context = ContextUtil.obtainContext(request);
+            String comment=workflowProcessEpersonRest.getComment();
+            WorkflowProcess workFlowProcess = workflowProcessService.find(context, uuid);
+            if(workFlowProcess.getWorkFlowProcessOutwardDetails() != null && workFlowProcess.getWorkFlowProcessOutwardDetails().getOutwardDepartment() != null){
+                throw  new ResourceNotFoundException("Dispatch not found");
+            }
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DISPATCH.getUserTypeFromMasterValue(context);
+            if (workFlowTypeStatus.isPresent()) {
+                workFlowProcess.setWorkflowStatus(workFlowTypeStatus.get());
+            }
+            workFlowProcess.getWorkFlowProcessOutwardDetails().getOutwardDepartment().getMembers().forEach(e->{
+                workFlowProcess.setnewUser(workFlowProcessEpersonConverter.convert(context,e));
+            });
+            workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
+            WorkFlowAction DISPATCH= WorkFlowAction.DISPATCH;
+            if(comment!=null) {
+                DISPATCH.setComment(comment);
+            }
+            DISPATCH.perfomeAction(context, workFlowProcess, workFlowProcessRest);
+            workFlowProcess.setWorkflowStatus(workFlowTypeStatus.get());
             workflowProcessService.create(context,workFlowProcess);
             context.commit();
         }catch (RuntimeException e){

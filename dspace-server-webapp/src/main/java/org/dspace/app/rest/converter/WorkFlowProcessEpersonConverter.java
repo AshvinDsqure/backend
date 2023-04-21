@@ -12,6 +12,7 @@ import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.*;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,15 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         if(rest.getAssignDate() != null){
             workflowProcessEperson.setAssignDate(rest.getAssignDate());
         }
+        return workflowProcessEperson;
+    }
+    public WorkflowProcessEperson convert(Context context, EPerson rest) {
+        WorkflowProcessEperson workflowProcessEperson = new WorkflowProcessEperson();
+        workflowProcessEperson.setePerson(rest);
+        if (rest.getDepartment() != null)
+            workflowProcessEperson.setDepartment(rest.getDepartment());
+        if (rest.getOffice() != null)
+           workflowProcessEperson.setOffice(rest.getOffice());
         return workflowProcessEperson;
     }
 
