@@ -109,10 +109,12 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
                 "SELECT wp FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
                 "join ep.ePerson as p  " +
-                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id IN(:isDraft)");
-        query.setParameter("isOwner",true);
+                "join wp.workflowStatus as st  where p.id=:eperson and st.id IN(:isDraft)");
         query.setParameter("eperson",eperson);
         query.setParameter("isDraft",statusid);
+        System.out.println("::::::::::::offset"+offset);
+        System.out.println("::::::::::::limit"+limit);
+
         if (0 <= offset) {
             query.setFirstResult(offset);
         }if (0 <= limit) {
@@ -127,8 +129,8 @@ public class WorkflowProcessDAOImpl extends AbstractHibernateDSODAO<WorkflowProc
                 "SELECT count(wp) FROM WorkflowProcess as wp " +
                 "join wp.workflowProcessEpeople as ep " +
                 "join ep.ePerson as p  " +
-                "join wp.workflowStatus as st  where ep.isOwner=:isOwner and p.id=:eperson and st.id  IN(:isDraft)");
-        query.setParameter("isOwner",true);
+                "join wp.workflowStatus as st  where p.id=:eperson and st.id  IN(:isDraft)");
+
         query.setParameter("eperson",eperson);
         query.setParameter("isDraft",statusid);
 

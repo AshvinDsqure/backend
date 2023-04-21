@@ -57,6 +57,11 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_status_id")
     private WorkFlowProcessMasterValue workflowStatus = null;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflow_priority_id")
+    private WorkFlowProcessMasterValue priority = null;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_type_id")
     private WorkFlowProcessMasterValue workflowType = null;
@@ -82,8 +87,6 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @Temporal(TemporalType.TIMESTAMP)
     private Date InitDate = new Date();
 
-    @Enumerated(EnumType.STRING)
-    private Priority priority;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dispatchmode_id")
     private WorkFlowProcessMasterValue dispatchmode = null;
@@ -194,14 +197,6 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
         InitDate = initDate;
     }
 
-    public Priority getPriority() {
-        return priority;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
-
     public WorkFlowProcessMasterValue getDispatchmode() {
         return dispatchmode;
     }
@@ -240,5 +235,13 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     public void setWorkFlowProcessOutwardDetails(WorkFlowProcessOutwardDetails workFlowProcessOutwardDetails) {
         this.workFlowProcessOutwardDetails = workFlowProcessOutwardDetails;
+    }
+
+    public WorkFlowProcessMasterValue getPriority() {
+        return priority;
+    }
+
+    public void setPriority(WorkFlowProcessMasterValue priority) {
+        this.priority = priority;
     }
 }
