@@ -33,6 +33,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ControllerUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
@@ -45,6 +47,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -96,6 +99,8 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
     private DiscoverableEndpointsService discoverableEndpointsService;
     @Autowired
     private BundleService bundleService;
+    @Autowired
+    ConverterService converterService;
 
     /**
      * Method to upload a Bitstream to a Bundle with the given UUID in the URL. This will create a Bitstream with the
@@ -151,9 +156,9 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
     @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/outward")
     @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
-    public List<WorkflowProcessReferenceDocRest> uploadBitstreamoutward(
+    public Page<WorkflowProcessReferenceDocRest>  uploadBitstreamoutward(
             HttpServletRequest request,
-            @RequestBody List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRestListstr) throws SQLException, AuthorizeException, IOException {
+            @RequestBody List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRestListstr, @Nullable Pageable optionalPageable) throws SQLException, AuthorizeException, IOException {
         List<WorkflowProcessReferenceDocRest> rsponce = new ArrayList<>();
         Context context = ContextUtil.obtainContext(request);
         System.out.println("workflowProcessReferenceDocRestListstr::" + workflowProcessReferenceDocRestListstr);
@@ -168,7 +173,7 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
             }
         }).collect(Collectors.toList());
         context.commit();
-        return rsponce;
+        return converterService.toRestPage(rsponce, optionalPageable, utils.obtainProjection());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/test")
