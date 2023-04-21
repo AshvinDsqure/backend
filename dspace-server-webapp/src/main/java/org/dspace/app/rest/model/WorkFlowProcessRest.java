@@ -80,12 +80,8 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date InitDate = new Date();
-
-
     @JsonProperty
-    private String priority;
-
-
+    private WorkFlowProcessMasterValueRest priorityRest = null;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
@@ -171,14 +167,6 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
         InitDate = initDate;
     }
 
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
     public String getEntityType() {
         return entityType;
     }
@@ -249,5 +237,13 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setWorkFlowProcessOutwardDetailsRest(WorkFlowProcessOutwardDetailsRest workFlowProcessOutwardDetailsRest) {
         this.workFlowProcessOutwardDetailsRest = workFlowProcessOutwardDetailsRest;
+    }
+
+    public WorkFlowProcessMasterValueRest getPriorityRest() {
+        return priorityRest;
+    }
+
+    public void setPriorityRest(WorkFlowProcessMasterValueRest priorityRest) {
+        this.priorityRest = priorityRest;
     }
 }

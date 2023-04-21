@@ -71,7 +71,6 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         }
         if (obj.getDispatchmode() != null) {
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
-            System.out.println("Dispath mode::" + workFlowProcessRest.getDispatchModeRest().getPrimaryvalue());
         }
         if (obj.getEligibleForFiling() != null) {
             workFlowProcessRest.setEligibleForFilingRest(workFlowProcessMasterValueConverter.convert(obj.getEligibleForFiling(), projection));
@@ -99,7 +98,7 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         }
         workFlowProcessRest.setInitDate(obj.getInitDate());
         if (obj.getPriority() != null) {
-            workFlowProcessRest.setPriority(obj.getPriority().getPriorityName());
+            workFlowProcessRest.setPriorityRest(workFlowProcessMasterValueConverter.convert(obj.getPriority(), projection));
         }
         if (obj.getDispatchmode() != null)
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
@@ -154,8 +153,8 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
             }
         }).collect(Collectors.toList()));
         workflowProcess.setInitDate(obj.getInitDate());
-        if (obj.getPriority() != null && obj.getPriority().length() !=0) {
-            workflowProcess.setPriority(Priority.valueOf(obj.getPriority()));
+        if (obj.getPriorityRest()!=null) {
+            workflowProcess.setPriority(workFlowProcessMasterValueConverter.convert(context,obj.getPriorityRest()));
         }
         if (obj.getDispatchModeRest() != null) {
             workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
