@@ -113,6 +113,7 @@ public class UploadBitstreamExcludeBundleController {
         Context context = ContextUtil.obtainContext(request);
         System.out.println("uuid:::"+uuid);
         Bitstream bitstream =null;
+        BitstreamResource bitstreamResource =null;
         try {
             Optional<Item> itemOptional = Optional.ofNullable(itemService.find(context, uuid));
             if (!itemOptional.isPresent()) {
@@ -128,6 +129,9 @@ public class UploadBitstreamExcludeBundleController {
             WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(context, workflowProcessReferenceDocRestobj);
             workflowProcessReferenceDoc.setBitstream(bitstream);
             workflowProcessService.storeWorkFlowMataDataTOBitsream(context, workflowProcessReferenceDoc, itemOptional.get());
+            BitstreamRest bitstreamRest=bitstreamConverter.convert(bitstream,utils.obtainProjection());
+            bitstreamResource = converter.toResource(bitstreamRest);
+            context.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             log.error("Something went wrong trying to find the Bundle with uuid: " + uuid, e);
@@ -144,8 +148,6 @@ public class UploadBitstreamExcludeBundleController {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        BitstreamRest bitstreamRest=bitstreamConverter.convert(bitstream,utils.obtainProjection());
-        BitstreamResource bitstreamResource = converter.toResource(bitstreamRest);
         return ControllerUtils.toResponseEntity(HttpStatus.CREATED, new HttpHeaders(), bitstreamResource);
     }
 }
