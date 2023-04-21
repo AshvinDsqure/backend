@@ -124,7 +124,7 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
             WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest = mapper.readValue(workflowProcessReferenceDocRestStr, WorkflowProcessReferenceDocRest.class);
             workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDocRest, context);
             System.out.println("workflowProcessReferenceDocRest::" + workflowProcessReferenceDocRest.getReferenceNumber());
-            if (workflowProcessReferenceDocRest.getWorkFlowProcessRest()!= null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()!= null) {
+            if (workflowProcessReferenceDocRest.getWorkFlowProcessRest() != null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid() != null) {
                 workflowProcessReferenceDoc.setWorkflowProcess(workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid())));
             }
 
@@ -147,32 +147,30 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
         return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
 
     }
+
     @RequestMapping(method = RequestMethod.POST, consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/outward")
     @PreAuthorize("hasPermission(#uuid, 'BUNDLE', 'ADD') && hasPermission(#uuid, 'BUNDLE', 'WRITE')")
     public List<WorkflowProcessReferenceDocRest> uploadBitstreamoutward(
             HttpServletRequest request,
-           String workflowProcessReferenceDocRestListstr) throws SQLException, AuthorizeException, IOException {
-        List<WorkflowProcessReferenceDocRest> rsponce=new ArrayList<>();
-        try {
-            Context context = ContextUtil.obtainContext(request);
-            Type listType = new TypeToken<ArrayList<WorkflowProcessReferenceDocRest>>(){}.getType();
-            List<WorkflowProcessReferenceDocRest>  workflowProcessReferenceDocRestList=new Gson().fromJson(workflowProcessReferenceDocRestListstr,listType);
-            rsponce= workflowProcessReferenceDocRestList.stream().map(wrd->{
-                try {
-                   WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(wrd, context);
-                    workflowProcessReferenceDoc= workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
-                   return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }).collect(Collectors.toList());
-            context.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            @RequestBody List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRestListstr) throws SQLException, AuthorizeException, IOException {
+        List<WorkflowProcessReferenceDocRest> rsponce = new ArrayList<>();
+        Context context = ContextUtil.obtainContext(request);
+        System.out.println("workflowProcessReferenceDocRestListstr::" + workflowProcessReferenceDocRestListstr);
+        System.out.println("workflowProcessReferenceDocRestList size::" + workflowProcessReferenceDocRestListstr.size());
+        rsponce = workflowProcessReferenceDocRestListstr.stream().map(wrd -> {
+            try {
+                WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(wrd, context);
+                workflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
+                return workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
+        context.commit();
         return rsponce;
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "/test")
     public String test(
             HttpServletRequest request
