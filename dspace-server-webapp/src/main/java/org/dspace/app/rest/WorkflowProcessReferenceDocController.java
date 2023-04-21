@@ -17,6 +17,7 @@ import org.dspace.app.rest.converter.WorkflowProcessReferenceDocConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.hateoas.BitstreamResource;
+import org.dspace.app.rest.repository.AbstractDSpaceRestRepository;
 import org.dspace.app.rest.repository.BundleRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.rest.utils.Utils;
@@ -79,7 +80,7 @@ import static org.dspace.app.rest.utils.RegexUtils.REGEX_REQUESTMAPPING_IDENTIFI
  */
 @RestController
 @RequestMapping("/api/" + WorkflowProcessReferenceDocRest.CATEGORY)
-public class WorkflowProcessReferenceDocController implements InitializingBean {
+public class WorkflowProcessReferenceDocController  extends AbstractDSpaceRestRepository implements InitializingBean {
 
     private static final Logger log = LogManager.getLogger();
     @Autowired
@@ -99,8 +100,7 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
     private DiscoverableEndpointsService discoverableEndpointsService;
     @Autowired
     private BundleService bundleService;
-    @Autowired
-    ConverterService converterService;
+
 
     /**
      * Method to upload a Bitstream to a Bundle with the given UUID in the URL. This will create a Bitstream with the
@@ -173,7 +173,7 @@ public class WorkflowProcessReferenceDocController implements InitializingBean {
             }
         }).collect(Collectors.toList());
         context.commit();
-        return converterService.toRestPage(rsponce, optionalPageable, utils.obtainProjection());
+        return converter.toRestPage(rsponce, optionalPageable, utils.obtainProjection());
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/test")
