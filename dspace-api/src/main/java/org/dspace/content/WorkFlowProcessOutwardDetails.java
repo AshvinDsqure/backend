@@ -50,6 +50,13 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outwardmode_id")
     private WorkFlowProcessMasterValue outwardmode;
+    @Column(name = "serviceprovider")
+    private String  serviceprovider;
+    @Column(name = "awbno")
+    private String  awbno;
+    @Column(name = "dispatchdate", columnDefinition = "timestamp with time zone")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dispatchdate;
 
 
     public String getOutwardNumber() {
@@ -108,5 +115,29 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
 
     public void setOutwardmode(WorkFlowProcessMasterValue outwardmode) {
         this.outwardmode = outwardmode;
+    }
+
+    public String getServiceprovider() {
+        return serviceprovider;
+    }
+
+    public void setServiceprovider(String serviceprovider) {
+        this.serviceprovider = serviceprovider;
+    }
+
+    public String getAwbno() {
+        return awbno;
+    }
+
+    public void setAwbno(String awbno) {
+        this.awbno = awbno;
+    }
+
+    public Date getDispatchdate() {
+        return dispatchdate;
+    }
+
+    public void setDispatchdate(Date dispatchdate) {
+        this.dispatchdate = dispatchdate;
     }
 }

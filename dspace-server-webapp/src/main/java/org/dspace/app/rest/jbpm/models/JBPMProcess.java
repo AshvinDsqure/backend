@@ -41,7 +41,7 @@ public class JBPMProcess implements Serializable {
             this.initiator="Dsquare";
         }
         //this.dispatch = workflowProcess.getDispatchModeRest().getPrimaryvalue();
-        this.dispatch = "";
+        this.dispatch = "electronic";
         this.users = new ArrayList<>();
     }
 

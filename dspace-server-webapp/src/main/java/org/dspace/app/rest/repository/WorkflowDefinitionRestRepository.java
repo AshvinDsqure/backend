@@ -81,7 +81,7 @@ public class WorkflowDefinitionRestRepository extends DSpaceObjectRestRepository
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return converter.toRest(null, utils.obtainProjection());
+        return workflowProcessDefinitionRest;
     }
 
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
@@ -132,7 +132,7 @@ public class WorkflowDefinitionRestRepository extends DSpaceObjectRestRepository
             System.out.println("documentTypeRest id ::: is Null  document tye null");
             throw new ResourceNotFoundException("metadata field with id: " + id + " not found");
         }
-        workflowProcessDefinition.setWorkflowprocessdefinition(workflowProcessDefinitionRest.getWorkflowprocessdefinitionname());
+        workflowProcessDefinition  = workFlowProcessDefinitionConverter.convert(context, workflowProcessDefinitionRest);
         workflowProcessDefinitionService.update(context, workflowProcessDefinition);
         context.commit();
         return converter.toRest(workflowProcessDefinition, utils.obtainProjection());

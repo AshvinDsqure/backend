@@ -35,7 +35,7 @@ public class WorkflowProcessDefinition extends DSpaceObject implements DSpaceObj
     @Column(name = "workflowprocessdefinition_id", insertable = false, updatable = false)
     private Integer legacyId;
     @Column(name = "workflowprocessdefinitionname")
-    private String workflowprocessdefinition;
+    private String workflowprocessdefinitionname;
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowProcessDefinition",cascade = { CascadeType.ALL})
     private Set<WorkflowProcessEperson> workflowProcessDefinitionEpeople=new HashSet<>();
     @Override
@@ -55,12 +55,13 @@ public class WorkflowProcessDefinition extends DSpaceObject implements DSpaceObj
         this.legacyId = legacyId;
     }
 
-    public String getWorkflowprocessdefinition() {
-        return workflowprocessdefinition;
+
+    public String getWorkflowprocessdefinitionname() {
+        return workflowprocessdefinitionname;
     }
 
-    public void setWorkflowprocessdefinition(String workflowprocessdefinition) {
-        this.workflowprocessdefinition = workflowprocessdefinition;
+    public void setWorkflowprocessdefinitionname(String workflowprocessdefinitionname) {
+        this.workflowprocessdefinitionname = workflowprocessdefinitionname;
     }
 
     public Set<WorkflowProcessEperson> getWorkflowProcessDefinitionEpeople() {

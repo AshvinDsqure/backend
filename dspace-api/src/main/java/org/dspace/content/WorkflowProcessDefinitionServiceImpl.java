@@ -58,7 +58,8 @@ public class WorkflowProcessDefinitionServiceImpl extends DSpaceObjectServiceImp
 
     @Override
     public WorkflowProcessDefinition find(Context context, UUID uuid) throws SQLException {
-        return null;
+        return workflowProcessDefinitionDAO.findByID(context,WorkflowProcessDefinition.class,uuid);
+
     }
 
     @Override

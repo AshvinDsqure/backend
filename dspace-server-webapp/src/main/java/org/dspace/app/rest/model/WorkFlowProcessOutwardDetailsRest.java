@@ -13,6 +13,8 @@ import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.eperson.Group;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.UUID;
 
@@ -30,6 +32,38 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     private WorkFlowProcessMasterValue outwardmediumRest;
     private Group outwardDepartmentRest;
     private WorkFlowProcessMasterValue outwardmodeRest;
+    @JsonDeserialize(converter = MyDateConverter.class)
+    @NotNull
+    @NotEmpty
+    private Date dispatchdate;
+    @NotNull
+    @NotEmpty
+    private String  awbno;
+    @NotNull
+    @NotEmpty
+    private String  serviceprovider;
+    public Date getDispatchdate() {
+        return dispatchdate;
+    }
+    public void setDispatchdate(Date dispatchdate) {
+        this.dispatchdate = dispatchdate;
+    }
+
+    public String getAwbno() {
+        return awbno;
+    }
+
+    public void setAwbno(String awbno) {
+        this.awbno = awbno;
+    }
+
+    public String getServiceprovider() {
+        return serviceprovider;
+    }
+
+    public void setServiceprovider(String serviceprovider) {
+        this.serviceprovider = serviceprovider;
+    }
 
     public String getOutwardNumber() {
         return outwardNumber;
@@ -89,4 +123,5 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     public void setOutwardmodeRest(WorkFlowProcessMasterValue outwardmodeRest) {
         this.outwardmodeRest = outwardmodeRest;
     }
+
 }

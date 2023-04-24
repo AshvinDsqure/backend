@@ -26,26 +26,17 @@ public class WorkFlowProcessOutwardDetailsConverter extends DSpaceObjectConverte
     public Class<WorkFlowProcessOutwardDetails> getModelClass() {
         return WorkFlowProcessOutwardDetails.class;
     }
-
     @Override
     protected WorkFlowProcessOutwardDetailsRest newInstance() {
         return new WorkFlowProcessOutwardDetailsRest();
     }
-
-
     @Override
     public WorkFlowProcessOutwardDetailsRest convert(WorkFlowProcessOutwardDetails obj, Projection projection) {
         WorkFlowProcessOutwardDetailsRest rest = new WorkFlowProcessOutwardDetailsRest();
+        rest= modelMapper.map(obj,WorkFlowProcessOutwardDetailsRest.class);
         rest.setUuid(obj.getID().toString());
-        rest.setOutwardDate(obj.getOutwardDate());
-        rest.setOutwardNumber(obj.getOutwardNumber());
-        rest.setOutwardmediumRest(obj.getOutwardmedium());
-        rest.setOutwardmodeRest(obj.getOutwardmode());
-        rest.setOutwardDepartmentRest(obj.getOutwardDepartment());
         return rest;
     }
-
-
     public WorkFlowProcessOutwardDetails convert(WorkFlowProcessOutwardDetailsRest rest) {
         if(rest!= null) {
             return modelMapper.map(rest, WorkFlowProcessOutwardDetails.class);

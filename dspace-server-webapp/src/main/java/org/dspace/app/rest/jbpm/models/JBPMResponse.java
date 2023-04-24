@@ -21,6 +21,8 @@ public class JBPMResponse {
 
     private String next_user;
     private String performed_by;
+
+    private List<String> next_group;
     private String type;
     public Integer getCount() {
         return count;
@@ -59,5 +61,13 @@ public class JBPMResponse {
 
     public void setPerformed_by(String performed_by) {
         this.performed_by = performed_by;
+    }
+
+    public List<String> getNext_group() {
+        return next_group;
+    }
+
+    public void setNext_group(List<String> next_group) {
+        this.next_group = next_group;
     }
 }

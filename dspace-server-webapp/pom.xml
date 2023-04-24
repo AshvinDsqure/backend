@@ -39,7 +39,7 @@
                     <warName>server</warName>
                     <!-- Filter the web.xml (needed for IDE compatibility/debugging) -->
                     <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-                    <outputDirectory>/opt/software/apache-tomcat-9.0.69/webapps/</outputDirectory>
+                    <outputDirectory>E:\tomcate\apache-tomcat-9.0.72\webapps\</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
