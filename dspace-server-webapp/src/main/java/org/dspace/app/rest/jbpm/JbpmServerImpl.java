@@ -35,7 +35,8 @@ public class JbpmServerImpl {
     public String startProcess(WorkFlowProcessRest workflowProcessw,List<String> users) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess(workflowProcessw);
-        jbpmProcess.setUsers(users);
+        jbpmProcess.setUsers(new ArrayList<Object>(users));
+        jbpmProcess.setWorkflowType(workflowProcessw.getWorkflowType().getPrimaryvalue());
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
@@ -47,7 +48,7 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        jbpmProcess.setUsers(users);
+        jbpmProcess.setUsers(new ArrayList<Object>(users));
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
@@ -60,8 +61,25 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
-        jbpmProcess.setUsers(users);
+        jbpmProcess.setUsers(new ArrayList<Object>(users));
         jbpmProcess.setProcstatus("completed");
+        System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
+        return restTemplate.exchange(baseurl+ JBPM.FORWARDPROCESS, HttpMethod.POST, entity, String.class).getBody();
+
+    }
+    public String dispatchReady(WorkFlowProcessRest workflowProcess,List<String> users,List<String> dispatchUsers) throws  RuntimeException{
+        String baseurl=configurationService.getProperty("jbpm.server");
+        JBPMProcess jbpmProcess=new JBPMProcess();
+        jbpmProcess.setQueueid(workflowProcess.getId());
+        jbpmProcess.setWorkflowType(workflowProcess.getWorkflowType().getPrimaryvalue());
+        List<Object> usersobj= new ArrayList<Object>(users);
+        System.out.println("usersobj current user:"+new Gson().toJson(usersobj));
+        usersobj.add(dispatchUsers);
+        jbpmProcess.setUsers(usersobj);
+        jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class JBPMProcess implements Serializable {
     private String queueid;
     private String initiator;
-    private List<String> users;
+    private List<Object> users;
 
     private String dispatch;
     private Integer jbpmprocid;
@@ -61,11 +61,11 @@ public class JBPMProcess implements Serializable {
         this.initiator = initiator;
     }
 
-    public List<String> getUsers() {
+    public List<Object> getUsers() {
         return users;
     }
 
-    public void setUsers(List<String> users) {
+    public void setUsers(List<Object> users) {
         this.users = users;
     }
 

@@ -16,9 +16,9 @@ public class JBPMResponse_ {
     private String message ;
 
     private String next_user;
+    private List<String> next_group=new ArrayList<>();
     private String performed_by;
     private String type;
-    private List<String> next_group;
     public Integer getCount() {
         return count;
     }

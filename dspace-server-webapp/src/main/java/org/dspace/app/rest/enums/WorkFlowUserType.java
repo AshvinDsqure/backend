@@ -28,6 +28,7 @@ public enum WorkFlowUserType {
     MASTER("Workflow User Type"),
     INITIATOR("Initiator"),
     NORMAL("Normal"),
+    DISPATCH("Dispatch_User"),
     REFER("Refer"),
     CLOSER("Closer");
     private String userType;

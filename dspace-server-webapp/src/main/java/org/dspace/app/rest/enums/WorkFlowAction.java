@@ -91,9 +91,13 @@ public enum WorkFlowAction {
     DISPATCH("Dispatch Ready"){
         @Override
         public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
-            String forwardResponce = this.getJbpmServer().completeTask(workFlowProcessRest,new ArrayList<>());
+            List<String> usersUuid = this.removeInitiatorgetUserList(workFlowProcessRest);
+            System.out.println("normal user::"+usersUuid.toString());
+            List<String> dispatchusersUuid = this.getDispatchUsers(workFlowProcessRest);
+            System.out.println("dispatchusersUuid user::"+dispatchusersUuid.toString());
+            String forwardResponce = this.getJbpmServer().dispatchReady(workFlowProcessRest,usersUuid,dispatchusersUuid);
             JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
-            System.out.println("jbpmResponse:: Backward"+new Gson().toJson(jbpmResponse));
+            System.out.println("Dispatch Ready"+new Gson().toJson(jbpmResponse));
             WorkflowProcessEperson currentOwner =  this.changeOwnership(context,jbpmResponse,workflowProcess);
             WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
             workFlowAction.setComment(this.getComment());
@@ -157,6 +161,12 @@ public enum WorkFlowAction {
     public List<String> removeInitiatorgetUserList(WorkFlowProcessRest workFlowProcessRest) {
         return workFlowProcessRest.getWorkflowProcessEpersonRests().stream()
                 .filter(wei -> !wei.getUserType().getPrimaryvalue().equals(WorkFlowUserType.INITIATOR.getAction()))
+                .filter(wei -> !wei.getUserType().getPrimaryvalue().equals(WorkFlowUserType.DISPATCH.getAction()))
+                .sorted(Comparator.comparing(WorkflowProcessEpersonRest::getIndex)).map(d -> d.getUuid()).collect(Collectors.toList());
+    }
+    public List<String> getDispatchUsers(WorkFlowProcessRest workFlowProcessRest) {
+        return workFlowProcessRest.getWorkflowProcessEpersonRests().stream()
+                .filter(wei -> wei.getUserType().getPrimaryvalue().equals(WorkFlowUserType.DISPATCH.getAction()))
                 .sorted(Comparator.comparing(WorkflowProcessEpersonRest::getIndex)).map(d -> d.getUuid()).collect(Collectors.toList());
     }
 
@@ -195,11 +205,26 @@ public enum WorkFlowAction {
             currentOwner.setSender(true);
             this.getWorkflowProcessEpersonService().update(context, currentOwner);
         }
-        if(jbpmResponse.getNext_user() != null) {
+        if(jbpmResponse.getNext_user() != null && jbpmResponse.getNext_user().trim().length() != 0) {
             WorkflowProcessEperson workflowProcessEpersonOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getNext_user()))).findFirst().get();
             workflowProcessEpersonOwner.setOwner(true);
             workflowProcessEpersonOwner.setSender(false);
             this.getWorkflowProcessEpersonService().update(context, workflowProcessEpersonOwner);
+        }
+        if(jbpmResponse.getNext_group() != null && jbpmResponse.getNext_group().size() != 0) {
+            List<WorkflowProcessEperson> workflowProcessEpersonOwners = workflowProcess.getWorkflowProcessEpeople().stream().filter(we ->jbpmResponse.getNext_group().stream().map(d->d).anyMatch(d->d.equals(we.getID().toString()))).collect(Collectors.toList());
+            workflowProcessEpersonOwners.stream().forEach(d->{
+                System.out.println("next grouppppp"+d.getID());
+                d.setOwner(true);
+                d.setSender(false);
+                try {
+                    this.getWorkflowProcessEpersonService().update(context, d);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                } catch (AuthorizeException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
         return  currentOwner;
 
