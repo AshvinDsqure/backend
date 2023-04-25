@@ -48,6 +48,7 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
+        jbpmProcess.setWorkflowType(workflowProcess.getWorkflowType().getPrimaryvalue());
         jbpmProcess.setUsers(new ArrayList<Object>(users));
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -61,6 +62,7 @@ public class JbpmServerImpl {
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
+        jbpmProcess.setWorkflowType(workflowProcess.getWorkflowType().getPrimaryvalue());
         jbpmProcess.setUsers(new ArrayList<Object>(users));
         jbpmProcess.setProcstatus("completed");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
@@ -92,6 +94,7 @@ public class JbpmServerImpl {
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());
         jbpmProcess.setUsers(new ArrayList<>());
+        jbpmProcess.setWorkflowType(workflowProcess.getWorkflowType().getPrimaryvalue());
         jbpmProcess.setProcstatus("inprogress");
         System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
         HttpHeaders headers = new HttpHeaders();
