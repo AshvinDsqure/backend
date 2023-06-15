@@ -558,6 +558,8 @@ public abstract class DSpaceRestRepository<T extends RestAddressableModel, ID ex
         } catch (AuthorizeException e) {
             throw new RuntimeException("Unable to perform PUT request as the " +
                                            "current user does not have sufficient rights", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return findById(uuid).orElse(null);
     }
@@ -600,7 +602,7 @@ public abstract class DSpaceRestRepository<T extends RestAddressableModel, ID ex
      */
     protected T put(Context context, HttpServletRequest request, String apiCategory, String model, ID id,
                     JsonNode jsonNode)
-        throws RepositoryMethodNotImplementedException, SQLException, AuthorizeException {
+            throws Exception {
         throw new RepositoryMethodNotImplementedException(apiCategory, model);
     }
 

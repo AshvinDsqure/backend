@@ -8,6 +8,7 @@
 package org.dspace.content.service;
 
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.WorkFlowProcessComment;
 import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.core.Context;
 
@@ -32,5 +33,6 @@ public interface WorkFlowProcessHistoryService extends DSpaceObjectService<WorkF
     public int countHistory(Context contex,UUID workflowprocessid) throws SQLException;
 
     List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid)  throws SQLException;
+
 
 }

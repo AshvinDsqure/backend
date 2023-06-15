@@ -16,6 +16,7 @@ import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.springframework.data.annotation.Transient;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
@@ -46,14 +47,18 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private WorkFlowProcessMasterValueRest officeRest = null;
     @JsonProperty
     private WorkFlowProcessMasterValueRest userType = null;
+
+    @JsonProperty
+    private ItemRest itemRest = null;
     @JsonProperty
     private String comment;
+    @JsonProperty
+    private  Boolean initiator=false;
     @Transient
     private WorkFlowUserType workFlowUserType;
     @JsonProperty
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date assignDate =null;
-
 
     @Override
     public String getCategory() {
@@ -136,5 +141,21 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Boolean getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(Boolean initiator) {
+        this.initiator = initiator;
+    }
+
+    public ItemRest getItemRest() {
+        return itemRest;
+    }
+
+    public void setItemRest(ItemRest itemRest) {
+        this.itemRest = itemRest;
     }
 }

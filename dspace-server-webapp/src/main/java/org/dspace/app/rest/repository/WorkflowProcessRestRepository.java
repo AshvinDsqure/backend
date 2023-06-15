@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.*;
 import org.dspace.app.rest.enums.WorkFlowAction;
@@ -37,6 +38,7 @@ import org.dspace.content.service.*;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.RegistrationData;
+import org.dspace.eperson.service.GroupService;
 import org.dspace.util.SolrUtils;
 import org.dspace.util.UUIDUtils;
 import org.modelmapper.ModelMapper;
@@ -70,8 +72,19 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
 
     @Autowired
     WorkFlowProcessConverter workFlowProcessConverter;
+
+    @Autowired
+    GroupService groupService;
+
     @Autowired
     WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
+
+    @Autowired
+    WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
+
+    @Autowired
+    WorkFlowProcessMasterService workFlowProcessMasterService;
+
     @Autowired
     private WorkflowProcessService workflowProcessService;
     @Autowired
@@ -93,7 +106,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
     @PreAuthorize("hasPermission(#id, 'WORKSPACEITEM', 'WRITE')")
     public WorkFlowProcessRest findOne(Context context, UUID id) throws SQLException {
         WorkflowProcess workflowProcess= workflowProcessService.find(context,id);
-        return converter.toRest(workflowProcess, utils.obtainProjection());
+        return workFlowProcessConverter.convert(workflowProcess,utils.obtainProjection());
     }
 
     @Override
@@ -102,8 +115,13 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         try {
             UUID statusid=WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get().getID();
             System.out.println("status id:"+statusid);
-            int count=workflowProcessService.countfindNotCompletedByUser(context,context.getCurrentUser().getID(),statusid);
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findNotCompletedByUser(context,context.getCurrentUser().getID(),statusid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            WorkFlowProcessMaster workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Workflow Type");
+            UUID statusdraftid=null;
+            if(workFlowProcessMaster!=null){
+                statusdraftid= workFlowProcessMasterValueService.findByName(context,"Draft",workFlowProcessMaster).getID();
+            }
+            int count=workflowProcessService.countfindNotCompletedByUser(context,context.getCurrentUser().getID(),statusid,statusdraftid);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findNotCompletedByUser(context,context.getCurrentUser().getID(),statusid,statusdraftid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
         }catch (Exception e){
             e.printStackTrace();
@@ -159,6 +177,41 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         }
     }
 
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'WRITE')")
+    @SearchRestMethod(name = "getDraftNotePendingWorkflow")
+    public Page<WorkFlowProcessRest> getDraftNotePendingWorkflow(Pageable pageable) {
+        try {
+            Context context = obtainContext();
+            UUID statuscloseid=WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get().getID();
+            WorkFlowProcessMaster workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Workflow Type");
+            UUID statusdraftid=null;
+            if(workFlowProcessMaster!=null){
+                 statusdraftid= workFlowProcessMasterValueService.findByName(context,"Draft",workFlowProcessMaster).getID();
+            }
+            System.out.println("statuscloseid>>"+statuscloseid);
+            System.out.println("statusdraftid>>"+statusdraftid);
+            int count=workflowProcessService.countfindDraftPending(context,context.getCurrentUser().getID(),statuscloseid,statusdraftid);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findDraftPending(context,context.getCurrentUser().getID(),statuscloseid,statusdraftid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
+        }catch (Exception e){
+            e.printStackTrace();
+            throw  new RuntimeException(e.getMessage(),e);
+        }
+    }
+
+    @SearchRestMethod(name = "getDocumentByItemID")
+    public WorkFlowProcessRest getDocumentByItemID(@Parameter(value = "itemid", required = true) UUID itemid) {
+        try {
+            Context context = obtainContext();
+            WorkflowProcess witems = workflowProcessService.getNoteByItemsid(context, itemid);
+            System.out.println("lisy"+witems);
+            return workFlowProcessConverter.convert(witems, utils.obtainProjection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+
     @Override
     public Class<WorkFlowProcessRest> getDomainClass() {
         return null;
@@ -174,13 +227,13 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         WorkflowProcess workflowProcess=null;
         try {
             workFlowProcessRest = mapper.readValue(req.getInputStream(), WorkFlowProcessRest.class);
+
+       System.out.println(">>>>>>>>>>>>>>>>>>>json"+workFlowProcessRest);
             Set<ConstraintViolation<WorkFlowProcessRest>> violations=validatorFactory.getValidator().validate(workFlowProcessRest);
             if (!violations.isEmpty()){
                 //throw new WorkFlowValiDationException(violations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList()));
             }
             boolean isDraft=workFlowProcessRest.getDraft();
-            String comment= workFlowProcessRest.getComment();
-
             if(isDraft){
                 workFlowProcessRest.getWorkflowProcessEpersonRests().clear();
                 //clear user if workflowis Draft
@@ -204,9 +257,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
                 System.out.println("isDraft:::"+isDraft);
                 if(!isDraft) {
                    WorkFlowAction create= WorkFlowAction.CREATE;
-                    create.setComment(comment);
                     create.perfomeAction(context,workflowProcess,workFlowProcessRest);
-
                 }
                 context.commit();
             }catch (RuntimeException | SQLException e){

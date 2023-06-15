@@ -18,7 +18,9 @@ import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessMasterRest;
 import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.WorkFlowProcessMaster;
 import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.service.WorkFlowProcessMasterService;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,9 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
     private WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
 
     @Autowired
+    private WorkFlowProcessMasterService masterService;
+
+    @Autowired
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
 
 
@@ -64,13 +69,14 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
         WorkFlowProcessMasterValueRest workFlowProcessMasterValueRest = null;
         WorkFlowProcessMasterValue workFlowProcessMasterValue = null;
         try {
-
-            System.out.println("::::::::::::::::req.getInputStream()::::::::"+req.getInputStream().toString());
             workFlowProcessMasterValueRest = mapper.readValue(req.getInputStream(), WorkFlowProcessMasterValueRest.class);
-            System.out.println("::::::::::::::::req.getWorkflowprocessmasterid()::::::::"+workFlowProcessMasterValueRest.getWorkFlowProcessMaster().getID());
-
+            if(workFlowProcessMasterValueRest.getWorkFlowProcessMaster().getID()==null&& workFlowProcessMasterValueRest.getWorkFlowProcessMaster().getMastername()!=null){
+                WorkFlowProcessMaster workFlowProcessMaster=new WorkFlowProcessMaster();
+                workFlowProcessMaster.setMastername(workFlowProcessMasterValueRest.getWorkFlowProcessMaster().getMastername());
+                WorkFlowProcessMaster ms=masterService.create(context,workFlowProcessMaster);
+                workFlowProcessMasterValueRest.setWorkFlowProcessMaster(ms);
+            }
             workFlowProcessMasterValue = createWorkFlowProcessMasterFromRestObject(context, workFlowProcessMasterValueRest);
-
         } catch (Exception e1) {
             e1.printStackTrace();
             throw new UnprocessableEntityException("error parsing the body... maybe this is not the right error code");
@@ -81,6 +87,7 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
 
     private WorkFlowProcessMasterValue createWorkFlowProcessMasterFromRestObject(Context context, WorkFlowProcessMasterValueRest workFlowProcessMasterValueRest) throws AuthorizeException {
         WorkFlowProcessMasterValue workFlowProcessMasterValue = new WorkFlowProcessMasterValue();
+
         try {
             workFlowProcessMasterValue=workFlowProcessMasterValueConverter.convert(workFlowProcessMasterValue,workFlowProcessMasterValueRest);
             workFlowProcessMasterValueService.create(context, workFlowProcessMasterValue);

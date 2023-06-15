@@ -1210,19 +1210,14 @@ RestResourceController implements InitializingBean {
      */
     private <ID extends Serializable> DSpaceResource<RestAddressableModel> putOneJsonInternal(
         HttpServletRequest request, String apiCategory, String model, ID id, JsonNode jsonNode) {
-
-        System.out.println("::::::::::::::::::::WorkflowProcessSenderDiaryRest:::::1::::::asas::::::");
-        checkModelPluralForm(apiCategory, model);
+         checkModelPluralForm(apiCategory, model);
         DSpaceRestRepository<RestAddressableModel, ID> repository = utils.getResourceRepository(apiCategory, model);
         RestAddressableModel modelObject = null;
-        System.out.println("::::::::::::::::::::repository::::::"+repository.getClass().getName());
-
         modelObject = repository.put(request, apiCategory, model, id, jsonNode);
         if (modelObject == null) {
             throw new ResourceNotFoundException(apiCategory + "." + model + " with id: " + id + " not found");
         }
         return converter.toResource(modelObject);
-
     }
     /**
      * Internal method to execute PUT with text/uri-list MediaType;

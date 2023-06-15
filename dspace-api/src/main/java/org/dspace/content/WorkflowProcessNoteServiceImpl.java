@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkflowProcessDefinitionDAO;
 import org.dspace.content.dao.WorkflowProcessNoteDAO;
+import org.dspace.content.service.WorkFlowProcessMasterService;
+import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.content.service.WorkflowProcessDefinitionService;
 import org.dspace.content.service.WorkflowProcessNoteService;
 import org.dspace.core.Constants;
@@ -42,6 +44,11 @@ public class WorkflowProcessNoteServiceImpl extends DSpaceObjectServiceImpl<Work
     @Autowired(required = true)
     protected WorkflowProcessNoteDAO workflowProcessNoteDAO;
 
+    @Autowired
+    WorkFlowProcessMasterService workFlowProcessMasterService;
+    @Autowired
+    WorkFlowProcessMasterValueService workFlowProcessMasterServicevalue;
+
     protected WorkflowProcessNoteServiceImpl() {
         super();
     }
@@ -58,7 +65,7 @@ public class WorkflowProcessNoteServiceImpl extends DSpaceObjectServiceImpl<Work
 
     @Override
     public WorkflowProcessNote find(Context context, UUID uuid) throws SQLException {
-        return null;
+        return workflowProcessNoteDAO.findByID(context,WorkflowProcessNote.class,uuid);
     }
 
     @Override
@@ -93,5 +100,25 @@ public class WorkflowProcessNoteServiceImpl extends DSpaceObjectServiceImpl<Work
     public List<WorkflowProcessNote> findAll(Context context, Integer limit, Integer offset) throws SQLException {
         return  Optional.ofNullable(workflowProcessNoteDAO.findAll(context,WorkflowProcessNote.class,limit,
                 offset)).orElse(new ArrayList<>());
+    }
+    @Override
+    public int countDocumentByItemid(Context context, UUID itemid) throws SQLException {
+
+        WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
+        if(workFlowProcessMaster!=null){
+            WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
+            return workflowProcessNoteDAO.countDocumentByItemid(context,note.getID(),itemid);
+        }
+        return 0;
+    }
+
+    @Override
+    public List<WorkflowProcessNote> getDocumentByItemid(Context context, UUID itemid, Integer offset, Integer limit) throws SQLException {
+        WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
+        if(workFlowProcessMaster!=null){
+            WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
+            return workflowProcessNoteDAO.getDocumentByItemid(context,note.getID(),itemid,offset,limit);
+        }
+        return null;
     }
 }

@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkflowProcessDAO;
 import org.dspace.content.dao.WorkflowProcessReferenceDocDAO;
+import org.dspace.content.service.WorkFlowProcessMasterService;
+import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.content.service.WorkflowProcessReferenceDocService;
 import org.dspace.content.service.WorkflowProcessService;
 import org.dspace.core.Constants;
@@ -41,6 +43,12 @@ public class WorkflowProcessReferenceDocServiceImpl extends DSpaceObjectServiceI
 
     @Autowired(required = true)
     protected WorkflowProcessReferenceDocDAO workflowProcessReferenceDocDAO;
+
+    @Autowired
+    WorkFlowProcessMasterService workFlowProcessMasterService;
+    @Autowired
+    WorkFlowProcessMasterValueService workFlowProcessMasterServicevalue;
+
 
     protected WorkflowProcessReferenceDocServiceImpl() {
         super();
@@ -94,4 +102,42 @@ public class WorkflowProcessReferenceDocServiceImpl extends DSpaceObjectServiceI
         return  Optional.ofNullable(workflowProcessReferenceDocDAO.findAll(context,WorkflowProcessReferenceDoc.class,limit,
                 offset)).orElse(new ArrayList<>());
     }
+
+    @Override
+    public int countDocumentByType(Context context, UUID drafttypeid) throws SQLException {
+        return workflowProcessReferenceDocDAO.countDocumentByType(context,drafttypeid);
+    }
+
+    @Override
+    public List<WorkflowProcessReferenceDoc> getDocumentByType(Context context, UUID drafttypeid, Integer offset, Integer limit) throws SQLException {
+        return workflowProcessReferenceDocDAO.getDocumentByType(context,drafttypeid,offset,limit);
+    }
+
+    @Override
+    public int countDocumentByItemid(Context context, UUID itemid) throws SQLException {
+
+       WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
+        if(workFlowProcessMaster!=null){
+            WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
+            return workflowProcessReferenceDocDAO.countDocumentByItemid(context,note.getID(),itemid);
+        }
+        return 0;
+    }
+
+    @Override
+    public List<WorkflowProcessReferenceDoc> getDocumentByItemid(Context context, UUID itemid, Integer offset, Integer limit) throws SQLException {
+        WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
+        if(workFlowProcessMaster!=null){
+            WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
+            return workflowProcessReferenceDocDAO.getDocumentByItemid(context,note.getID(),itemid,offset,limit);
+        }
+        return null;
+    }
+
+    @Override
+    public List<WorkflowProcessReferenceDoc> getDocumentByworkflowprocessid(Context context, UUID workflowprocessid) throws SQLException {
+        return workflowProcessReferenceDocDAO.getDocumentByworkflowprocessid(context,workflowprocessid);
+    }
+
+
 }

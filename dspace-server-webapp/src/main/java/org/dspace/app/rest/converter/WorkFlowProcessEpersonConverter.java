@@ -54,8 +54,10 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         if (obj.getUsertype() != null) {
             workflowProcessDefinitionEpersonRest.setUserType(workFlowProcessMasterValueConverter.convert(obj.getUsertype(), projection));
         }
+        if(obj.getInitiator()!=null) {
+            workflowProcessDefinitionEpersonRest.setInitiator(obj.getInitiator());
+        }
         workflowProcessDefinitionEpersonRest.setAssignDate(obj.getAssignDate());
-        System.out.println("obj.getIndex()::" + obj.getIndex() +" email id::"+obj.getePerson().getEmail());
         workflowProcessDefinitionEpersonRest.setIndex(obj.getIndex());
         return workflowProcessDefinitionEpersonRest;
     }
@@ -82,6 +84,9 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         }
         if(rest.getAssignDate() != null){
             workflowProcessEperson.setAssignDate(rest.getAssignDate());
+        }
+        if(rest.getInitiator()!=null) {
+            workflowProcessEperson.setInitiator(rest.getInitiator());
         }
         return workflowProcessEperson;
     }

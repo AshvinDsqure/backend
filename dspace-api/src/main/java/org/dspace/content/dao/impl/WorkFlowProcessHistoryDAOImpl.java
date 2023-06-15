@@ -8,6 +8,7 @@
 package org.dspace.content.dao.impl;
 
 import org.apache.logging.log4j.Logger;
+import org.dspace.content.WorkFlowProcessComment;
 import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.content.dao.WorkFlowProcessHistoryDAO;
 import org.dspace.core.AbstractHibernateDAO;
@@ -40,8 +41,6 @@ public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlo
                     "WHERE wp.id=:workflowprocessid ");
             query.setParameter("workflowprocessid", workflowprocessid);
             return query.getResultList();
-
-
         }
 
     @Override
@@ -52,6 +51,4 @@ public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlo
         query.setParameter("workflowprocessid", workflowprocessid);
         return count(query);
     }
-
-
 }

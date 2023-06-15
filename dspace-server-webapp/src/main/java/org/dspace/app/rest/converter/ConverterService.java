@@ -336,7 +336,7 @@ public class ConverterService {
      * @return a new resource instance of the appropriate type.
      */
     private <T extends HALResource> T getResource(RestModel restObject) {
-        System.out.println("restObject.getClass()::::"+restObject.getClass());
+      //  System.out.println("restObject.getClass()::::"+restObject.getClass());
         Constructor constructor = resourceConstructors.get(restObject.getClass());
 
         if (constructor == null) {

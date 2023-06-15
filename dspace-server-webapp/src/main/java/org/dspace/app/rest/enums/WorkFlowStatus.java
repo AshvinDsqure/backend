@@ -63,15 +63,12 @@ public enum WorkFlowStatus {
     public WorkFlowProcessMasterValueService getWorkFlowProcessMasterValueService() {
         return workFlowProcessMasterValueService;
     }
-
     public void setWorkFlowProcessMasterValueService(WorkFlowProcessMasterValueService workFlowProcessMasterValueService) {
         this.workFlowProcessMasterValueService = workFlowProcessMasterValueService;
     }
-
     public  WorkFlowProcessMasterService getWorkFlowProcessMasterService() {
         return workFlowProcessMasterService;
     }
-
     public  void setWorkFlowProcessMasterService(WorkFlowProcessMasterService workFlowProcessMasterService) {
         this.workFlowProcessMasterService = workFlowProcessMasterService;
     }

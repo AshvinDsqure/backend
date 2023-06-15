@@ -842,6 +842,4 @@ public interface ItemService
 
     public List<Item> searchItemByTitle(Context context, String title) throws Exception;
 
-
-
 }

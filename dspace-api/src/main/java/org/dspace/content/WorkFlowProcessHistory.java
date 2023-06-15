@@ -62,6 +62,9 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
     @Column(name = "comment")
     private String comment;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "workFlowProcessHistory", cascade = {CascadeType.ALL})
+    private WorkFlowProcessComment workFlowProcessComment;
+
     public WorkFlowProcessMasterValue getAction() {
         return action;
     }
@@ -118,5 +121,13 @@ public class WorkFlowProcessHistory extends DSpaceObject implements DSpaceObject
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public WorkFlowProcessComment getWorkFlowProcessComment() {
+        return workFlowProcessComment;
+    }
+
+    public void setWorkFlowProcessComment(WorkFlowProcessComment workFlowProcessComment) {
+        this.workFlowProcessComment = workFlowProcessComment;
     }
 }

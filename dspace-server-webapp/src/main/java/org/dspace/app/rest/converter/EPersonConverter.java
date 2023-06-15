@@ -8,14 +8,20 @@
 package org.dspace.app.rest.converter;
 
 import org.dspace.app.rest.model.EPersonRest;
+import org.dspace.app.rest.model.GroupRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
+import org.dspace.eperson.Group;
+import org.dspace.eperson.service.EPersonService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * This is the converter from/to the EPerson in the DSpace API data model and the
@@ -27,6 +33,9 @@ import org.springframework.stereotype.Component;
 public class EPersonConverter extends DSpaceObjectConverter<EPerson, org.dspace.app.rest.model.EPersonRest> {
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    EPersonService ePersonService;
 
     @Autowired
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
@@ -51,7 +60,17 @@ public class EPersonConverter extends DSpaceObjectConverter<EPerson, org.dspace.
         if(obj.getOffice()!=null && obj.getOffice().getID()!=null){
             eperson.setOfficeRest(workFlowProcessMasterValueConverter.convert(obj.getOffice(),projection));
         }
+        if(obj.getDesignation()!=null){
+            eperson.setDesignationRest(workFlowProcessMasterValueConverter.convert(obj.getDesignation(),projection));
+        }
         return eperson;
+    }
+
+    public EPerson convert(Context context, EPersonRest rest) throws SQLException {
+        if(rest!=null && rest.getId()!=null){
+            return ePersonService.find(context, UUID.fromString(rest.getId()));
+        }
+        return null;
     }
     public EPerson convert(EPersonRest obj) {
         return modelMapper.map(obj,EPerson.class);

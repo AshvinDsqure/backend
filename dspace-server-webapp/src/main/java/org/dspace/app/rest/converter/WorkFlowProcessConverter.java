@@ -8,23 +8,27 @@
 package org.dspace.app.rest.converter;
 
 import com.google.gson.Gson;
+import com.itextpdf.text.log.SysoCounter;
 import org.dspace.app.rest.enums.WorkFlowType;
 import org.dspace.app.rest.enums.WorkFlowUserType;
-import org.dspace.app.rest.model.EPersonRest;
-import org.dspace.app.rest.model.ItemRest;
-import org.dspace.app.rest.model.WorkFlowProcessRest;
-import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
+import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.*;
 import org.dspace.content.enums.Dispatch;
 import org.dspace.content.enums.Priority;
 import org.dspace.content.enums.WorkFlowProcessReferenceDocType;
 import org.dspace.content.service.BitstreamService;
+import org.dspace.content.service.WorkFlowProcessDraftDetailsService;
 import org.dspace.core.Context;
+import org.dspace.eperson.service.GroupService;
+import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.sql.SQLOutput;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,6 +44,9 @@ import java.util.stream.Collectors;
 public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProcess, WorkFlowProcessRest> {
     @Autowired
     ItemConverter itemConverter;
+
+    @Autowired
+    GroupService groupService;
     @Autowired
     EPersonConverter ePersonConverter;
     @Autowired
@@ -52,10 +59,18 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
     WorkFlowProcessOutwardDetailsConverter workFlowProcessOutwardDetailsConverter;
     @Autowired
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
+
+    @Autowired
+    WorkFlowProcessDraftDetailsService workFlowProcessDraftDetailsService;
     @Autowired
     WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
     @Autowired
     WorkFlowProcessEpersonConverter workFlowProcessEpersonConverter;
+    @Autowired
+    WorkFlowProcessDraftDetailsConverter workFlowProcessDraftDetailsConverter;
+
+    @Autowired
+    WorkflowProcessNoteConverter workflowProcessNoteConverter;
 
     @Override
     public WorkFlowProcessRest convert(WorkflowProcess obj, Projection projection) {
@@ -68,6 +83,12 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         }
         if (obj.getWorkFlowProcessOutwardDetails() != null) {
             workFlowProcessRest.setWorkFlowProcessOutwardDetailsRest(workFlowProcessOutwardDetailsConverter.convert(obj.getWorkFlowProcessOutwardDetails(), projection));
+        }
+        if (obj.getWorkFlowProcessDraftDetails() != null) {
+            workFlowProcessRest.setWorkFlowProcessDraftDetailsRest(workFlowProcessDraftDetailsConverter.convert(obj.getWorkFlowProcessDraftDetails(), projection));
+        }
+        if (obj.getWorkflowProcessNote() != null) {
+            workFlowProcessRest.setWorkflowProcessNoteRest(workflowProcessNoteConverter.convert(obj.getWorkflowProcessNote(), projection));
         }
         if (obj.getDispatchmode() != null) {
             workFlowProcessRest.setDispatchModeRest(workFlowProcessMasterValueConverter.convert(obj.getDispatchmode(), projection));
@@ -82,19 +103,27 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
             workFlowProcessRest.setWorkflowStatus(workFlowProcessMasterValueConverter.convert(obj.getWorkflowStatus(), projection));
         }
 
-        if (obj.getEligibleForFiling() != null) {
+        if (obj.getItem() != null) {
             workFlowProcessRest.setItemRest(itemConverter.convertNameOnly(obj.getItem(), projection));
         }
         if (obj.getWorkflowProcessReferenceDocs() != null) {
             workFlowProcessRest.setWorkflowProcessReferenceDocRests(obj.getWorkflowProcessReferenceDocs().stream().map(d -> {
-                return workflowProcessReferenceDocConverter.convert(d, projection);
+                WorkflowProcessReferenceDocRest rest= workflowProcessReferenceDocConverter.convert(d, projection);
+                if(d.getWorkflowprocessnote()!=null){
+                    rest.setWorkflowProcessNoteRest(workflowProcessNoteConverter.convert(d.getWorkflowprocessnote(),projection));
+                }
+                return  rest;
             }).collect(Collectors.toList()));
         }
         workFlowProcessRest.setSubject(obj.getSubject());
         if (obj.getWorkflowProcessEpeople() != null) {
-            workFlowProcessRest.setWorkflowProcessEpersonRests(obj.getWorkflowProcessEpeople().stream().map(we -> {
+
+            Comparator<WorkflowProcessEpersonRest> comparator = (s1, s2) -> s1.getIndex().compareTo(s2.getIndex());
+            List<WorkflowProcessEpersonRest> list = obj.getWorkflowProcessEpeople().stream().map(we -> {
                 return workFlowProcessEpersonConverter.convert(we, projection);
-            }).collect(Collectors.toList()));
+            }).collect(Collectors.toList());
+            list.sort(comparator);
+            workFlowProcessRest.setWorkflowProcessEpersonRests(list);
         }
         workFlowProcessRest.setInitDate(obj.getInitDate());
         if (obj.getPriority() != null) {
@@ -110,18 +139,35 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
         if (senderRest.isPresent()) {
             workFlowProcessRest.setSender(workFlowProcessEpersonConverter.convert(senderRest.get(), projection));
         }
-
+        workFlowProcessRest.setUuid(obj.getID().toString());
         return workFlowProcessRest;
     }
 
     public WorkflowProcess convert(WorkFlowProcessRest obj, Context context) throws Exception {
         WorkflowProcess workflowProcess = new WorkflowProcess();
-        workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryConverter.convert(obj.getWorkflowProcessSenderDiaryRest()));
-        workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
-        workflowProcess.setWorkFlowProcessOutwardDetails(workFlowProcessOutwardDetailsConverter.convert(obj.getWorkFlowProcessOutwardDetailsRest()));
-        workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
-        workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
-        if(obj.getItemRest() != null) {
+        if (obj.getWorkflowProcessSenderDiaryRest() != null) {
+            workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryConverter.convert(obj.getWorkflowProcessSenderDiaryRest()));
+        }
+        if (obj.getWorkFlowProcessInwardDetailsRest() != null) {
+            workflowProcess.setWorkFlowProcessInwardDetails(workFlowProcessInwardDetailsConverter.convert(obj.getWorkFlowProcessInwardDetailsRest()));
+        }
+        if (obj.getWorkFlowProcessDraftDetailsRest() != null) {
+            WorkFlowProcessDraftDetails draftDetails = workFlowProcessDraftDetailsService.create(context, workFlowProcessDraftDetailsConverter.convert(context, obj.getWorkFlowProcessDraftDetailsRest()));
+            workflowProcess.setWorkFlowProcessDraftDetails(draftDetails);
+        }
+        if (obj.getWorkflowProcessNoteRest() != null) {
+            workflowProcess.setWorkflowProcessNote(workflowProcessNoteConverter.convert(context, obj.getWorkflowProcessNoteRest()));
+        }
+        if (obj.getWorkFlowProcessOutwardDetailsRest() != null) {
+            workflowProcess.setWorkFlowProcessOutwardDetails(workFlowProcessOutwardDetailsConverter.convert(context, obj.getWorkFlowProcessOutwardDetailsRest()));
+        }
+        if (obj.getDispatchModeRest() != null) {
+            workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
+        }
+        if (obj.getEligibleForFilingRest() != null) {
+            workflowProcess.setEligibleForFiling(workFlowProcessMasterValueConverter.convert(context, obj.getEligibleForFilingRest()));
+        }
+        if (obj.getItemRest() != null) {
             workflowProcess.setItem(itemConverter.convert(obj.getItemRest(), context));
         }
         WorkFlowType workFlowType = WorkFlowType.valueOf(obj.getWorkflowTypeStr());
@@ -147,20 +193,20 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
                 workflowProcessEperson.setOwner(false);
                 workflowProcessEperson.setSender(false);
                 workflowProcessEperson.setWorkflowProcess(workflowProcess);
+
                 return workflowProcessEperson;
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }).collect(Collectors.toList()));
         workflowProcess.setInitDate(obj.getInitDate());
-        if (obj.getPriorityRest()!=null) {
-            workflowProcess.setPriority(workFlowProcessMasterValueConverter.convert(context,obj.getPriorityRest()));
+        if (obj.getPriorityRest() != null) {
+            workflowProcess.setPriority(workFlowProcessMasterValueConverter.convert(context, obj.getPriorityRest()));
         }
         if (obj.getDispatchModeRest() != null) {
             workflowProcess.setDispatchmode(workFlowProcessMasterValueConverter.convert(context, obj.getDispatchModeRest()));
         }
         return workflowProcess;
-
     }
 
     @Override
@@ -172,5 +218,4 @@ public class WorkFlowProcessConverter extends DSpaceObjectConverter<WorkflowProc
     public Class<WorkflowProcess> getModelClass() {
         return WorkflowProcess.class;
     }
-
 }

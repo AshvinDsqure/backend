@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.WorkflowProcessNote;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * The Item REST Resource
@@ -39,9 +41,16 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     @JsonProperty
     private String subject;
     @JsonProperty
+    private String editortext;
+    @JsonProperty
     private String referenceNumber;
+
+    @JsonProperty
+    private String description;
     @JsonProperty
     private WorkFlowProcessMasterValueRest workFlowProcessReferenceDocType;
+    @JsonProperty
+    private WorkFlowProcessMasterValueRest drafttypeRest;
     @JsonProperty
     private WorkFlowProcessMasterValueRest latterCategoryRest;
     @JsonProperty
@@ -49,6 +58,12 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
     private Date initdate = new Date();
     @JsonProperty
     private WorkFlowProcessRest workFlowProcessRest;
+    @JsonProperty
+    private WorkflowProcessNoteRest workflowProcessNoteRest;
+
+    @JsonProperty
+    private WorkflowProcessReferenceDocVersionRest workflowProcessReferenceDocVersionRest;
+
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
@@ -123,5 +138,44 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
 
     public void setWorkFlowProcessReferenceDocType(WorkFlowProcessMasterValueRest workFlowProcessReferenceDocType) {
         this.workFlowProcessReferenceDocType = workFlowProcessReferenceDocType;
+    }
+
+    public WorkFlowProcessMasterValueRest getDrafttypeRest() {
+        return drafttypeRest;
+    }
+
+    public void setDrafttypeRest(WorkFlowProcessMasterValueRest drafttypeRest) {
+        this.drafttypeRest = drafttypeRest;
+    }
+
+    public WorkflowProcessNoteRest getWorkflowProcessNoteRest() {
+        return workflowProcessNoteRest;
+    }
+
+    public void setWorkflowProcessNoteRest(WorkflowProcessNoteRest workflowProcessNoteRest) {
+        this.workflowProcessNoteRest = workflowProcessNoteRest;
+    }
+    public String getEditortext() {
+        return editortext;
+    }
+
+    public void setEditortext(String editortext) {
+        this.editortext = editortext;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public WorkflowProcessReferenceDocVersionRest getWorkflowProcessReferenceDocVersionRest() {
+        return workflowProcessReferenceDocVersionRest;
+    }
+
+    public void setWorkflowProcessReferenceDocVersionRest(WorkflowProcessReferenceDocVersionRest workflowProcessReferenceDocVersionRest) {
+        this.workflowProcessReferenceDocVersionRest = workflowProcessReferenceDocVersionRest;
     }
 }

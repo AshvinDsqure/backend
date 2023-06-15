@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -201,6 +202,8 @@ public class BitstreamRestRepository extends DSpaceObjectRestRepository<Bitstrea
             if (bundles.size() != 0) {
                bitstreams=bundles.stream().findFirst().get().getBitstreams();
             }
+            bitstreams= bitstreams.stream().filter(f->!f.getName().contains("Note#")).collect(Collectors.toList());
+
             return  converter.toRestPage(bitstreams,pageable,bitstreams.size(),utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);

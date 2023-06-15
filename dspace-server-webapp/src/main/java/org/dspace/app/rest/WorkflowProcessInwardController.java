@@ -108,7 +108,7 @@ public class WorkflowProcessInwardController extends AbstractDSpaceRestRepositor
             workFlowType.setWorkFlowStatus(WorkFlowStatus.INPROGRESS);
             WorkFlowAction create = WorkFlowAction.CREATE;
             //set comment
-            create.setComment(workFlowProcessRest.getComment());
+           // create.setComment(workFlowProcessRest.getComment());
             //set action
             workFlowType.setWorkFlowAction(create);
             workFlowType.setProjection(utils.obtainProjection());
@@ -139,7 +139,7 @@ public class WorkflowProcessInwardController extends AbstractDSpaceRestRepositor
             workFlowType.setWorkFlowStatus(WorkFlowStatus.DRAFT);
             WorkFlowAction create = WorkFlowAction.CREATE;
             //set comment
-            create.setComment(workFlowProcessRest.getComment());
+           // create.setComment(workFlowProcessRest.getComment());
             //set action
             workFlowType.setWorkFlowAction(create);
             workFlowType.setProjection(utils.obtainProjection());

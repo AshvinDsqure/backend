@@ -7,8 +7,15 @@
  */
 package org.dspace.content.dao;
 
+import org.dspace.content.WorkFlowProcessDraftDetails;
 import org.dspace.content.WorkflowProcess;
 import org.dspace.content.WorkflowProcessNote;
+import org.dspace.content.WorkflowProcessReferenceDoc;
+import org.dspace.core.Context;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Database Access Object interface class for the Item object.
@@ -17,5 +24,9 @@ import org.dspace.content.WorkflowProcessNote;
  *
  * @author kevinvandevelde at atmire.com
  */
-public interface WorkflowProcessNoteDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcessNote> {
+public interface WorkflowProcessNoteDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcessNote>{
+    int countRows(Context context) throws SQLException;
+    public int countDocumentByItemid(Context context , UUID drafttypeid, UUID itemid) throws SQLException;
+    public List<WorkflowProcessNote> getDocumentByItemid(Context context , UUID drafttypeid, UUID itemid, Integer offset, Integer limit) throws SQLException;
+
 }

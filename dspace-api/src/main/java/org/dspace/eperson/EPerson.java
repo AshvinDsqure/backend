@@ -85,6 +85,11 @@ public class EPerson extends DSpaceObject implements DSpaceObjectLegacySupport {
     private WorkFlowProcessMasterValue department;
 
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "designation_id")
+    private WorkFlowProcessMasterValue designation;
+
+
     /**
      * The e-mail field (for sorting)
      */
@@ -483,5 +488,13 @@ public class EPerson extends DSpaceObject implements DSpaceObjectLegacySupport {
     }
     public void setDepartment(WorkFlowProcessMasterValue department) {
         this.department = department;
+    }
+
+    public WorkFlowProcessMasterValue getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(WorkFlowProcessMasterValue designation) {
+        this.designation = designation;
     }
 }

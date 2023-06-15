@@ -58,6 +58,9 @@ public class Group extends DSpaceObject implements DSpaceObjectLegacySupport {
     @Column
     private Boolean permanent = false;
 
+    @Column(name = "isdspace")
+    private Boolean isdspace = false;
+
     @Column(length = 250, unique = true)
     private String name;
 
@@ -241,5 +244,13 @@ public class Group extends DSpaceObject implements DSpaceObjectLegacySupport {
     void setPermanent(boolean permanence) {
         permanent = permanence;
         setModified();
+    }
+
+    public Boolean getIsdspace() {
+        return isdspace;
+    }
+
+    public void setIsdspace(Boolean isdspace) {
+        this.isdspace = isdspace;
     }
 }

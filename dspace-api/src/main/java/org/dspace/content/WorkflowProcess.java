@@ -49,6 +49,9 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
     @JoinColumn(name = "workflowprocesssenderdiary")
     private WorkflowProcessSenderDiary workflowProcessSenderDiary = null;
+    @OneToOne(fetch = FetchType.LAZY,cascade = {CascadeType.ALL})
+    @JoinColumn(name = "workflowprocessdraftdetails_idf")
+    private WorkFlowProcessDraftDetails workFlowProcessDraftDetails;
     /* Filling Details*/
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -57,11 +60,9 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_status_id")
     private WorkFlowProcessMasterValue workflowStatus = null;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_priority_id")
     private WorkFlowProcessMasterValue priority = null;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_type_id")
     private WorkFlowProcessMasterValue workflowType = null;
@@ -77,7 +78,6 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     /* Office   Details*/
     @Column(name = "subject")
     private String Subject;
-
     @Column(name = "workflow_id", insertable = false, updatable = false)
     private Integer legacyId;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowProcess", cascade = {CascadeType.ALL})
@@ -86,10 +86,16 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @Column(name = "init_date", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date InitDate = new Date();
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dispatchmode_id")
     private WorkFlowProcessMasterValue dispatchmode = null;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflowprocessnote_idf")
+    private WorkflowProcessNote workflowProcessNote;
+
+
+
+
 
 //    @Column(name = "assignduedate", columnDefinition = "timestamp with time zone")
 //    @Temporal(TemporalType.TIMESTAMP)

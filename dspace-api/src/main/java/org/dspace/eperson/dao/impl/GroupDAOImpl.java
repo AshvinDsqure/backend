@@ -77,7 +77,7 @@ public class GroupDAOImpl extends AbstractHibernateDSODAO<Group> implements Grou
     @Override
     public List<Group> findAll(Context context, int pageSize, int offset) throws SQLException {
         Query query = createQuery(context,
-                                  "SELECT g FROM Group g ORDER BY g.name ASC");
+                                  "SELECT g FROM Group g where isdspace=:isdspace ORDER BY g.name ASC");
         if (pageSize > 0) {
             query.setMaxResults(pageSize);
         }
@@ -85,6 +85,7 @@ public class GroupDAOImpl extends AbstractHibernateDSODAO<Group> implements Grou
             query.setFirstResult(offset);
         }
         query.setHint("org.hibernate.cacheable", Boolean.TRUE);
+        query.setParameter("isdspace", Boolean.TRUE);
 
         return list(query);
     }

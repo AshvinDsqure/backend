@@ -38,5 +38,4 @@ public class WorkFlowProcessMasterConverter extends DSpaceObjectConverter<WorkFl
         workFlowProcessMaster.setMastername(workFlowProcessMasterRest.getMastername());
         return workFlowProcessMaster;
     }
-
 }

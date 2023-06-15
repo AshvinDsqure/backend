@@ -19,6 +19,7 @@ import org.dspace.app.rest.model.WorkFlowProcessHistoryRest;
 import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
+import org.dspace.content.WorkFlowProcessComment;
 import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.content.service.WorkFlowProcessHistoryService;
 import org.dspace.core.Context;
@@ -148,6 +149,7 @@ public class WorkFlowProcessHistoryRepository extends DSpaceObjectRestRepository
             throw new RuntimeException(e.getMessage(), e);
         }
     }
+
     @Override
     public Class<WorkFlowProcessHistoryRest> getDomainClass() {
         return null;

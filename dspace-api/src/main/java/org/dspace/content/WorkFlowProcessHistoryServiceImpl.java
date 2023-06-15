@@ -97,6 +97,7 @@ public class WorkFlowProcessHistoryServiceImpl extends DSpaceObjectServiceImpl<W
         return workFlowProcessHistoryDAO.getHistory(context,workflowprocessid);
     }
 
+
     @Override
     public WorkFlowProcessHistory find(Context context, UUID uuid) throws SQLException {
         return workFlowProcessHistoryDAO.findByID(context,WorkFlowProcessHistory.class,uuid);

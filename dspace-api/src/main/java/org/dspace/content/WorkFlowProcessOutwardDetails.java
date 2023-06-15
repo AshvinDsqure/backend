@@ -35,21 +35,17 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     public static final String ANY = "*";
     @Column(name = "workflowprocessoutwarddetails_id", insertable = false, updatable = false)
     private Integer legacyId;
-
     @Column(name = "outwardnumber")
     private String outwardNumber;
     @Column(name = "outwarddate", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date outwardDate;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "outwardmedium_id")
-    private WorkFlowProcessMasterValue outwardmedium;
-    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "outwarddepartment_id")
     private Group outwardDepartment;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "outwardmode_id")
-    private WorkFlowProcessMasterValue outwardmode;
+    @JoinColumn(name = "outwardmedium_id")
+    private WorkFlowProcessMasterValue outwardmedium = null;
     @Column(name = "serviceprovider")
     private String  serviceprovider;
     @Column(name = "awbno")
@@ -57,34 +53,26 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     @Column(name = "dispatchdate", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dispatchdate;
-
-
     public String getOutwardNumber() {
         return outwardNumber;
     }
-
     public void setOutwardNumber(String outwardNumber) {
         this.outwardNumber = outwardNumber;
     }
-
     public Date getOutwardDate() {
         return outwardDate;
     }
-
     public void setOutwardDate(Date outwardDate) {
         this.outwardDate = outwardDate;
     }
-
     @Override
     public int getType() {
         return 0;
     }
-
     @Override
     public String getName() {
         return "workflowprocessoutwarddetails";
     }
-
     @Override
     public Integer getLegacyId() {
         return this.legacyId;
@@ -92,52 +80,34 @@ public class WorkFlowProcessOutwardDetails extends DSpaceObject implements DSpac
     public void setLegacyId(Integer legacyId) {
         this.legacyId = legacyId;
     }
-
-    public WorkFlowProcessMasterValue getOutwardmedium() {
-        return outwardmedium;
-    }
-
-    public void setOutwardmedium(WorkFlowProcessMasterValue outwardmedium) {
-        this.outwardmedium = outwardmedium;
-    }
-
     public Group getOutwardDepartment() {
         return outwardDepartment;
     }
-
     public void setOutwardDepartment(Group outwardDepartment) {
         this.outwardDepartment = outwardDepartment;
     }
-
-    public WorkFlowProcessMasterValue getOutwardmode() {
-        return outwardmode;
-    }
-
-    public void setOutwardmode(WorkFlowProcessMasterValue outwardmode) {
-        this.outwardmode = outwardmode;
-    }
-
     public String getServiceprovider() {
         return serviceprovider;
     }
-
     public void setServiceprovider(String serviceprovider) {
         this.serviceprovider = serviceprovider;
     }
-
     public String getAwbno() {
         return awbno;
     }
-
     public void setAwbno(String awbno) {
         this.awbno = awbno;
     }
-
     public Date getDispatchdate() {
         return dispatchdate;
     }
-
     public void setDispatchdate(Date dispatchdate) {
         this.dispatchdate = dispatchdate;
+    }
+    public WorkFlowProcessMasterValue getOutwardmedium() {
+        return outwardmedium;
+    }
+    public void setOutwardmedium(WorkFlowProcessMasterValue outwardmedium) {
+        this.outwardmedium = outwardmedium;
     }
 }

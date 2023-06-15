@@ -8,6 +8,7 @@
 
 package org.dspace.content.dao;
 
+import org.dspace.content.WorkFlowProcessComment;
 import org.dspace.content.WorkFlowProcessHistory;
 import org.dspace.core.Context;
 

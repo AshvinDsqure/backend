@@ -14,6 +14,7 @@ import org.dspace.core.Context;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service interface class for the Item object.
@@ -57,5 +58,11 @@ public interface WorkflowProcessReferenceDocService extends DSpaceObjectService<
      * @throws SQLException if database error
      */
     public List<WorkflowProcessReferenceDoc> findAll(Context context, Integer limit, Integer offset) throws SQLException;
+    public int countDocumentByType(Context context , UUID drafttypeid) throws SQLException;
+    public List<WorkflowProcessReferenceDoc> getDocumentByType(Context context , UUID drafttypeid, Integer offset, Integer limit) throws SQLException;
+    public int countDocumentByItemid(Context context , UUID itemid) throws SQLException;
+    public List<WorkflowProcessReferenceDoc> getDocumentByItemid(Context context , UUID itemid, Integer offset, Integer limit) throws SQLException;
+    public List<WorkflowProcessReferenceDoc> getDocumentByworkflowprocessid(Context context ,UUID workflowprocessid) throws SQLException;
+
 
 }

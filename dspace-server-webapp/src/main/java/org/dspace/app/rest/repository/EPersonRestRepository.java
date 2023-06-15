@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.repository;
@@ -61,7 +61,7 @@ import org.springframework.stereotype.Component;
 
 @Component(EPersonRest.CATEGORY + "." + EPersonRest.NAME)
 public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, EPersonRest>
-                                   implements InitializingBean {
+        implements InitializingBean {
 
     private static final Logger log = LogManager.getLogger();
 
@@ -123,7 +123,6 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
         EPerson eperson = null;
         try {
             eperson = es.create(context);
-
             // this should be probably moved to the converter (a merge method?)
             eperson.setCanLogIn(epersonRest.isCanLogIn());
             eperson.setRequireCertificate(epersonRest.isRequireCertificate());
@@ -131,8 +130,15 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
             eperson.setNetid(epersonRest.getNetid());
             eperson.setTablenumber(epersonRest.getTablenumber());
             eperson.setEmployeeid(epersonRest.getEmployeeid());
-            eperson.setDepartment(workFlowProcessMasterValueConverter.convert(context,epersonRest.getDepartmentRest()));
-            eperson.setOffice(workFlowProcessMasterValueConverter.convert(context,epersonRest.getOfficeRest()));
+            if (epersonRest.getDepartmentRest() != null) {
+                eperson.setDepartment(workFlowProcessMasterValueConverter.convert(context, epersonRest.getDepartmentRest()));
+            }
+            if (epersonRest.getOfficeRest() != null) {
+                eperson.setOffice(workFlowProcessMasterValueConverter.convert(context, epersonRest.getOfficeRest()));
+            }
+            if (epersonRest.getDesignationRest() != null) {
+                eperson.setDesignation(workFlowProcessMasterValueConverter.convert(context, epersonRest.getDesignationRest()));
+            }
             if (epersonRest.getPassword() != null) {
                 if (!validatePasswordService.isPasswordValid(epersonRest.getPassword())) {
                     throw new PasswordNotValidException();
@@ -155,41 +161,42 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
      * what we expect in this creation.
      * It'll check if all of those constraints hold true and if we're allowed to register new accounts.
      * If this is the case, we'll create an EPerson without any authorization checks and delete the token
-     * @param context       The DSpace context
-     * @param epersonRest   The EPersonRest given to be created
-     * @param token         The token to be used
-     * @return              The EPersonRest after the creation of the EPerson object
-     * @throws AuthorizeException   If something goes wrong
-     * @throws SQLException         If something goes wrong
+     *
+     * @param context     The DSpace context
+     * @param epersonRest The EPersonRest given to be created
+     * @param token       The token to be used
+     * @return The EPersonRest after the creation of the EPerson object
+     * @throws AuthorizeException If something goes wrong
+     * @throws SQLException       If something goes wrong
      */
     private EPersonRest createAndReturn(Context context, EPersonRest epersonRest, String token)
-        throws AuthorizeException, SQLException {
+            throws AuthorizeException, SQLException {
         if (!AuthorizeUtil.authorizeNewAccountRegistration(context, requestService
-            .getCurrentRequest().getHttpServletRequest())) {
+                .getCurrentRequest().getHttpServletRequest())) {
             throw new DSpaceBadRequestException(
-                "Registration is disabled, you are not authorized to create a new Authorization");
+                    "Registration is disabled, you are not authorized to create a new Authorization");
         }
         RegistrationData registrationData = registrationDataService.findByToken(context, token);
         if (registrationData == null) {
             throw new DSpaceBadRequestException("The token given as parameter: " + token + " does not exist" +
-                                                " in the database");
+                    " in the database");
         }
         if (es.findByEmail(context, registrationData.getEmail()) != null) {
             throw new DSpaceBadRequestException("The token given already contains an email address that resolves" +
-                                                " to an eperson");
+                    " to an eperson");
         }
         String emailFromJson = epersonRest.getEmail();
         if (StringUtils.isNotBlank(emailFromJson)) {
             if (!StringUtils.equalsIgnoreCase(registrationData.getEmail(), emailFromJson)) {
                 throw new DSpaceBadRequestException("The email resulting from the token does not match the email given"
-                                                        + " in the json body. Email from token: " +
-                                                    registrationData.getEmail() + " email from the json body: "
-                                                    + emailFromJson);
+                        + " in the json body. Email from token: " +
+                        registrationData.getEmail() + " email from the json body: "
+                        + emailFromJson);
             }
         }
         if (epersonRest.isSelfRegistered() != null && !epersonRest.isSelfRegistered()) {
             throw new DSpaceBadRequestException("The self registered property cannot be set to false using this method"
-                                                    + " with a token");
+                    + " with a token");
         }
         checkRequiredProperties(epersonRest);
         // We'll turn off authorisation system because this call isn't admin based as it's token based
@@ -210,7 +217,7 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
             List<MetadataValueRest> epersonFirstName = metadataRest.getMap().get("eperson.firstname");
             List<MetadataValueRest> epersonLastName = metadataRest.getMap().get("eperson.lastname");
             if (epersonFirstName == null || epersonLastName == null ||
-                epersonFirstName.isEmpty() || epersonLastName.isEmpty()) {
+                    epersonFirstName.isEmpty() || epersonLastName.isEmpty()) {
                 throw new EPersonNameNotProvidedException();
             }
         }
@@ -252,8 +259,7 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
      * Find the eperson with the provided email address if any. The search is delegated to the
      * {@link EPersonService#findByEmail(Context, String)} method
      *
-     * @param email
-     *            is the *required* email address
+     * @param email is the *required* email address
      * @return a Page of EPersonRest instances matching the user query
      */
     @SearchRestMethod(name = "byEmail")
@@ -270,6 +276,7 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
         }
         return converter.toRest(eperson, utils.obtainProjection());
     }
+
     @SearchRestMethod(name = "wildcardSearchByEmail")
     public Page<EPersonRest> wildcardSearchByEmail(@Parameter(value = "email", required = true) String email, Pageable pageable) {
         List<EPerson> eperson = null;
@@ -282,29 +289,27 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
         if (eperson == null) {
             return null;
         }
-        return converter.toRestPage(eperson, pageable,100, utils.obtainProjection());
+        return converter.toRestPage(eperson, pageable, 100, utils.obtainProjection());
     }
 
     /**
      * Find the epersons matching the query parameter. The search is delegated to the
      * {@link EPersonService#search(Context, String, int, int)} method
      *
-     * @param query
-     *            is the *required* query string
-     * @param pageable
-     *            contains the pagination information
+     * @param query    is the *required* query string
+     * @param pageable contains the pagination information
      * @return a Page of EPersonRest instances matching the user query
      */
     @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('MANAGE_ACCESS_GROUP')")
     @SearchRestMethod(name = "byMetadata")
     public Page<EPersonRest> findByMetadata(@Parameter(value = "query", required = true) String query,
-            Pageable pageable) {
+                                            Pageable pageable) {
 
         try {
             Context context = obtainContext();
             long total = es.searchResultCount(context, query);
             List<EPerson> epersons = es.search(context, query, Math.toIntExact(pageable.getOffset()),
-                                                               Math.toIntExact(pageable.getPageSize()));
+                    Math.toIntExact(pageable.getPageSize()));
             return converter.toRestPage(epersons, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -324,12 +329,12 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
         if (StringUtils.isNotBlank(request.getParameter("token"))) {
             if (!passwordChangeFound) {
                 throw new AccessDeniedException("Refused to perform the EPerson patch based on a token without " +
-                                                    "changing the password");
+                        "changing the password");
             }
         } else {
             if (passwordChangeFound && !StringUtils.equals(context.getAuthenticationMethod(), "password")) {
                 throw new AccessDeniedException("Refused to perform the EPerson patch based to change the password " +
-                                                        "for non \"password\" authentication");
+                        "for non \"password\" authentication");
             }
         }
         patchDSpaceObject(apiCategory, model, uuid, patch);

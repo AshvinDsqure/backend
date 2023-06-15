@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dspace.app.rest.model.helper.MyDateConverter;
 import org.dspace.content.WorkFlowProcessMasterValue;
@@ -29,16 +30,15 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     private String outwardNumber;
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date outwardDate;
-    private WorkFlowProcessMasterValue outwardmediumRest;
-    private Group outwardDepartmentRest;
-    private WorkFlowProcessMasterValue outwardmodeRest;
+    private GroupRest outwardDepartmentRest;
+    private WorkFlowProcessMasterValueRest outwardmediumRest = null;
     @JsonDeserialize(converter = MyDateConverter.class)
-    @NotNull
-    @NotEmpty
     private Date dispatchdate;
+    @JsonProperty
     @NotNull
     @NotEmpty
     private String  awbno;
+    @JsonProperty
     @NotNull
     @NotEmpty
     private String  serviceprovider;
@@ -100,28 +100,19 @@ public class WorkFlowProcessOutwardDetailsRest extends  DSpaceObjectRest{
     }
 
 
-    public WorkFlowProcessMasterValue getOutwardmediumRest() {
-        return outwardmediumRest;
-    }
-
-    public void setOutwardmediumRest(WorkFlowProcessMasterValue outwardmediumRest) {
-        this.outwardmediumRest = outwardmediumRest;
-    }
-
-    public Group getOutwardDepartmentRest() {
+    public GroupRest getOutwardDepartmentRest() {
         return outwardDepartmentRest;
     }
 
-    public void setOutwardDepartmentRest(Group outwardDepartmentRest) {
+    public void setOutwardDepartmentRest(GroupRest outwardDepartmentRest) {
         this.outwardDepartmentRest = outwardDepartmentRest;
     }
 
-    public WorkFlowProcessMasterValue getOutwardmodeRest() {
-        return outwardmodeRest;
+    public WorkFlowProcessMasterValueRest getOutwardmediumRest() {
+        return outwardmediumRest;
     }
 
-    public void setOutwardmodeRest(WorkFlowProcessMasterValue outwardmodeRest) {
-        this.outwardmodeRest = outwardmodeRest;
+    public void setOutwardmediumRest(WorkFlowProcessMasterValueRest outwardmediumRest) {
+        this.outwardmediumRest = outwardmediumRest;
     }
-
 }

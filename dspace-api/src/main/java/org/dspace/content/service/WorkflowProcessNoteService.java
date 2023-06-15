@@ -10,10 +10,12 @@ package org.dspace.content.service;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkflowProcessDefinition;
 import org.dspace.content.WorkflowProcessNote;
+import org.dspace.content.WorkflowProcessReferenceDoc;
 import org.dspace.core.Context;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Service interface class for the Item object.
@@ -57,5 +59,8 @@ public interface WorkflowProcessNoteService extends DSpaceObjectService<Workflow
      * @throws SQLException if database error
      */
     public List<WorkflowProcessNote> findAll(Context context, Integer limit, Integer offset) throws SQLException;
+
+    public int countDocumentByItemid(Context context , UUID itemid) throws SQLException;
+    public List<WorkflowProcessNote> getDocumentByItemid(Context context , UUID itemid, Integer offset, Integer limit) throws SQLException;
 
 }

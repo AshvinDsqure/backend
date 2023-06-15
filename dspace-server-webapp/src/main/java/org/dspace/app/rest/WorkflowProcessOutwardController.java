@@ -94,7 +94,7 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD})
     public ResponseEntity create( @RequestBody @Valid WorkFlowProcessRest workFlowProcessRest) throws Exception {
         try {
-            System.out.println("workFlowProcessRest::" + new Gson().toJson(workFlowProcessRest));
+          //System.out.println("workFlowProcessRest::" + new Gson().toJson(workFlowProcessRest));
             HttpServletRequest request = getRequestService().getCurrentRequest().getHttpServletRequest();
             Context context = ContextUtil.obtainContext(request);
             Optional<WorkflowProcessEpersonRest> WorkflowProcessEpersonRest = Optional.ofNullable((getSubmitor(context)));
@@ -105,9 +105,6 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
             //status
             workFlowType.setWorkFlowStatus(WorkFlowStatus.INPROGRESS);
             WorkFlowAction create = WorkFlowAction.CREATE;
-            //set comment
-            create.setComment(workFlowProcessRest.getComment());
-            //set action
             workFlowType.setWorkFlowAction(create);
             workFlowType.setProjection(utils.obtainProjection());
             workFlowProcessRest.getWorkflowProcessEpersonRests().add(WorkflowProcessEpersonRest.get());

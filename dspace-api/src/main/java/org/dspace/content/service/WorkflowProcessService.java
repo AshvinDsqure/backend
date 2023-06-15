@@ -64,8 +64,8 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
      * @throws SQLException if database error
      */
     public List<WorkflowProcess> findAll(Context context, Integer limit, Integer offset) throws SQLException;
-    List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit)throws SQLException;
-    int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid)throws SQLException;
+    List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid,UUID draftid,Integer offset, Integer limit)throws SQLException;
+    int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid,UUID draftid)throws SQLException;
 
     List<WorkflowProcess> getHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException;
 
@@ -84,5 +84,9 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
      * @throws SQLException,AuthorizeException if database error
      */
     public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc,Item item) throws SQLException, AuthorizeException ;
+    public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc) throws SQLException, AuthorizeException ;
+    List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid, Integer offset, Integer limit) throws SQLException;
+    int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid) throws SQLException;
+    WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException;
 
 }

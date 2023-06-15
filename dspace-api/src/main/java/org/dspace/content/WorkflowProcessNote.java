@@ -41,18 +41,17 @@ public class WorkflowProcessNote extends DSpaceObject implements DSpaceObjectLeg
     @Column(name = "workflowprocessnote_id", insertable = false, updatable = false)
     private Integer legacyId;
     @Column(name = "subject")
-    private String Subject;
+    private String subject;
     @Column(name = "description")
     private String description;
     @Column(name = "init_date", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date InitDate = new Date();
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowProcess",cascade = { CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowprocessnote",cascade = { CascadeType.ALL})
     private Set<WorkflowProcessReferenceDoc> workflowProcessReferenceDocs=new HashSet<>();
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "submitter_id")
     private EPerson submitter = null;
-
 
     @Override
     public int getType() {
@@ -73,13 +72,11 @@ public class WorkflowProcessNote extends DSpaceObject implements DSpaceObjectLeg
     }
 
     public String getSubject() {
-        return Subject;
+        return subject;
     }
-
     public void setSubject(String subject) {
-        Subject = subject;
+        this.subject = subject;
     }
-
     public String getDescription() {
         return description;
     }
@@ -111,4 +108,5 @@ public class WorkflowProcessNote extends DSpaceObject implements DSpaceObjectLeg
     public void setSubmitter(EPerson submitter) {
         this.submitter = submitter;
     }
+
 }

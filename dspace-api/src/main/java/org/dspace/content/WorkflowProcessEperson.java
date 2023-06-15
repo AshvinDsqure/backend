@@ -67,6 +67,8 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     private  Boolean isOwner;
     @Column(name = "issender")
     private  Boolean isSender=false;
+    @Column(name = "initiator")
+    private  Boolean initiator=false;
     @Override
     public int getType() {
         return 0;
@@ -174,4 +176,11 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
         isSender = sender;
     }
 
+    public Boolean getInitiator() {
+        return initiator;
+    }
+
+    public void setInitiator(Boolean initiator) {
+        this.initiator = initiator;
+    }
 }

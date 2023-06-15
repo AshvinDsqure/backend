@@ -39,40 +39,33 @@ public class GroupRest extends DSpaceObjectRest {
     public static final String SUBGROUPS = "subgroups";
     public static final String EPERSONS = "epersons";
     public static final String OBJECT = "object";
-
-    private String name;
-
     private boolean permanent;
-
+    private Boolean isdspace;
     @Override
     public String getCategory() {
         return CATEGORY;
     }
-
     @Override
     public String getType() {
         return NAME;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public boolean isPermanent() {
         return permanent;
     }
-
     public void setPermanent(boolean permanent) {
         this.permanent = permanent;
     }
-
     @Override
     @JsonIgnore
     public Class getController() {
         return RestResourceController.class;
+    }
+
+    public Boolean getIsdspace() {
+        return isdspace;
+    }
+
+    public void setIsdspace(Boolean isdspace) {
+        this.isdspace = isdspace;
     }
 }

@@ -10,12 +10,18 @@ package org.dspace.app.rest.repository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import org.dspace.app.rest.Parameter;
+import org.dspace.app.rest.SearchRestMethod;
+import org.dspace.app.rest.converter.WorkflowProcessNoteConverter;
+import org.dspace.app.rest.converter.WorkflowProcessReferenceDocConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessDefinitionRest;
 import org.dspace.app.rest.model.WorkflowProcessNoteRest;
+import org.dspace.app.rest.model.WorkflowProcessReferenceDocVersionRest;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkflowProcessNote;
+import org.dspace.content.WorkflowProcessReferenceDoc;
 import org.dspace.content.service.WorkflowProcessNoteService;
 import org.dspace.core.Context;
 import org.dspace.eperson.service.EPersonService;
@@ -32,6 +38,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * This is the rest repository responsible for managing WorkflowDefinition Rest objects
@@ -39,37 +46,43 @@ import java.util.UUID;
  * @author Maria Verdonck (Atmire) on 11/12/2019
  */
 @Component(WorkflowProcessNoteRest.CATEGORY + "." + WorkflowProcessNoteRest.NAME)
-public class WorkflowNoteRestRepository extends DSpaceObjectRestRepository<WorkflowProcessNote, WorkflowProcessNoteRest> {
-
+public class WorkflowProcessNoteRestRepository extends DSpaceObjectRestRepository<WorkflowProcessNote, WorkflowProcessNoteRest> {
     @Autowired
     private WorkflowProcessNoteService workflowProcessNoteService;
     @Autowired
     private EPersonService ePersonService;
-
-    public WorkflowNoteRestRepository(WorkflowProcessNoteService dso) {
+    @Autowired
+    private WorkflowProcessNoteConverter workflowProcessNoteConverter;
+    @Autowired
+    private WorkflowProcessReferenceDocConverter workflowProcessReferenceDocConverter;
+    public WorkflowProcessNoteRestRepository(WorkflowProcessNoteService dso) {
         super(dso);
     }
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     public WorkflowProcessNoteRest findOne(Context context, UUID id) {
-        WorkFlowProcessDefinitionRest workflowProcessDefinitionRest=null;
+        WorkflowProcessNoteRest workflowProcessNoteRest=null;
         try {
             Optional<WorkflowProcessNote> workflowProcessDefinitionOption = Optional.ofNullable(workflowProcessNoteService.find(context, id));
+
             if(workflowProcessDefinitionOption.isPresent()){
-                workflowProcessDefinitionRest =converter.toRest(workflowProcessDefinitionOption.get(),utils.obtainProjection());
+
+                System.out.println(">>>>>>>>>>>>>>>>>>name"+workflowProcessDefinitionOption.get().getDescription());
+                workflowProcessNoteRest =converter.toRest(workflowProcessDefinitionOption.get(),utils.obtainProjection());
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return converter.toRest(null, utils.obtainProjection());
+        return workflowProcessNoteRest;
     }
     @PreAuthorize("hasPermission(#id, 'ITEM', 'STATUS') || hasPermission(#id, 'ITEM', 'READ')")
     @Override
     public Page<WorkflowProcessNoteRest> findAll(Context context, Pageable pageable) {
         try {
             List<WorkflowProcessNote> workflowProcessDefinitions= workflowProcessNoteService.findAll(context,pageable.getPageSize(),Math.toIntExact(pageable.getOffset()));
-            return converter.toRestPage(workflowProcessDefinitions, pageable, 0, utils.obtainProjection());
+            return converter.toRestPage(workflowProcessDefinitions, pageable, 10, utils.obtainProjection());
         }catch (Exception e){
+            e.printStackTrace();
             throw  new RuntimeException(e.getMessage(),e);
         }
     }
@@ -100,7 +113,6 @@ public class WorkflowNoteRestRepository extends DSpaceObjectRestRepository<Workf
     protected WorkflowProcessNoteRest put(Context context, HttpServletRequest request, String apiCategory, String model, UUID id,
                                    JsonNode jsonNode) throws SQLException, AuthorizeException {
         WorkflowProcessNoteRest workflowProcessNoteRest = new Gson().fromJson(jsonNode.toString(), WorkflowProcessNoteRest.class);
-
         WorkflowProcessNote WorkflowProcessNote = workflowProcessNoteService.find(context, id);
         if (WorkflowProcessNote == null) {
             System.out.println("documentTypeRest id ::: is Null  document tye null");
@@ -110,11 +122,24 @@ public class WorkflowNoteRestRepository extends DSpaceObjectRestRepository<Workf
         workflowProcessNoteService.update(context, WorkflowProcessNote);
         return converter.toRest(workflowProcessNoteRest, utils.obtainProjection());
     }
-    private WorkflowProcessNote createworkflowProcessDefinitionFromRestObject(Context context, WorkflowProcessNoteRest workflowProcessDefinitionRest) throws AuthorizeException {
+    private WorkflowProcessNote createworkflowProcessDefinitionFromRestObject(Context context, WorkflowProcessNoteRest workflowProcessNoteRest) throws AuthorizeException {
         WorkflowProcessNote workflowProcessNote =new WorkflowProcessNote();
         try {
-
-            workflowProcessNoteService.create(context,workflowProcessNote);
+            workflowProcessNote= workflowProcessNoteConverter.convert(workflowProcessNoteRest);
+            workflowProcessNote.setSubmitter(context.getCurrentUser());
+            workflowProcessNote = workflowProcessNoteService.create(context,workflowProcessNote);
+            WorkflowProcessNote finalWorkflowProcessNote = workflowProcessNote;
+            workflowProcessNote.setWorkflowProcessReferenceDocs(workflowProcessNoteRest.getWorkflowProcessReferenceDocRests().stream().map(d -> {
+                try {
+                    WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, d);
+                    workflowProcessReferenceDoc.setWorkflowprocessnote(finalWorkflowProcessNote);
+                    return workflowProcessReferenceDoc;
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toSet()));
+            System.out.println("workflowProcess Note::: update ......");
+            workflowProcessNoteService.update(context,workflowProcessNote);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -143,6 +168,19 @@ public class WorkflowNoteRestRepository extends DSpaceObjectRestRepository<Workf
             workflowProcessNoteService.delete(context, workflowProcessNote);
             context.commit();
         } catch (SQLException | IOException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @SearchRestMethod(name = "getDocumentByItemID")
+    public Page<WorkflowProcessNote> getDocumentByItemID(@Parameter(value = "itemid", required = true) UUID itemid, Pageable pageable) {
+        try {
+            Context context = obtainContext();
+            long total = workflowProcessNoteService.countDocumentByItemid(context, itemid);
+            List<WorkflowProcessNote> witems = workflowProcessNoteService.getDocumentByItemid(context, itemid, Math.toIntExact(pageable.getOffset()),
+                    Math.toIntExact(pageable.getPageSize()));
+            return converter.toRestPage(witems, pageable, total, utils.obtainProjection());
+        } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }

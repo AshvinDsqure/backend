@@ -9,12 +9,18 @@ package org.dspace.app.rest.converter;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 import org.dspace.app.rest.model.BitstreamRest;
 import org.dspace.app.rest.model.CheckSumRest;
+import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
+import org.dspace.content.WorkflowProcessReferenceDoc;
+import org.dspace.content.service.BitstreamService;
+import org.dspace.core.Context;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
@@ -25,6 +31,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BitstreamConverter extends DSpaceObjectConverter<Bitstream, BitstreamRest> {
+
+    @Autowired
+    BitstreamService bitstreamService;
 
     @Override
     public BitstreamRest convert(org.dspace.content.Bitstream obj, Projection projection) {
@@ -46,6 +55,10 @@ public class BitstreamConverter extends DSpaceObjectConverter<Bitstream, Bitstre
         b.setCheckSum(checksum);
         b.setSizeBytes(obj.getSizeBytes());
         return b;
+    }
+
+    public Bitstream convertByService(Context context, BitstreamRest rest) throws SQLException {
+        return  bitstreamService.find(context, UUID.fromString(rest.getUuid()));
     }
     public BitstreamRest convertFoWorkFLowRefDoc(org.dspace.content.Bitstream obj, Projection projection) {
         BitstreamRest b = super.convert(obj, projection);

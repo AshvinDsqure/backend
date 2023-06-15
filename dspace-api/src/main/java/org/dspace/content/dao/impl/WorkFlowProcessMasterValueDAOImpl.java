@@ -37,7 +37,6 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
     public int countRows(Context context) throws SQLException {
         return count(createQuery(context, "SELECT count(*) FROM WorkFlowProcessMasterValue"));
     }
-
     @Override
     public List<WorkFlowProcessMasterValue> findByType(Context context, String mastername,Integer offset,Integer limit) throws SQLException{
         CriteriaBuilder criteriaBuilder= getCriteriaBuilder(context);
@@ -62,10 +61,7 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
      ));
         Query query = this.getHibernateSession(context).createQuery(criteriaQuery);
      return singleResult(context,criteriaQuery);
-
     }
-
-
     @Override
     public int countfindByType(Context context, String type) throws SQLException {
         try {
@@ -78,5 +74,4 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
             return 0;
         }
     }
-
 }

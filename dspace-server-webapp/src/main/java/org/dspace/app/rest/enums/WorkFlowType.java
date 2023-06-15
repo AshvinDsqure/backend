@@ -60,11 +60,12 @@ public enum WorkFlowType {
             this.getWorkFlowAction().perfomeAction(context, workflowProcess, workFlowProcessRest);
             return workFlowProcessRest;
         }
+
         @Override
         public WorkFlowProcessRest storeWorkFlowProcessDraft(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
             workFlowProcessRest.setWorkflowTypeStr("INWARD");
             WorkflowProcess workflowProcess = this.getWorkFlowProcessConverter().convert(workFlowProcessRest, context);
-            if(workflowProcess.getWorkflowProcessSenderDiary() != null) {
+            if (workflowProcess.getWorkflowProcessSenderDiary() != null) {
                 Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional = Optional.ofNullable(this.getWorkflowProcessSenderDiaryService().findByEmailID(context, workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
                 if (workflowProcessSenderDiaryOptional.isPresent()) {
                     workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
@@ -93,7 +94,7 @@ public enum WorkFlowType {
             return workFlowProcessRest;
         }
     },
-    OUTWARED("Outward"){
+    OUTWARED("Outward") {
         @Override
         public WorkFlowProcessRest storeWorkFlowProcess(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
             workFlowProcessRest.setWorkflowTypeStr("OUTWARED");
@@ -128,7 +129,68 @@ public enum WorkFlowType {
         public WorkFlowProcessRest storeWorkFlowProcessDraft(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
             workFlowProcessRest.setWorkflowTypeStr("OUTWARED");
             WorkflowProcess workflowProcess = this.getWorkFlowProcessConverter().convert(workFlowProcessRest, context);
-            if(workflowProcess.getWorkflowProcessSenderDiary() != null) {
+            if (workflowProcess.getWorkflowProcessSenderDiary() != null) {
+                Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional = Optional.ofNullable(this.getWorkflowProcessSenderDiaryService().findByEmailID(context, workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
+                if (workflowProcessSenderDiaryOptional.isPresent()) {
+                    workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
+                }
+            }
+            if (getWorkFlowStatus() != null) {
+                Optional<WorkFlowProcessMasterValue> workFlowStatusOptional = getWorkFlowStatus().getUserTypeFromMasterValue(context);
+                if (workFlowStatusOptional.isPresent()) {
+                    workflowProcess.setWorkflowStatus(workFlowStatusOptional.get());
+                }
+            }
+            workflowProcess = this.getWorkflowProcessService().create(context, workflowProcess);
+            WorkflowProcess finalWorkflowProcess = workflowProcess;
+            workflowProcess.setWorkflowProcessReferenceDocs(workFlowProcessRest.getWorkflowProcessReferenceDocRests().stream().map(d -> {
+                try {
+                    WorkflowProcessReferenceDoc workflowProcessReferenceDoc = this.getWorkflowProcessReferenceDocConverter().convertByService(context, d);
+                    workflowProcessReferenceDoc.setWorkflowProcess(finalWorkflowProcess);
+                    return workflowProcessReferenceDoc;
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+            this.getWorkflowProcessService().update(context, workflowProcess);
+            workFlowProcessRest = getWorkFlowProcessConverter().convert(workflowProcess, this.getProjection());
+            //this.getWorkFlowAction().perfomeAction(context, workflowProcess, workFlowProcessRest);
+            return workFlowProcessRest;
+        }
+    },
+    DRAFT("Draft") {
+        @Override
+        public WorkFlowProcessRest storeWorkFlowProcess(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
+            workFlowProcessRest.setWorkflowTypeStr("DRAFT");
+            WorkflowProcess workflowProcess = this.getWorkFlowProcessConverter().convert(workFlowProcessRest, context);
+            if (getWorkFlowStatus() != null) {
+                Optional<WorkFlowProcessMasterValue> workFlowStatusOptional = getWorkFlowStatus().getUserTypeFromMasterValue(context);
+                if (workFlowStatusOptional.isPresent()) {
+                    workflowProcess.setWorkflowStatus(workFlowStatusOptional.get());
+                }
+            }
+            workflowProcess = this.getWorkflowProcessService().create(context, workflowProcess);
+            WorkflowProcess finalWorkflowProcess = workflowProcess;
+            workflowProcess.setWorkflowProcessReferenceDocs(workFlowProcessRest.getWorkflowProcessReferenceDocRests().stream().map(d -> {
+                try {
+                    WorkflowProcessReferenceDoc workflowProcessReferenceDoc = this.getWorkflowProcessReferenceDocConverter().convertByService(context, d);
+                    workflowProcessReferenceDoc.setWorkflowProcess(finalWorkflowProcess);
+                    return workflowProcessReferenceDoc;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+            this.getWorkflowProcessService().update(context, workflowProcess);
+            workFlowProcessRest = getWorkFlowProcessConverter().convert(workflowProcess, this.getProjection());
+            this.getWorkFlowAction().perfomeAction(context, workflowProcess, workFlowProcessRest);
+            return workFlowProcessRest;
+        }
+        @Override
+        public WorkFlowProcessRest storeWorkFlowProcessDraft(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
+            workFlowProcessRest.setWorkflowTypeStr("DRAFT");
+            WorkflowProcess workflowProcess = this.getWorkFlowProcessConverter().convert(workFlowProcessRest, context);
+            if (workflowProcess.getWorkflowProcessSenderDiary() != null) {
                 Optional<WorkflowProcessSenderDiary> workflowProcessSenderDiaryOptional = Optional.ofNullable(this.getWorkflowProcessSenderDiaryService().findByEmailID(context, workflowProcess.getWorkflowProcessSenderDiary().getEmail()));
                 if (workflowProcessSenderDiaryOptional.isPresent()) {
                     workflowProcess.setWorkflowProcessSenderDiary(workflowProcessSenderDiaryOptional.get());
@@ -205,6 +267,7 @@ public enum WorkFlowType {
     }
 
     public Optional<WorkFlowProcessMasterValue> getUserTypeFromMasterValue(Context context) throws SQLException {
+
         WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
         WorkFlowProcessMasterValue workFlowProcessMasterValue = this.getWorkFlowProcessMasterValueService().findByName(context, this.getAction(), workFlowProcessMaster);
         return Optional.ofNullable(workFlowProcessMasterValue);
@@ -213,9 +276,11 @@ public enum WorkFlowType {
     public WorkFlowProcessRest storeWorkFlowProcess(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
         return null;
     }
+
     public WorkFlowProcessRest storeWorkFlowProcessDraft(Context context, WorkFlowProcessRest workFlowProcessRest) throws Exception {
         return null;
     }
+
     public WorkFlowProcessMaster getMaster(Context context) throws SQLException {
         return this.getWorkFlowProcessMasterService().findByName(context, this.getAction());
     }

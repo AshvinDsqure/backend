@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.model;
@@ -37,15 +37,20 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     public static final String NAME = "workflowprocesse";
     public static final String PLURAL_NAME = "workflowprocess";
     public static final String CATEGORY = RestAddressableModel.WORKFLOWPROCESS;
-    public static final String  CATEGORY_INWARD= "inward";
-    public static final String  CATEGORY_OUTWARE= "outward";
+    public static final String CATEGORY_INWARD = "inward";
+    public static final String CATEGORY_OUTWARE = "outward";
+    public static final String CATEGORY_DRAFT = "draft";
+    @JsonProperty
+    private WorkFlowProcessDraftDetailsRest workFlowProcessDraftDetailsRest;
+    @JsonProperty
+    private WorkflowProcessNoteRest workflowProcessNoteRest;
     @JsonProperty
     private WorkFlowProcessInwardDetailsRest workFlowProcessInwardDetailsRest;
     @JsonProperty
     private WorkFlowProcessOutwardDetailsRest workFlowProcessOutwardDetailsRest;
     @JsonProperty
     @Valid
-    private  WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest;
+    private WorkflowProcessSenderDiaryRest workflowProcessSenderDiaryRest;
     @JsonProperty
     @Valid
     @NotNull
@@ -68,15 +73,15 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     @JsonProperty
     private String workflowTypeStr;
     @JsonProperty
-    private  Boolean isDraft=false;
+    private Boolean isDraft = false;
     @JsonProperty
-    private  String comment;
+    private String comment;
     @JsonProperty
-    List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests=new ArrayList<>();
+    List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests = new ArrayList<>();
 
     @JsonProperty
     @NotEmpty(message = "Input WorkflowProcessEpersonRest list cannot be empty.")
-    private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests=new ArrayList<>();
+    private List<WorkflowProcessEpersonRest> workflowProcessEpersonRests = new ArrayList<>();
     @JsonProperty
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date InitDate = new Date();
@@ -85,6 +90,7 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
+
     @Override
     public String getCategory() {
         return CATEGORY;
@@ -151,6 +157,7 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
     public void setWorkflowProcessReferenceDocRests(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests) {
         this.workflowProcessReferenceDocRests = workflowProcessReferenceDocRests;
     }
+
     public List<WorkflowProcessEpersonRest> getWorkflowProcessEpersonRests() {
         return workflowProcessEpersonRests;
     }
@@ -245,5 +252,21 @@ public class WorkFlowProcessRest extends DSpaceObjectRest {
 
     public void setPriorityRest(WorkFlowProcessMasterValueRest priorityRest) {
         this.priorityRest = priorityRest;
+    }
+
+    public WorkFlowProcessDraftDetailsRest getWorkFlowProcessDraftDetailsRest() {
+        return workFlowProcessDraftDetailsRest;
+    }
+
+    public void setWorkFlowProcessDraftDetailsRest(WorkFlowProcessDraftDetailsRest workFlowProcessDraftDetailsRest) {
+        this.workFlowProcessDraftDetailsRest = workFlowProcessDraftDetailsRest;
+    }
+
+    public WorkflowProcessNoteRest getWorkflowProcessNoteRest() {
+        return workflowProcessNoteRest;
+    }
+
+    public void setWorkflowProcessNoteRest(WorkflowProcessNoteRest workflowProcessNoteRest) {
+        this.workflowProcessNoteRest = workflowProcessNoteRest;
     }
 }

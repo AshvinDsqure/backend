@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 
@@ -23,9 +23,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceImpl<WorkFlowProcessMasterValue> implements WorkFlowProcessMasterValueService{
+public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceImpl<WorkFlowProcessMasterValue> implements WorkFlowProcessMasterValueService {
 
-
+    @Autowired
+    private WorkFlowProcessMasterService masterService;
     /**
      * log4j category
      */
@@ -51,7 +52,6 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
     }
 
 
-
     @Override
     public void updateLastModified(Context context, WorkFlowProcessMasterValue dso) throws SQLException, AuthorizeException {
 
@@ -59,7 +59,7 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
 
     @Override
     public void delete(Context context, WorkFlowProcessMasterValue dso) throws SQLException, AuthorizeException, IOException {
-        workFlowProcessMasterValueDAO.delete(context,dso);
+        workFlowProcessMasterValueDAO.delete(context, dso);
     }
 
     @Override
@@ -69,19 +69,19 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
 
     @Override
     public List<WorkFlowProcessMasterValue> findAll(Context context) throws SQLException {
-        return Optional.ofNullable(workFlowProcessMasterValueDAO.findAll(context,WorkFlowProcessMasterValue.class)).orElse(new ArrayList<>());
+        return Optional.ofNullable(workFlowProcessMasterValueDAO.findAll(context, WorkFlowProcessMasterValue.class)).orElse(new ArrayList<>());
 
     }
 
     @Override
     public WorkFlowProcessMasterValue create(Context context, WorkFlowProcessMasterValue workFlowProcessMaster) throws SQLException, AuthorizeException {
-        workFlowProcessMaster= workFlowProcessMasterValueDAO.create(context,workFlowProcessMaster);
+        workFlowProcessMaster = workFlowProcessMasterValueDAO.create(context, workFlowProcessMaster);
         return workFlowProcessMaster;
     }
 
     @Override
     public List<WorkFlowProcessMasterValue> findAll(Context context, Integer limit, Integer offset) throws SQLException {
-        return  Optional.ofNullable(workFlowProcessMasterValueDAO.findAll(context,WorkFlowProcessMasterValue.class,limit,
+        return Optional.ofNullable(workFlowProcessMasterValueDAO.findAll(context, WorkFlowProcessMasterValue.class, limit,
                 offset)).orElse(new ArrayList<>());
     }
 
@@ -92,24 +92,25 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
 
     @Override
     public List<WorkFlowProcessMasterValue> findByType(Context context, String type, Integer offset, Integer limit) throws SQLException {
-       return workFlowProcessMasterValueDAO.findByType(context,type,limit,offset);
+        return workFlowProcessMasterValueDAO.findByType(context, type, limit, offset);
     }
 
     @Override
     public WorkFlowProcessMasterValue find(Context context, UUID uuid) throws SQLException {
-        return workFlowProcessMasterValueDAO.findByID(context,WorkFlowProcessMasterValue.class,uuid);
+        return workFlowProcessMasterValueDAO.findByID(context, WorkFlowProcessMasterValue.class, uuid);
     }
+
     @Override
     public void update(Context context, WorkFlowProcessMasterValue workFlowProcessMaster) throws SQLException, AuthorizeException {
         this.workFlowProcessMasterValueDAO.save(context, workFlowProcessMaster);
     }
-    @Override
-    public WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster)throws SQLException{
-        return  workFlowProcessMasterValueDAO.findByName(context,name,workFlowProcessMaster);
-    }
 
     @Override
+    public WorkFlowProcessMasterValue findByName(Context context, String name, WorkFlowProcessMaster workFlowProcessMaster) throws SQLException {
+        return workFlowProcessMasterValueDAO.findByName(context, name, workFlowProcessMaster);
+    }
+    @Override
     public int countfindByType(Context context, String type) throws SQLException {
-        return workFlowProcessMasterValueDAO.countfindByType(context,type);
+        return workFlowProcessMasterValueDAO.countfindByType(context, type);
     }
 }

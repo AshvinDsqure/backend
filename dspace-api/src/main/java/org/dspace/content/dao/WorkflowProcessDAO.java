@@ -22,8 +22,9 @@ import java.util.UUID;
  * @author kevinvandevelde at atmire.com
  */
 public interface WorkflowProcessDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcess> {
-    List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException;
-
+    List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson, UUID statusid,UUID draftid, Integer offset, Integer limit) throws SQLException;
+    List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid, Integer offset, Integer limit) throws SQLException;
+    int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid) throws SQLException;
     List<WorkflowProcess> getHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid, Integer offset, Integer limit) throws SQLException;
 
     int countgetHistoryByNotOwnerAndNotDraft(Context context, UUID eperson, UUID statusid) throws SQLException;
@@ -32,7 +33,7 @@ public interface WorkflowProcessDAO extends DSpaceObjectLegacySupportDAO<Workflo
 
     int countgetHistoryByOwnerAndIsDraft(Context context, UUID eperson, UUID statusid) throws SQLException;
 
-    int countfindNotCompletedByUser(Context context, UUID eperson, UUID statusid) throws SQLException;
+    int countfindNotCompletedByUser(Context context, UUID eperson, UUID statusid,UUID draftid) throws SQLException;
 
-
+    WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException;
 }

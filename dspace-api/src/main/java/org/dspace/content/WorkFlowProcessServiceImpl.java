@@ -8,12 +8,13 @@
 package org.dspace.content;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.dao.WorkflowProcessDAO;
 import org.dspace.content.service.*;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-
+import org.dspace.disseminate.service.CitationDocumentService;
 import org.dspace.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service implementation for the Item object.
@@ -43,6 +45,10 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     @Autowired
     private BitstreamService bitstreamService;
 
+
+
+
+
     protected WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
 
     protected WorkFlowProcessMasterService workFlowProcessMasterServicee;
@@ -63,6 +69,7 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
 
     @Override
     public WorkflowProcess find(Context context, UUID uuid) throws SQLException {
+
         return workflowProcessDAO.findByID(context,WorkflowProcess.class,uuid);
     }
 
@@ -101,13 +108,13 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     }
 
     @Override
-    public List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid, Integer offset, Integer limit) throws SQLException {
-       return workflowProcessDAO.findNotCompletedByUser(context,eperson,statusid,offset,limit);
+    public List<WorkflowProcess> findNotCompletedByUser(Context context, UUID eperson,UUID statusid,UUID draftid, Integer offset, Integer limit) throws SQLException {
+       return workflowProcessDAO.findNotCompletedByUser(context,eperson,statusid,draftid,offset,limit);
     }
 
     @Override
-    public int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid) throws SQLException {
-        return workflowProcessDAO.countfindNotCompletedByUser(context,eperson,statusid);
+    public int countfindNotCompletedByUser(Context context, UUID eperson,UUID statusid,UUID draftid) throws SQLException {
+        return workflowProcessDAO.countfindNotCompletedByUser(context,eperson,statusid,draftid);
     }
 
     @Override
@@ -161,5 +168,39 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
             }
         }
 
+    }
+    @Override
+    public void storeWorkFlowMataDataTOBitsream(Context context, WorkflowProcessReferenceDoc workflowProcessReferenceDoc) throws SQLException, AuthorizeException {
+        Bitstream bitstream= workflowProcessReferenceDoc.getBitstream();
+        if(bitstream != null) {
+            if (workflowProcessReferenceDoc.getWorkFlowProcessReferenceDocType() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "doc", "type", null, workflowProcessReferenceDoc.getWorkFlowProcessReferenceDocType().getPrimaryvalue());
+            }
+            if (workflowProcessReferenceDoc.getReferenceNumber() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "ref", "number", null, workflowProcessReferenceDoc.getReferenceNumber());
+            }
+            if (workflowProcessReferenceDoc.getSubject() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "description", null, null, workflowProcessReferenceDoc.getSubject());
+            }
+            if (workflowProcessReferenceDoc.getLatterCategory() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "letter", "category", null, workflowProcessReferenceDoc.getLatterCategory().getPrimaryvalue());
+                bitstreamService.addMetadata(context, bitstream, "dc", "letter", "categoryhi", null, workflowProcessReferenceDoc.getLatterCategory().getSecondaryvalue());
+            }
+            if (workflowProcessReferenceDoc.getInitdate() != null) {
+                bitstreamService.addMetadata(context, bitstream, "dc", "date", null, null, workflowProcessReferenceDoc.getInitdate().toString());
+            }
+        }
+    }
+    @Override
+    public List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid, Integer offset, Integer limit) throws SQLException {
+        return workflowProcessDAO.findDraftPending(context,eperson,statuscloseid,statusdraftid,offset,limit);
+    }
+    @Override
+    public int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid) throws SQLException {
+        return workflowProcessDAO.countfindDraftPending(context,eperson,statuscloseid,statusdraftid);
+    }
+    @Override
+    public WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException {
+        return workflowProcessDAO.getNoteByItemsid(context,itemid);
     }
 }

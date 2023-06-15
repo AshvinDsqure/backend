@@ -184,6 +184,8 @@ public class AuthenticationRestController implements InitializingBean {
         //If you can get here, you should be authenticated, the actual login is handled by spring security
         System.out.println("user"+user);
         System.out.println("password"+password);
+
+        System.out.println("in Login");
         // Build our response. This will check if we have an EPerson.
         // If not, that means the authentication failed and we should return the error message
         return getLoginResponse(request,
