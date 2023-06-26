@@ -7,18 +7,16 @@
  */
 package org.dspace.app.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.model.helper.MyDateConverter;
+import org.dspace.eperson.EPerson;
 import org.springframework.data.annotation.Transient;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.List;
 
 /**
  * The Item REST Resource
@@ -29,7 +27,7 @@ import java.util.Date;
 
 })
 public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
-    public static final String NAME = "WorkflowProcessDefinitionEpersonRest";
+    public static final String NAME = "workflowprocesseperson";
     public static final String PLURAL_NAME = "WorkflowProcessDefinitionEpersonRest";
     public static final String CATEGORY = RestAddressableModel.CORE;
     @JsonProperty
@@ -49,6 +47,9 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private WorkFlowProcessMasterValueRest userType = null;
 
     @JsonProperty
+    private List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests = null;
+
+    @JsonProperty
     private ItemRest itemRest = null;
     @JsonProperty
     private String comment;
@@ -56,6 +57,13 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     private  Boolean initiator=false;
     @Transient
     private WorkFlowUserType workFlowUserType;
+    @JsonProperty
+    private Integer sequence;
+    @JsonProperty
+    private  Boolean isOwner;
+
+    @JsonProperty
+    private  Boolean issequence=false;
     @JsonProperty
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date assignDate =null;
@@ -157,5 +165,36 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     public void setItemRest(ItemRest itemRest) {
         this.itemRest = itemRest;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    public Boolean getIssequence() {
+        return issequence;
+    }
+
+    public void setIssequence(Boolean issequence) {
+        this.issequence = issequence;
+    }
+
+    public Boolean getOwner() {
+        return isOwner;
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
+    }
+
+    public List<WorkflowProcessReferenceDocRest> getWorkflowProcessReferenceDocRests() {
+        return workflowProcessReferenceDocRests;
+    }
+    public void setWorkflowProcessReferenceDocRests(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests) {
+        this.workflowProcessReferenceDocRests = workflowProcessReferenceDocRests;
     }
 }

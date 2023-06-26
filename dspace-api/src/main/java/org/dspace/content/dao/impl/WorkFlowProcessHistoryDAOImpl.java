@@ -28,21 +28,18 @@ public class WorkFlowProcessHistoryDAOImpl  extends AbstractHibernateDAO<WorkFlo
     public WorkFlowProcessHistory findByLegacyId(Context context, int legacyId, Class<WorkFlowProcessHistory> clazz) throws SQLException {
         return null;
     }
-
     @Override
     public int countRows(Context context) throws SQLException {
         return count(createQuery(context, "SELECT count(*) FROM WorkFlowProcessHistory"));
     }
-
     @Override
     public List<WorkFlowProcessHistory> getHistory(Context context, UUID workflowprocessid) throws SQLException {
            Query query = createQuery(context, "SELECT history FROM WorkFlowProcessHistory as history " +
                     "join history.workflowProcess  as wp " +
-                    "WHERE wp.id=:workflowprocessid ");
+                    "WHERE wp.id=:workflowprocessid order by history.actionDate ASC ");
             query.setParameter("workflowprocessid", workflowprocessid);
             return query.getResultList();
         }
-
     @Override
     public int countHistory(Context context,UUID workflowprocessid) throws SQLException {
         Query query = createQuery(context, "SELECT count(history) FROM WorkFlowProcessHistory as history " +

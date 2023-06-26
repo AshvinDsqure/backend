@@ -42,6 +42,7 @@ public class JbpmServerImpl {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
+        System.out.println("::::::::::::::URL::::::::::::::::::::::"+baseurl+ JBPM.CREATEPROCESS);
         return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
@@ -126,7 +127,7 @@ public class JbpmServerImpl {
         System.out.println("test body:"+entity.getBody());
         return restTemplate.exchange(baseurl+ JBPM.HOLDPROCESS, HttpMethod.PUT, entity, String.class).getBody();
     }
-    public String resumeTask(WorkFlowProcessRest workflowProcess, WorkFlowAction workFlowAction) throws  RuntimeException{
+    public String resumeTask(WorkFlowProcessRest workflowProcess) throws  RuntimeException{
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
         jbpmProcess.setQueueid(workflowProcess.getId());

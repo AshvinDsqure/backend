@@ -111,7 +111,8 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
             //perfome and stor to db
             workFlowProcessRest = workFlowType.storeWorkFlowProcess(context, workFlowProcessRest);
             context.commit();
-
+            create.setComment(null);
+            create.setWorkflowProcessReferenceDocs(null);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -142,7 +143,8 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
             //perfome and stor to db
             workFlowProcessRest = workFlowType.storeWorkFlowProcessDraft(context, workFlowProcessRest);
             context.commit();
-
+            create.setComment(null);
+            create.setWorkflowProcessReferenceDocs(null);
         }catch (Exception e){
             e.printStackTrace();
         }

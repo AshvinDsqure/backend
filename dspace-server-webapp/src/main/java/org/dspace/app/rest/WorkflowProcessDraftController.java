@@ -8,6 +8,7 @@
 package org.dspace.app.rest;
 
 import com.google.gson.Gson;
+import com.itextpdf.text.DocumentException;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.WorkFlowProcessConverter;
 import org.dspace.app.rest.converter.WorkFlowProcessEpersonConverter;
@@ -17,13 +18,16 @@ import org.dspace.app.rest.enums.WorkFlowStatus;
 import org.dspace.app.rest.enums.WorkFlowType;
 import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.exception.MissingParameterException;
+import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.jbpm.JbpmServerImpl;
 import org.dspace.app.rest.model.EPersonRest;
 import org.dspace.app.rest.model.WorkFlowProcessRest;
 import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
 import org.dspace.app.rest.repository.AbstractDSpaceRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.WorkflowProcess;
 import org.dspace.content.service.*;
 import org.dspace.core.Context;
 import org.dspace.disseminate.service.CitationDocumentService;
@@ -39,6 +43,7 @@ import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * This is a specialized controller to provide access to the bitstream binary
@@ -112,41 +117,43 @@ public class WorkflowProcessDraftController extends AbstractDSpaceRestRepository
             //perfome and stor to db
             workFlowProcessRest = workFlowType.storeWorkFlowProcess(context, workFlowProcessRest);
             context.commit();
-
+            create.setComment(null);
+            create.setWorkflowProcessReferenceDocs(null);
         }catch (Exception e){
             e.printStackTrace();
         }
+
         return ResponseEntity.ok(workFlowProcessRest);
     }
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD},value = "/draft")
-    public ResponseEntity draft( @RequestBody WorkFlowProcessRest workFlowProcessRest) throws Exception {
+    public ResponseEntity draft( @RequestBody WorkFlowProcessRest workFlowProcessRest, HttpServletRequest request) throws Exception {
+        WorkflowProcess workFlowProcess=null;
+        System.out.println("data "+workFlowProcessRest);
+        System.out.println("id "+workFlowProcessRest.getId());
+
         try {
-           HttpServletRequest request = getRequestService().getCurrentRequest().getHttpServletRequest();
             Context context = ContextUtil.obtainContext(request);
-            workFlowProcessRest.getWorkflowProcessEpersonRests().clear();
-            Optional<WorkflowProcessEpersonRest> WorkflowProcessEpersonRest = Optional.ofNullable((getSubmitor(context)));
-            if (!WorkflowProcessEpersonRest.isPresent()) {
-                return ResponseEntity.badRequest().body("no user found");
+            if(workFlowProcessRest!=null && workFlowProcessRest.getId()!=null) {
+             workFlowProcess = workFlowProcessConverter.convertDraftwithID(workFlowProcessRest,context,UUID.fromString(workFlowProcessRest.getId()));
             }
-            WorkFlowType workFlowType = WorkFlowType.DRAFT;
-            //status
-            workFlowType.setWorkFlowStatus(WorkFlowStatus.DRAFT);
-            WorkFlowAction create = WorkFlowAction.CREATE;
-            //set comment
-           // create.setComment(workFlowProcessRest.getComment());
-            //set action
-            workFlowType.setWorkFlowAction(create);
-            workFlowType.setProjection(utils.obtainProjection());
-            workFlowProcessRest.getWorkflowProcessEpersonRests().add(WorkflowProcessEpersonRest.get());
-            //perfome and stor to db
-            workFlowProcessRest = workFlowType.storeWorkFlowProcessDraft(context, workFlowProcessRest);
+            if (workFlowProcess == null) {
+                throw new RuntimeException("Workflow not found");
+            }
+            Optional<WorkFlowProcessMasterValue> workFlowTypeStatus = WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context);
+            if (workFlowTypeStatus.isPresent()) {
+                workFlowProcess.setWorkflowStatus(workFlowTypeStatus.get());
+            }
+            workflowProcessService.create(context, workFlowProcess);
+            workFlowProcessRest = workFlowProcessConverter.convert(workFlowProcess, utils.obtainProjection());
             context.commit();
 
-        }catch (Exception e){
-            e.printStackTrace();
+            return ResponseEntity.ok(workFlowProcessRest);
+        } catch (RuntimeException e) {
+            throw new UnprocessableEntityException("error in suspendTask Server..");
+        } catch (AuthorizeException e) {
+            throw new RuntimeException(e);
         }
-        return ResponseEntity.ok(workFlowProcessRest);
     }
     public WorkflowProcessEpersonRest getSubmitor(Context context) throws SQLException {
         if(context.getCurrentUser() != null ){
@@ -154,6 +161,7 @@ public class WorkflowProcessDraftController extends AbstractDSpaceRestRepository
             EPersonRest ePersonRest=new EPersonRest();
             ePersonRest.setUuid(context.getCurrentUser().getID().toString());
             workflowProcessEpersonSubmitor.setIndex(0);
+            workflowProcessEpersonSubmitor.setSequence(0);
             Optional<WorkFlowProcessMasterValue> workFlowUserTypOptional = WorkFlowUserType.INITIATOR.getUserTypeFromMasterValue(context);
             if(workFlowUserTypOptional.isPresent()){
                 workflowProcessEpersonSubmitor.setUserType(workFlowProcessMasterValueConverter.convert(workFlowUserTypOptional.get(),utils.obtainProjection()));

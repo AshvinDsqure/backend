@@ -20,6 +20,7 @@ import org.dspace.eperson.EPerson;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 public class WorkFlowProcessCommentRest extends  DSpaceObjectRest{
     public static final String NAME = "workflowprocesscomment";
@@ -28,7 +29,7 @@ public class WorkFlowProcessCommentRest extends  DSpaceObjectRest{
     public static final String GROUPS = "groups";
     private Integer legacyId;
     private String comment;
-    private WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest;
+    private List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRest;
     private WorkFlowProcessHistoryRest workFlowProcessHistoryRest;
 
     private EPersonRest submitterRest = null;
@@ -54,12 +55,15 @@ public class WorkFlowProcessCommentRest extends  DSpaceObjectRest{
     public void setComment(String comment) {
         this.comment = comment;
     }
-    public WorkflowProcessReferenceDocRest getWorkflowProcessReferenceDocRest() {
+
+    public List<WorkflowProcessReferenceDocRest> getWorkflowProcessReferenceDocRest() {
         return workflowProcessReferenceDocRest;
     }
-    public void setWorkflowProcessReferenceDocRest(WorkflowProcessReferenceDocRest workflowProcessReferenceDocRest) {
+
+    public void setWorkflowProcessReferenceDocRest(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRest) {
         this.workflowProcessReferenceDocRest = workflowProcessReferenceDocRest;
     }
+
     public WorkFlowProcessHistoryRest getWorkFlowProcessHistoryRest() {
         return workFlowProcessHistoryRest;
     }

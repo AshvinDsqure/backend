@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 @Component
 public class WorkFlowProcessDraftDetailsConverter extends DSpaceObjectConverter<WorkFlowProcessDraftDetails, WorkFlowProcessDraftDetailsRest> {
@@ -59,7 +60,7 @@ public class WorkFlowProcessDraftDetailsConverter extends DSpaceObjectConverter<
         if (rest.getDocumentsignatorRest() != null && rest.getDocumentsignatorRest().getUuid()!=null && !rest.getDocumentsignatorRest().getUuid().toString().isEmpty()) {
             obj.setDocumentsignator(ePersonConverter.convert(context, rest.getDocumentsignatorRest()));
         }
-        obj.setDraftdate(rest.getDraftdate());
+        obj.setDraftdate(new Date());
         return obj;
     }
     public WorkFlowProcessDraftDetails convert(WorkFlowProcessDraftDetailsRest rest) {

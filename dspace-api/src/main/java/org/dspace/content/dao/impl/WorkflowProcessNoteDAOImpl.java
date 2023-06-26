@@ -33,22 +33,26 @@ public class WorkflowProcessNoteDAOImpl extends AbstractHibernateDSODAO<Workflow
     }
 
     @Override
-    public int countRows(Context context) throws SQLException {
-        return 0;
+    public int getNoteCountNumber(Context context, UUID drafttypeid, UUID itemid, UUID workflowstatuscloseid) throws SQLException {
+        Query query = createQuery(context, "SELECT distinct count(n) FROM WorkflowProcessReferenceDoc as d join d.workflowprocessnote as n  join d.drafttype as df join d.workflowProcess as wp join wp.item as i join wp.workflowStatus as status where i.id=:itemid and status.id=:stid and df.id.id=:dfid");
+        query.setParameter("stid",workflowstatuscloseid);
+        query.setParameter("itemid",itemid);
+        query.setParameter("dfid",drafttypeid);
+        return count(query);
     }
+
     @Override
-    public int countDocumentByItemid(Context context, UUID drafttypeid, UUID itemid) throws SQLException {
-        Query query = createQuery(context, "SELECT count(n) FROM WorkflowProcessReferenceDoc as d join d.workflowprocessnote as n  join d.drafttype as df join d.workflowProcess as wp join wp.item as i where df.id=:drafttypeid and i.id=:itemid ");
-        query.setParameter("drafttypeid",drafttypeid);
+    public int countDocumentByItemid(Context context, UUID drafttypeid, UUID itemid,UUID workflowstatuscloseid) throws SQLException {
+        Query query = createQuery(context, "SELECT distinct count(n) FROM WorkflowProcessReferenceDoc as d join d.workflowprocessnote as n  join d.drafttype as df join d.workflowProcess as wp join wp.item as i join wp.workflowStatus as status where i.id=:itemid and status.id=:stid");
+        query.setParameter("stid",workflowstatuscloseid);
         query.setParameter("itemid",itemid);
         return count(query);
     }
     @Override
-    public List<WorkflowProcessNote> getDocumentByItemid(Context context, UUID drafttypeid, UUID itemid, Integer offset, Integer limit) throws SQLException {
-        //df.id=:drafttypeid and
-        Query query = createQuery(context, "SELECT distinct n FROM WorkflowProcessReferenceDoc as d join d.workflowprocessnote as n  join d.drafttype as df join d.workflowProcess as wp join wp.item as i where i.id=:itemid order by n.InitDate desc");
-       // query.setParameter("drafttypeid",drafttypeid);
+    public List<WorkflowProcessNote> getDocumentByItemid(Context context, UUID drafttypeid, UUID itemid,UUID workflowstatuscloseid, Integer offset, Integer limit) throws SQLException {
+        Query query = createQuery(context, "SELECT distinct n FROM WorkflowProcessReferenceDoc as d join d.workflowprocessnote as n  join d.drafttype as df join d.workflowProcess as wp join wp.item as i join wp.workflowStatus as status where i.id=:itemid and status.id=:stid order by n.InitDate desc");
         query.setParameter("itemid",itemid);
+        query.setParameter("stid",workflowstatuscloseid);
         if (0 <= offset) {
             query.setFirstResult(offset);
         }if (0 <= limit) {

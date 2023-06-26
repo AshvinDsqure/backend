@@ -183,6 +183,7 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
         try {
             Context context = obtainContext();
             UUID statuscloseid=WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get().getID();
+            UUID statusdraft=WorkFlowStatus.DRAFT.getUserTypeFromMasterValue(context).get().getID();
             WorkFlowProcessMaster workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Workflow Type");
             UUID statusdraftid=null;
             if(workFlowProcessMaster!=null){
@@ -190,8 +191,9 @@ public class WorkflowProcessRestRepository extends DSpaceObjectRestRepository<Wo
             }
             System.out.println("statuscloseid>>"+statuscloseid);
             System.out.println("statusdraftid>>"+statusdraftid);
-            int count=workflowProcessService.countfindDraftPending(context,context.getCurrentUser().getID(),statuscloseid,statusdraftid);
-            List<WorkflowProcess> workflowProcesses= workflowProcessService.findDraftPending(context,context.getCurrentUser().getID(),statuscloseid,statusdraftid,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
+            System.out.println("statusdraft>>"+statusdraft);
+            int count=workflowProcessService.countfindDraftPending(context,context.getCurrentUser().getID(),statuscloseid,statusdraftid,statusdraft);
+            List<WorkflowProcess> workflowProcesses= workflowProcessService.findDraftPending(context,context.getCurrentUser().getID(),statuscloseid,statusdraftid,statusdraft,Math.toIntExact(pageable.getOffset()),pageable.getPageSize());
             return converter.toRestPage(workflowProcesses, pageable,count , utils.obtainProjection());
         }catch (Exception e){
             e.printStackTrace();

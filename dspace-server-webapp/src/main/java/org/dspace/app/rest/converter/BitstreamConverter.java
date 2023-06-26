@@ -15,6 +15,7 @@ import org.dspace.app.rest.model.BitstreamRest;
 import org.dspace.app.rest.model.CheckSumRest;
 import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
 import org.dspace.app.rest.projection.Projection;
+import org.dspace.app.rest.utils.FileUtils;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
 import org.dspace.content.WorkflowProcessReferenceDoc;
@@ -54,6 +55,7 @@ public class BitstreamConverter extends DSpaceObjectConverter<Bitstream, Bitstre
         checksum.setValue(obj.getChecksum());
         b.setCheckSum(checksum);
         b.setSizeBytes(obj.getSizeBytes());
+        b.setName(FileUtils.getNameWithoutExtension(obj.getName()));
         return b;
     }
 
@@ -62,6 +64,7 @@ public class BitstreamConverter extends DSpaceObjectConverter<Bitstream, Bitstre
     }
     public BitstreamRest convertFoWorkFLowRefDoc(org.dspace.content.Bitstream obj, Projection projection) {
         BitstreamRest b = super.convert(obj, projection);
+        b.setName(FileUtils.getNameWithoutExtension(obj.getName()));
         return b;
     }
     @Override

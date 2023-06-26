@@ -25,8 +25,8 @@ import java.util.UUID;
  * @author kevinvandevelde at atmire.com
  */
 public interface WorkflowProcessNoteDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcessNote>{
-    int countRows(Context context) throws SQLException;
-    public int countDocumentByItemid(Context context , UUID drafttypeid, UUID itemid) throws SQLException;
-    public List<WorkflowProcessNote> getDocumentByItemid(Context context , UUID drafttypeid, UUID itemid, Integer offset, Integer limit) throws SQLException;
+    int getNoteCountNumber(Context context , UUID drafttypeid, UUID itemid,UUID workflowstatuscloseid) throws SQLException;
+    public int countDocumentByItemid(Context context , UUID drafttypeid, UUID itemid,UUID workflowstatuscloseid) throws SQLException;
+    public List<WorkflowProcessNote> getDocumentByItemid(Context context , UUID drafttypeid, UUID itemid,UUID workflowstatuscloseid, Integer offset, Integer limit) throws SQLException;
 
 }

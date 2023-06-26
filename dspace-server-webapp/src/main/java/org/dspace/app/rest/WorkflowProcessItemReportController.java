@@ -23,6 +23,7 @@ import org.dspace.content.Item;
 import org.dspace.content.service.BundleService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -104,7 +105,6 @@ public class WorkflowProcessItemReportController {
                 String uploadedby = i.getSubmitter().getEmail();
                 String hierarchy = i.getOwningCollection().getName();
                 String email =(context.getCurrentUser()!=null)?context.getCurrentUser().getEmail():"-";
-
                 return new ExcelDTO(title, type, issued, caseDetail, uploaddate, uploadedby, hierarchy,email);
             }).collect(Collectors.toList());
             ByteArrayInputStream in = ExcelHelper.tutorialsToExcel(listDTo);

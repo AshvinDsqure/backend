@@ -184,6 +184,7 @@ public enum WorkFlowType {
             this.getWorkflowProcessService().update(context, workflowProcess);
             workFlowProcessRest = getWorkFlowProcessConverter().convert(workflowProcess, this.getProjection());
             this.getWorkFlowAction().perfomeAction(context, workflowProcess, workFlowProcessRest);
+            workFlowProcessRest = getWorkFlowProcessConverter().convert(workflowProcess, this.getProjection());
             return workFlowProcessRest;
         }
         @Override

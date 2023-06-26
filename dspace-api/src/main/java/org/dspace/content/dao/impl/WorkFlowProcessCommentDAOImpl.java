@@ -34,7 +34,7 @@ public class WorkFlowProcessCommentDAOImpl extends AbstractHibernateDAO<WorkFlow
     }
     @Override
     public List<WorkFlowProcessComment> getComments(Context context, UUID workflowprocessid) throws SQLException {
-        Query query = createQuery(context, "SELECT c FROM WorkFlowProcessComment as c join c.workFlowProcess  as wp WHERE wp.id=:workflowprocessid");
+        Query query = createQuery(context, "SELECT c FROM WorkFlowProcessComment as c join c.workFlowProcess  as wp join c.workFlowProcessHistory as h WHERE wp.id=:workflowprocessid order by h.actionDate ASC");
         query.setParameter("workflowprocessid", workflowprocessid);
         return query.getResultList();
     }

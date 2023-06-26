@@ -14,6 +14,7 @@ import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkflowProcessNoteConverter;
 import org.dspace.app.rest.converter.WorkflowProcessReferenceDocConverter;
+import org.dspace.app.rest.enums.WorkFlowStatus;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
 import org.dspace.app.rest.model.WorkFlowProcessDefinitionRest;
 import org.dspace.app.rest.model.WorkflowProcessNoteRest;
@@ -176,8 +177,10 @@ public class WorkflowProcessNoteRestRepository extends DSpaceObjectRestRepositor
     public Page<WorkflowProcessNote> getDocumentByItemID(@Parameter(value = "itemid", required = true) UUID itemid, Pageable pageable) {
         try {
             Context context = obtainContext();
-            long total = workflowProcessNoteService.countDocumentByItemid(context, itemid);
-            List<WorkflowProcessNote> witems = workflowProcessNoteService.getDocumentByItemid(context, itemid, Math.toIntExact(pageable.getOffset()),
+            UUID statusid= WorkFlowStatus.CLOSE.getUserTypeFromMasterValue(context).get().getID();
+            System.out.println("status id:"+statusid);
+            long total = workflowProcessNoteService.countDocumentByItemid(context, itemid,statusid);
+            List<WorkflowProcessNote> witems = workflowProcessNoteService.getDocumentByItemid(context, itemid,statusid, Math.toIntExact(pageable.getOffset()),
                     Math.toIntExact(pageable.getPageSize()));
             return converter.toRestPage(witems, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {

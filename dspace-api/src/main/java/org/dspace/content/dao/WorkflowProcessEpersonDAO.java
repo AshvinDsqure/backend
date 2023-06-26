@@ -19,4 +19,6 @@ import org.dspace.content.WorkflowProcessEperson;
  * @author kevinvandevelde at atmire.com
  */
 public interface WorkflowProcessEpersonDAO extends DSpaceObjectLegacySupportDAO<WorkflowProcessEperson> {
+
+
 }

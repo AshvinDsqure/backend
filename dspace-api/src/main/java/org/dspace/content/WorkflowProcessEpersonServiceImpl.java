@@ -44,42 +44,33 @@ public class WorkflowProcessEpersonServiceImpl extends DSpaceObjectServiceImpl<W
     @Autowired(required = true)
     protected WorkflowProcessDefinitionDAO workflowProcessDefinitionDAO;
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(Item.class);
-
     @Autowired(required = true)
     protected WorkflowProcessEpersonDAO workflowProcessEpersonDAO;
-
     protected WorkflowProcessEpersonServiceImpl() {
         super();
     }
-
     @Override
     public WorkflowProcessEperson findByIdOrLegacyId(Context context, String id) throws SQLException {
         return null;
     }
-
     @Override
     public WorkflowProcessEperson findByLegacyId(Context context, int id) throws SQLException {
         return workflowProcessEpersonDAO.findByLegacyId(context,id,WorkflowProcessEperson.class);
     }
-
     @Override
     public WorkflowProcessEperson find(Context context, UUID uuid) throws SQLException {
         return workflowProcessEpersonDAO.findByID(context,WorkflowProcessEperson.class,uuid);
     }
-
     @Override
     public void updateLastModified(Context context, WorkflowProcessEperson dso) throws SQLException, AuthorizeException {
         update(context, dso);
         //Also fire a modified event since the item HAS been modified
         context.addEvent(new org.dspace.event.Event(Event.MODIFY, Constants.ITEM, dso.getID(), null, getIdentifiers(context, dso)));
     }
-
     @Override
     public void delete(Context context, WorkflowProcessEperson dso) throws SQLException, AuthorizeException, IOException {
-
+        workflowProcessEpersonDAO.delete(context,dso);
     }
-
-
     @Override
     public int getSupportsTypeConstant() {
         return 0;

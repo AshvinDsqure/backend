@@ -203,7 +203,6 @@ public class BitstreamRestRepository extends DSpaceObjectRestRepository<Bitstrea
                bitstreams=bundles.stream().findFirst().get().getBitstreams();
             }
             bitstreams= bitstreams.stream().filter(f->!f.getName().contains("Note#")).collect(Collectors.toList());
-
             return  converter.toRestPage(bitstreams,pageable,bitstreams.size(),utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);

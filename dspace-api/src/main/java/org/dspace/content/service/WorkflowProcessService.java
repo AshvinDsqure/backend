@@ -85,8 +85,8 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
      */
     public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc,Item item) throws SQLException, AuthorizeException ;
     public  void  storeWorkFlowMataDataTOBitsream(Context context,WorkflowProcessReferenceDoc workflowProcessReferenceDoc) throws SQLException, AuthorizeException ;
-    List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid, Integer offset, Integer limit) throws SQLException;
-    int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid) throws SQLException;
+    List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid,UUID statusdraft,Integer offset, Integer limit) throws SQLException;
+    int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid,UUID statusdraft) throws SQLException;
     WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException;
 
 }

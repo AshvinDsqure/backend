@@ -173,12 +173,14 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
                 workflowProcessService.update(context, workflowProcess);
             }
             if (workflowProcessReferenceDocRest.getDrafttypeRest() != null && workFlowProcessMasterValueConverter.convert(context, workflowProcessReferenceDocRest.getDrafttypeRest()) != null && workFlowProcessMasterValueConverter.convert(context, workflowProcessReferenceDocRest.getDrafttypeRest()).getPrimaryvalue().equalsIgnoreCase("Comment")) {
+                List<WorkflowProcessReferenceDoc>docs=new ArrayList<>();
                 if (workflowProcessReferenceDocRest.getUuid() != null) {
                     System.out.println("Comment if");
                     workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convertByService(context, workflowProcessReferenceDocRest);
                     WorkFlowProcessComment d = new WorkFlowProcessComment();
                     d.setSubmitter(context.getCurrentUser());
-                    d.setWorkflowProcessReferenceDoc(workflowProcessReferenceDoc);
+                    docs.add(workflowProcessReferenceDoc);
+                    d.setWorkflowProcessReferenceDoc(docs);
                     if (workflowProcessReferenceDocRest.getWorkFlowProcessRest() != null && workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid() != null) {
                         WorkflowProcess workflowProcess = workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()));
                         d.setWorkFlowProcess(workflowProcess);
@@ -198,7 +200,8 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
                         WorkflowProcess workflowProcess = workflowProcessService.find(context, UUID.fromString(workflowProcessReferenceDocRest.getWorkFlowProcessRest().getUuid()));
                         d.setWorkFlowProcess(workflowProcess);
                     }
-                    d.setWorkflowProcessReferenceDoc(workflowProcessReferenceDoc);
+                    docs.add(workflowProcessReferenceDoc);
+                    d.setWorkflowProcessReferenceDoc(docs);
                     storeVersion(context, workflowProcessReferenceDoc, bitstream, workflowProcessReferenceDocRest);
                     workflowProcessService.storeWorkFlowMataDataTOBitsream(context, workflowProcessReferenceDoc);
                     workFlowProcessCommentService.create(context, d);
@@ -285,7 +288,7 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
         version.setWorkflowProcessReferenceDoc(workflowProcessReferenceDoc);
 
         Set<WorkflowProcessReferenceDocVersion> versionsetss = new HashSet<>();
-        List<WorkflowProcessReferenceDocVersion> versionset = workflowProcessReferenceDocVersionService.getDocVersionBydocumentID(context,workflowProcessReferenceDoc.getID(),0,100);
+        List<WorkflowProcessReferenceDocVersion> versionset = workflowProcessReferenceDocVersionService.getDocVersionBydocumentID(context, workflowProcessReferenceDoc.getID(), 0, 100);
         System.out.println(versionset);
         for (WorkflowProcessReferenceDocVersion v : versionset) {
             if (v.getIsactive()) {
@@ -312,12 +315,11 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
                                                                         @RequestBody List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRestListstr,
                                                                         @Nullable Pageable optionalPageable) throws SQLException, AuthorizeException, IOException {
         List<WorkflowProcessReferenceDocRest> rsponce = new ArrayList<>();
-
         Context context = ContextUtil.obtainContext(request);
         System.out.println("workflowProcessReferenceDocRestListstr::" + workflowProcessReferenceDocRestListstr);
         System.out.println("workflowProcessReferenceDocRestList size::" + workflowProcessReferenceDocRestListstr.size());
         rsponce = workflowProcessReferenceDocRestListstr.stream().map(wrd -> {
-            WorkflowProcessReferenceDocRest rest=null;
+            WorkflowProcessReferenceDocRest rest = null;
             try {
                 WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(wrd, context);
                 if (wrd.getSubject() != null) {
@@ -339,13 +341,13 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
                 if (wrd.getWorkflowProcessNoteRest() != null) {
                     workflowProcessReferenceDoc.setWorkflowprocessnote(workflowProcessNoteService.find(context, UUID.fromString(wrd.getWorkflowProcessNoteRest().getUuid())));
                 }
-                workflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
-                //   workflowProcessService.storeWorkFlowMataDataTOBitsream(context, workflowProcessReferenceDoc);
-                rest=workflowProcessReferenceDocConverter.convert(workflowProcessReferenceDoc, utils.obtainProjection());
-                if(workflowProcessReferenceDoc.getWorkflowprocessnote()!=null){
-                    rest.setWorkflowProcessNoteRest(workflowProcessNoteConverter.convert(workflowProcessReferenceDoc.getWorkflowprocessnote(),utils.obtainProjection()));
+                WorkflowProcessReferenceDoc finalworkflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
+                workflowProcessService.storeWorkFlowMataDataTOBitsream(context, finalworkflowProcessReferenceDoc);
+                rest = workflowProcessReferenceDocConverter.convert(finalworkflowProcessReferenceDoc, utils.obtainProjection());
+                if (workflowProcessReferenceDoc.getWorkflowprocessnote() != null) {
+                    rest.setWorkflowProcessNoteRest(workflowProcessNoteConverter.convert(workflowProcessReferenceDoc.getWorkflowprocessnote(), utils.obtainProjection()));
                 }
-                return  rest;
+                return rest;
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException(e);

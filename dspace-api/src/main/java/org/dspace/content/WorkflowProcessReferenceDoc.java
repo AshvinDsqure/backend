@@ -69,6 +69,10 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     private Date initdate = new Date();
     @Column(name = "description")
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    @JoinColumn(name = "workflowprocesscomment")
+    private WorkFlowProcessComment workflowprocesscomment;
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "workflowProcessReferenceDoc",cascade = { CascadeType.ALL})
     private Set<WorkflowProcessReferenceDocVersion> workflowProcessReferenceDocVersion=new HashSet<>();
     @Override
@@ -159,6 +163,14 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     public void setWorkflowProcessReferenceDocVersion(Set<WorkflowProcessReferenceDocVersion> workflowProcessReferenceDocVersion) {
         this.workflowProcessReferenceDocVersion = workflowProcessReferenceDocVersion;
 
+    }
+
+    public WorkFlowProcessComment getWorkflowprocesscomment() {
+        return workflowprocesscomment;
+    }
+
+    public void setWorkflowprocesscomment(WorkFlowProcessComment workflowprocesscomment) {
+        this.workflowprocesscomment = workflowprocesscomment;
     }
 
     public String getDescription() {

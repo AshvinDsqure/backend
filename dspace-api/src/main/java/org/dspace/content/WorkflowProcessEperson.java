@@ -7,6 +7,7 @@
  */
 package org.dspace.content;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.dspace.eperson.EPerson;
 
 import javax.persistence.*;
@@ -57,7 +58,9 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "office_id")
     private WorkFlowProcessMasterValue office = null;
-
+    @JsonProperty
+    @Column(name = "sequence")
+    private Integer sequence;
     @Column(name = "assign_date", columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
     private Date assignDate = new Date();
@@ -69,6 +72,9 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
     private  Boolean isSender=false;
     @Column(name = "initiator")
     private  Boolean initiator=false;
+
+    @Column(name = "issequence")
+    private  Boolean issequence=false;
     @Override
     public int getType() {
         return 0;
@@ -182,5 +188,21 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
 
     public void setInitiator(Boolean initiator) {
         this.initiator = initiator;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    public Boolean getIssequence() {
+        return issequence;
+    }
+
+    public void setIssequence(Boolean issequence) {
+        this.issequence = issequence;
     }
 }

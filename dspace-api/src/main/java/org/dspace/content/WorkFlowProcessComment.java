@@ -38,9 +38,8 @@ public class WorkFlowProcessComment extends DSpaceObject implements DSpaceObject
     private Integer legacyId;
     @Column(name = "comment")
     private String comment;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workflowprocessreferencedoc_idf")
-    private WorkflowProcessReferenceDoc workflowProcessReferenceDoc;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "workflowprocesscomment")
+    private List<WorkflowProcessReferenceDoc> workflowProcessReferenceDoc = new ArrayList<>();
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflowprocesshistory_idf")
     private WorkFlowProcessHistory workFlowProcessHistory;
@@ -72,12 +71,15 @@ public class WorkFlowProcessComment extends DSpaceObject implements DSpaceObject
     public void setComment(String comment) {
         this.comment = comment;
     }
-    public WorkflowProcessReferenceDoc getWorkflowProcessReferenceDoc() {
+
+    public List<WorkflowProcessReferenceDoc> getWorkflowProcessReferenceDoc() {
         return workflowProcessReferenceDoc;
     }
-    public void setWorkflowProcessReferenceDoc(WorkflowProcessReferenceDoc workflowProcessReferenceDoc) {
+
+    public void setWorkflowProcessReferenceDoc(List<WorkflowProcessReferenceDoc> workflowProcessReferenceDoc) {
         this.workflowProcessReferenceDoc = workflowProcessReferenceDoc;
     }
+
     public WorkFlowProcessHistory getWorkFlowProcessHistory() {
         return workFlowProcessHistory;
     }

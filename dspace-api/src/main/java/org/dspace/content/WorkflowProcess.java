@@ -187,6 +187,7 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
         WorkflowProcessEperson workflowProcessEpersonmax = this.workflowProcessEpeople.stream().max(Comparator.comparing(WorkflowProcessEperson::getIndex)).orElseThrow(NoSuchElementException::new);
         var nextindex=workflowProcessEpersonmax.getIndex()+1;
         workflowProcessEperson.setIndex(nextindex);
+        workflowProcessEperson.setSequence(nextindex);
         this.workflowProcessEpeople.add(workflowProcessEperson);
         System.out.println("workflowProcessEpersonmax index::"+workflowProcessEpersonmax.getIndex());
     }

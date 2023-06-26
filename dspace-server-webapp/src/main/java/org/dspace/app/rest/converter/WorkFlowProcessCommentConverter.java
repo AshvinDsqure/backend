@@ -7,10 +7,14 @@
  */
 package org.dspace.app.rest.converter;
 
+import org.dspace.app.rest.enums.WorkFlowUserType;
 import org.dspace.app.rest.model.WorkFlowProcessCommentRest;
+import org.dspace.app.rest.model.WorkflowProcessReferenceDocRest;
 import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.WorkFlowProcessComment;
 import org.dspace.content.WorkFlowProcessMasterValue;
+import org.dspace.content.WorkflowProcessEperson;
+import org.dspace.content.WorkflowProcessReferenceDoc;
 import org.dspace.content.service.WorkFlowProcessHistoryService;
 import org.dspace.core.Context;
 import org.modelmapper.ModelMapper;
@@ -18,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class WorkFlowProcessCommentConverter extends DSpaceObjectConverter<WorkFlowProcessComment, WorkFlowProcessCommentRest> {
@@ -36,7 +42,6 @@ public class WorkFlowProcessCommentConverter extends DSpaceObjectConverter<WorkF
     @Autowired
     WorkFlowProcessConverter workFlowProcessConverter;
 
-
     @Override
     public Class<WorkFlowProcessComment> getModelClass() {
         return WorkFlowProcessComment.class;
@@ -52,8 +57,15 @@ public class WorkFlowProcessCommentConverter extends DSpaceObjectConverter<WorkF
             rest.setWorkFlowProcessHistoryRest(workFlowProcessHistoryConverter.convert(obj.getWorkFlowProcessHistory(), projection));
         }
         if (obj.getWorkflowProcessReferenceDoc() != null) {
-            rest.setWorkflowProcessReferenceDocRest(workflowProcessReferenceDocConverter.convert(obj.getWorkflowProcessReferenceDoc(), projection));
-        }
+            rest.setWorkflowProcessReferenceDocRest(obj.getWorkflowProcessReferenceDoc().stream().map(we -> {
+                try {
+                    WorkflowProcessReferenceDocRest workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(we, projection);
+                    return workflowProcessReferenceDoc;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
+       }
         if (obj.getSubmitter() != null) {
             rest.setSubmitterRest(ePersonConverter.convert(obj.getSubmitter(), projection));
         }
@@ -74,7 +86,14 @@ public class WorkFlowProcessCommentConverter extends DSpaceObjectConverter<WorkF
             obj.setWorkFlowProcessHistory(workFlowProcessHistoryService.find(context,UUID.fromString(rest.getWorkFlowProcessHistoryRest().getId())));
         }
         if (rest.getWorkflowProcessReferenceDocRest() != null) {
-            obj.setWorkflowProcessReferenceDoc(workflowProcessReferenceDocConverter.convertByService(context,rest.getWorkflowProcessReferenceDocRest()));
+            obj.setWorkflowProcessReferenceDoc(rest.getWorkflowProcessReferenceDocRest().stream().map(we -> {
+                try {
+                    WorkflowProcessReferenceDoc workflowProcessReferenceDoc = workflowProcessReferenceDocConverter.convert(context,we);
+                    return workflowProcessReferenceDoc;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).collect(Collectors.toList()));
         }
         if (rest.getSubmitterRest() != null) {
             obj.setSubmitter(ePersonConverter.convert(context, rest.getSubmitterRest()));

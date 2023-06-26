@@ -137,14 +137,8 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
             workflowProcessReferenceDoc.setInitdate(obj.getInitdate());
         }
         if(obj.getEditortext()!=null){
-            System.out.println("getEditortext:::::::::"+obj.getEditortext());
-            Document document = Jsoup.parse(obj.getEditortext());
-            String text = document.text();
-            System.out.println("getEditortext:::::::::"+text);
             byte[] bytes = obj.getEditortext().getBytes("UTF-8");
             String string = new String(bytes, "UTF-8");
-            System.out.println("getEditortext:::::::::"+string);
-
             workflowProcessReferenceDoc.setEditortext(string);
         }
         if(obj.getWorkFlowProcessReferenceDocType() != null) {

@@ -101,23 +101,34 @@ public class WorkflowProcessNoteServiceImpl extends DSpaceObjectServiceImpl<Work
         return  Optional.ofNullable(workflowProcessNoteDAO.findAll(context,WorkflowProcessNote.class,limit,
                 offset)).orElse(new ArrayList<>());
     }
-    @Override
-    public int countDocumentByItemid(Context context, UUID itemid) throws SQLException {
 
+    @Override
+    public int getNoteCountNumber(Context context, UUID itemid, UUID workflowstatuscloseid) throws SQLException {
         WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
         if(workFlowProcessMaster!=null){
             WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
-            return workflowProcessNoteDAO.countDocumentByItemid(context,note.getID(),itemid);
+            return workflowProcessNoteDAO.getNoteCountNumber(context,note.getID(),itemid,workflowstatuscloseid);
         }
         return 0;
     }
 
     @Override
-    public List<WorkflowProcessNote> getDocumentByItemid(Context context, UUID itemid, Integer offset, Integer limit) throws SQLException {
+    public int countDocumentByItemid(Context context, UUID itemid,UUID workflowstatuscloseid) throws SQLException {
+
         WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
         if(workFlowProcessMaster!=null){
             WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
-            return workflowProcessNoteDAO.getDocumentByItemid(context,note.getID(),itemid,offset,limit);
+            return workflowProcessNoteDAO.countDocumentByItemid(context,note.getID(),itemid,workflowstatuscloseid);
+        }
+        return 0;
+    }
+
+    @Override
+    public List<WorkflowProcessNote> getDocumentByItemid(Context context, UUID itemid,UUID workflowstatuscloseid, Integer offset, Integer limit) throws SQLException {
+        WorkFlowProcessMaster  workFlowProcessMaster= workFlowProcessMasterService.findByName(context,"Draft Type");
+        if(workFlowProcessMaster!=null){
+            WorkFlowProcessMasterValue note=workFlowProcessMasterServicevalue.findByName(context,"Note",workFlowProcessMaster);
+            return workflowProcessNoteDAO.getDocumentByItemid(context,note.getID(),itemid,workflowstatuscloseid,offset,limit);
         }
         return null;
     }

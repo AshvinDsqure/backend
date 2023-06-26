@@ -1532,7 +1532,6 @@ prevent the generation of resource policy entry values with null dspace_object a
             log.debug("Called getMetadata for " + item.getID() + " with invalid cache");
             //rebuild cache
             List<MetadataValue> dbMetadataValues = item.getMetadata();
-
             List<MetadataValue> fullMetadataValueList = new LinkedList<>();
             fullMetadataValueList.addAll(relationshipMetadataService.getRelationshipMetadata(item, true));
             fullMetadataValueList.addAll(dbMetadataValues);

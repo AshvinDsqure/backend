@@ -19,7 +19,9 @@ import org.dspace.app.rest.model.WorkflowProcessReferenceDocVersionRest;
 import org.dspace.app.rest.model.WorkflowProcessSenderDiaryRest;
 import org.dspace.app.rest.utils.DateUtils;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.WorkflowProcessReferenceDoc;
 import org.dspace.content.WorkflowProcessReferenceDocVersion;
+import org.dspace.content.service.WorkflowProcessReferenceDocService;
 import org.dspace.content.service.WorkflowProcessReferenceDocVersionService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,10 @@ public class WorkflowProcessReferenceDocVersionRepository extends DSpaceObjectRe
             .getLogger(WorkflowProcessReferenceDocVersionRepository.class);
     @Autowired
     WorkflowProcessReferenceDocVersionService WorkflowProcessReferenceDocVersionService;
+
+    @Autowired
+    WorkflowProcessReferenceDocService workflowProcessReferenceDocService;
+
 
     @Autowired
     WorkflowProcessReferenceDocVersionConverter WorkflowProcessReferenceDocVersionConverter;
@@ -164,6 +170,12 @@ public class WorkflowProcessReferenceDocVersionRepository extends DSpaceObjectRe
             System.out.println("in update version id:"+versionid);
             Context context = obtainContext();
             WorkflowProcessReferenceDocVersion v=  WorkflowProcessReferenceDocVersionService.find(context, versionid);
+            WorkflowProcessReferenceDoc doc=  workflowProcessReferenceDocService.find(context,v.getWorkflowProcessReferenceDoc().getID());
+            for (WorkflowProcessReferenceDocVersion vv:doc.getWorkflowProcessReferenceDocVersion()) {
+                WorkflowProcessReferenceDocVersion dd=  WorkflowProcessReferenceDocVersionService.find(context, vv.getID());
+                dd.setIsactive(false);
+                WorkflowProcessReferenceDocVersionService.update(context,dd);
+            }
             System.out.println("sdsdsd"+v.getIsactive());
             if(v.getIsactive()){
                 v.setIsactive(false);
@@ -171,8 +183,7 @@ public class WorkflowProcessReferenceDocVersionRepository extends DSpaceObjectRe
                 v.setIsactive(true);
             }
             WorkflowProcessReferenceDocVersionService.update(context,v);
-            System.out.println("is done :"+v.getIsactive());
-          //  context.commit();
+             System.out.println("is done :"+v.getIsactive());
             WorkflowProcessReferenceDocVersionRest workflowProcessReferenceDocVersionRest= converter.toRest(v, utils.obtainProjection());
             context.commit();
            return workflowProcessReferenceDocVersionRest;

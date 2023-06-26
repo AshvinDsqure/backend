@@ -192,12 +192,12 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
         }
     }
     @Override
-    public List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid, Integer offset, Integer limit) throws SQLException {
-        return workflowProcessDAO.findDraftPending(context,eperson,statuscloseid,statusdraftid,offset,limit);
+    public List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid, UUID statusdraft,Integer offset, Integer limit) throws SQLException {
+        return workflowProcessDAO.findDraftPending(context,eperson,statuscloseid,statusdraftid,statusdraft,offset,limit);
     }
     @Override
-    public int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid) throws SQLException {
-        return workflowProcessDAO.countfindDraftPending(context,eperson,statuscloseid,statusdraftid);
+    public int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid,UUID statusdraft) throws SQLException {
+        return workflowProcessDAO.countfindDraftPending(context,eperson,statuscloseid,statusdraftid,statusdraft);
     }
     @Override
     public WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException {
