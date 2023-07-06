@@ -23,9 +23,12 @@ import org.dspace.app.rest.model.WorkFlowProcessRest;
 import org.dspace.app.rest.model.WorkflowProcessEpersonRest;
 import org.dspace.app.rest.repository.AbstractDSpaceRestRepository;
 import org.dspace.app.rest.utils.ContextUtil;
+import org.dspace.app.rest.utils.DateUtils;
+import org.dspace.content.WorkFlowProcessMaster;
 import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.service.*;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
@@ -80,6 +83,10 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
     MetadataFieldService metadataFieldService;
     @Autowired
     private DiscoverableEndpointsService discoverableEndpointsService;
+    @Autowired
+    WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
+    @Autowired
+    WorkFlowProcessMasterService workFlowProcessMasterService;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -118,6 +125,40 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
         }
         return ResponseEntity.ok(workFlowProcessRest);
     }
+
+
+    @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD}, value = "/getOutWardNumber")
+    public ResponseEntity getOutWardNumber() throws Exception {
+        String inwardnumber = null;
+        try {
+            // System.out.println("workFlowProcessRest::" + new Gson().toJson());
+            HttpServletRequest request = getRequestService().getCurrentRequest().getHttpServletRequest();
+            Context context = ContextUtil.obtainContext(request);
+            EPerson currentuser = context.getCurrentUser();
+            StringBuffer sb = new StringBuffer();
+            WorkFlowProcessMasterValue department;
+            if (currentuser != null) {
+                department = workFlowProcessMasterValueService.find(context, context.getCurrentUser().getDepartment().getID());
+                if (department.getPrimaryvalue() != null) {
+                    System.out.println("department.getPrimaryvalue() "+department.getPrimaryvalue());
+                    sb.append(DateUtils.getShortName(department.getPrimaryvalue()));
+                }
+            }
+            if (currentuser.getTablenumber() != null) {
+                sb.append("/"+currentuser.getTablenumber());
+            }
+            sb.append("/outward");
+            sb.append("/"+DateUtils.getFinancialYear());
+            int count = workflowProcessService.getCountByType(context, getMastervalueData(context, WorkFlowType.MASTER.getAction(), WorkFlowType.OUTWARED.getAction()).getID());
+            count = count + 1;
+            sb.append("/0000" + count);
+            inwardnumber = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(inwardnumber);
+    }
     @PreAuthorize("hasPermission(#uuid, 'ITEAM', 'READ')")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.HEAD},value = "/draft")
     public ResponseEntity draft( @RequestBody WorkFlowProcessRest workFlowProcessRest) throws Exception {
@@ -150,6 +191,18 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
         }
         return ResponseEntity.ok(workFlowProcessRest);
     }
+
+    public WorkFlowProcessMasterValue getMastervalueData(Context context, String mastername, String mastervaluename) throws SQLException {
+        WorkFlowProcessMaster workFlowProcessMaster = workFlowProcessMasterService.findByName(context, mastername);
+        if (workFlowProcessMaster != null) {
+            WorkFlowProcessMasterValue workFlowProcessMasterValue = workFlowProcessMasterValueService.findByName(context, mastervaluename, workFlowProcessMaster);
+            if (workFlowProcessMasterValue != null) {
+                System.out.println(" MAster value" + workFlowProcessMasterValue.getPrimaryvalue());
+                return workFlowProcessMasterValue;
+            }
+        }
+        return null;
+    }
     public WorkflowProcessEpersonRest getSubmitor(Context context) throws SQLException {
         if(context.getCurrentUser() != null ){
             WorkflowProcessEpersonRest workflowProcessEpersonSubmitor=new WorkflowProcessEpersonRest();
@@ -164,6 +217,5 @@ public class WorkflowProcessOutwardController extends AbstractDSpaceRestReposito
             return  workflowProcessEpersonSubmitor;
         }
         return  null;
-
     }
 }

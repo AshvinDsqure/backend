@@ -203,4 +203,16 @@ public class WorkFlowProcessServiceImpl extends DSpaceObjectServiceImpl<Workflow
     public WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException {
         return workflowProcessDAO.getNoteByItemsid(context,itemid);
     }
+
+    @Override
+    public int getCountByType(Context context, UUID typeid) throws SQLException {
+        return workflowProcessDAO.getCountByType(context,typeid);
+    }
+
+    @Override
+    public List<WorkflowProcess> Filter(Context context, HashMap<String, String> perameter, Integer offset, Integer limit) throws SQLException {
+
+        return workflowProcessDAO.Filter(context,perameter,offset,limit);
+    }
+
 }

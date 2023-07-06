@@ -25,6 +25,8 @@ public class JBPMProcess implements Serializable {
     private List<Object> users;
 
     private String dispatch;
+
+    private String referuserid;
     private Integer jbpmprocid;
     private Integer jbpmtaskid;
     private  String procstatus;
@@ -108,5 +110,13 @@ public class JBPMProcess implements Serializable {
 
     public void setWorkflowType(String workflowType) {
         this.workflowType = workflowType;
+    }
+
+    public String getReferuserid() {
+        return referuserid;
+    }
+
+    public void setReferuserid(String referuserid) {
+        this.referuserid = referuserid;
     }
 }

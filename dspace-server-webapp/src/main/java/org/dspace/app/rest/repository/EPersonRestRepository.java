@@ -22,20 +22,21 @@ import org.dspace.app.rest.DiscoverableEndpointsService;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
+import org.dspace.app.rest.enums.WorkFlowStatus;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.EPersonNameNotProvidedException;
 import org.dspace.app.rest.exception.PasswordNotValidException;
 import org.dspace.app.rest.exception.RESTEmptyWorkflowGroupException;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
-import org.dspace.app.rest.model.EPersonRest;
-import org.dspace.app.rest.model.MetadataRest;
-import org.dspace.app.rest.model.MetadataValueRest;
+import org.dspace.app.rest.model.*;
 import org.dspace.app.rest.model.patch.Operation;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.app.util.AuthorizeUtil;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.authorize.service.ValidatePasswordService;
+import org.dspace.content.Item;
+import org.dspace.content.WorkflowProcess;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.EmptyWorkflowGroupException;
@@ -354,6 +355,26 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
             throw new UnprocessableEntityException(e.getMessage(), e);
         }
     }
+
+
+    @SearchRestMethod(name = "searchByDepartment")
+    public Page<EPersonRest> searchByDepartment(
+            @Parameter(value = "searchdepartment", required = true) UUID searchdepartment,
+            Pageable pageable) {
+        try {
+            System.out.println("search value :"+searchdepartment);
+            Context context = obtainContext();
+            List<EPerson> witems =es.getByDepartment(context,searchdepartment);
+            return converter.toRestPage(witems, pageable, 1000, utils.obtainProjection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 
     @Override
     public Class<EPersonRest> getDomainClass() {

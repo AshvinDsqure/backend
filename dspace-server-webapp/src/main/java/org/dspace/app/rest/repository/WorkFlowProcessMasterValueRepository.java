@@ -15,6 +15,7 @@ import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.ConverterService;
 import org.dspace.app.rest.converter.WorkFlowProcessMasterValueConverter;
 import org.dspace.app.rest.exception.UnprocessableEntityException;
+import org.dspace.app.rest.model.EPersonRest;
 import org.dspace.app.rest.model.WorkFlowProcessMasterRest;
 import org.dspace.app.rest.model.WorkFlowProcessMasterValueRest;
 import org.dspace.authorize.AuthorizeException;
@@ -23,6 +24,8 @@ import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.service.WorkFlowProcessMasterService;
 import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.xmlworkflow.state.Workflow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -177,6 +180,29 @@ public class WorkFlowProcessMasterValueRepository extends DSpaceObjectRestReposi
           return  new PageImpl(transformedList, pageable, total);
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+
+
+    @SearchRestMethod(name = "searchByDepartment")
+    public Page<WorkFlowProcessMasterValueRest> searchByDepartment(
+            @Parameter(value = "searchdepartment", required = true) String searchdepartment,
+            Pageable pageable) {
+        try {
+            System.out.println("search value :"+searchdepartment);
+            Context context = obtainContext();
+            UUID masterid=null;
+            WorkFlowProcessMaster master=masterService.findByName(context,"Department");
+           if(master!=null){
+               masterid=master.getID();
+           }
+            List<WorkFlowProcessMasterValue> witems =workFlowProcessMasterValueService.searchByDepartment(context,masterid,searchdepartment);
+            return converter.toRestPage(witems, pageable, 1000, utils.obtainProjection());
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

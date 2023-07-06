@@ -47,6 +47,9 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
 
     @Autowired
     WorkFlowProcessMasterValueConverter workFlowProcessMasterValueConverter;
+
+    @Autowired
+    ItemConverter itemConverter;
     @Autowired
     WorkflowProcessReferenceDocService workflowProcessReferenceDocService;
     public WorkflowProcessReferenceDocRest convert(WorkflowProcessReferenceDoc obj, Projection projection) {
@@ -74,6 +77,9 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
         }
         if(obj.getDescription()!=null){
             workflowProcessDefinitionRest.setDescription(obj.getDescription());
+        }
+        if(obj.getItemname()!=null){
+            workflowProcessDefinitionRest.setItemname(obj.getItemname());
         }
         workflowProcessDefinitionRest.setUuid(obj.getID().toString());
         return workflowProcessDefinitionRest;
@@ -119,6 +125,9 @@ public class WorkflowProcessReferenceDocConverter extends DSpaceObjectConverter<
         }
         if(rest.getBitstreamRest() != null) {
             workflowProcessReferenceDoc.setBitstream(bitstreamService.find(context, UUID.fromString(rest.getBitstreamRest().getId())));
+        }
+        if(rest.getItemname() != null) {
+            workflowProcessReferenceDoc.setItemname(rest.getItemname());
         }
         return  workflowProcessReferenceDoc;
     }

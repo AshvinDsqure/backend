@@ -113,4 +113,9 @@ public class WorkFlowProcessMasterValueServiceImpl extends DSpaceObjectServiceIm
     public int countfindByType(Context context, String type) throws SQLException {
         return workFlowProcessMasterValueDAO.countfindByType(context, type);
     }
+
+    @Override
+    public List<WorkFlowProcessMasterValue> searchByDepartment(Context context,UUID masterid,  String search) throws SQLException {
+        return workFlowProcessMasterValueDAO.searchByDepartment(context,masterid,search);
+    }
 }

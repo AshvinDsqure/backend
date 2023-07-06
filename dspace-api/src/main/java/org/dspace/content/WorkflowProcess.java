@@ -92,9 +92,8 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflowprocessnote_idf")
     private WorkflowProcessNote workflowProcessNote;
-
-
-
+    @Column(name = "isdelete")
+    private  Boolean isdelete =false;
 
 
 //    @Column(name = "assignduedate", columnDefinition = "timestamp with time zone")
@@ -250,5 +249,12 @@ public class WorkflowProcess extends DSpaceObject implements DSpaceObjectLegacyS
 
     public void setPriority(WorkFlowProcessMasterValue priority) {
         this.priority = priority;
+    }
+
+    public Boolean getIsdelete() {
+        return isdelete;
+    }
+    public void setIsdelete(Boolean isdelete) {
+        this.isdelete = isdelete;
     }
 }

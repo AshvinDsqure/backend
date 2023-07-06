@@ -62,6 +62,7 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         workflowProcessDefinitionEpersonRest.setIssequence(obj.getIssequence());
         workflowProcessDefinitionEpersonRest.setSequence(obj.getSequence());
         workflowProcessDefinitionEpersonRest.setOwner(obj.getOwner());
+        workflowProcessDefinitionEpersonRest.setIsrefer(obj.getIsrefer());
         return workflowProcessDefinitionEpersonRest;
     }
 
@@ -93,6 +94,7 @@ public class WorkFlowProcessEpersonConverter extends DSpaceObjectConverter<Workf
         }
         workflowProcessEperson.setIssequence(rest.getIssequence());
         workflowProcessEperson.setSequence(rest.getSequence());
+        workflowProcessEperson.setIsrefer(rest.getIsrefer());
         return workflowProcessEperson;
     }
     public WorkflowProcessEperson convert(Context context, EPerson rest) {

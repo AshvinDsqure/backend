@@ -61,6 +61,9 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "draft_type_id")
     private WorkFlowProcessMasterValue drafttype;
+
+    @Column(name = "itemname")
+    private String itemname;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lattercategory")
     private WorkFlowProcessMasterValue latterCategory;
@@ -179,5 +182,13 @@ public class WorkflowProcessReferenceDoc extends DSpaceObject implements DSpaceO
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getItemname() {
+        return itemname;
+    }
+
+    public void setItemname(String itemname) {
+        this.itemname = itemname;
     }
 }

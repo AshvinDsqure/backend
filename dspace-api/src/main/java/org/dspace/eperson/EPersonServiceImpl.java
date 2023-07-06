@@ -597,4 +597,9 @@ public class EPersonServiceImpl extends DSpaceObjectServiceImpl<EPerson> impleme
     public String getName(EPerson dso) {
         return dso.getName();
     }
+
+    @Override
+    public List<EPerson> getByDepartment(Context context, UUID idd) throws SQLException {
+        return ePersonDAO.getByDepartment(context,idd);
+    }
 }

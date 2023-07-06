@@ -41,17 +41,48 @@ public class WorkflowProcessSenderDiaryConverter extends DSpaceObjectConverter<W
     @Override
     public WorkflowProcessSenderDiaryRest convert(WorkflowProcessSenderDiary obj, Projection projection) {
         WorkflowProcessSenderDiaryRest rest = new WorkflowProcessSenderDiaryRest();
-        rest = modelMapper.map(obj, WorkflowProcessSenderDiaryRest.class);
+        if (obj.getState() != null) {
+            rest.setState(obj.getState());
+        }
+        if (obj.getEmail() != null) {
+            rest.setEmail(obj.getEmail());
+        }
+        if (obj.getAddress() != null) {
+            rest.setAddress(obj.getAddress());
+        }
+        if (obj.getCity() != null) {
+            rest.setCity(obj.getCity());
+        }
+        if (obj.getCountry() != null) {
+            rest.setCountry(obj.getCountry());
+        }
+        if (obj.getSendername() != null) {
+            rest.setSendername(obj.getSendername());
+        }
+        if (obj.getContactNumber() != null) {
+            rest.setContactNumber(obj.getContactNumber());
+        }
+        if (obj.getDesignation() != null) {
+            rest.setDesignation(obj.getDesignation());
+        }
+        if (obj.getOrganization() != null) {
+            rest.setOrganization(obj.getOrganization());
+        }
+        if (obj.getPincode()!=null){
+            rest.setPincode(obj.getPincode());
+        }
         rest.setUuid(obj.getID().toString());
         return rest;
     }
+
     public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiary obj, WorkflowProcessSenderDiaryRest rest) {
         obj = modelMapper.map(rest, WorkflowProcessSenderDiary.class);
         return obj;
     }
+
     public WorkflowProcessSenderDiary convert(WorkflowProcessSenderDiaryRest rest) {
-        WorkflowProcessSenderDiary obj =null;
-        if(rest != null) {
+        WorkflowProcessSenderDiary obj = null;
+        if (rest != null) {
             obj = new WorkflowProcessSenderDiary();
             obj = modelMapper.map(rest, WorkflowProcessSenderDiary.class);
         }

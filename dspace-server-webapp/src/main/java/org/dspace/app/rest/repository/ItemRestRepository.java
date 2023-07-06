@@ -7,8 +7,7 @@
  */
 package org.dspace.app.rest.repository;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -387,6 +386,33 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
         Item item = uriListHandlerService.handle(context, req, stringList, Item.class);
         return converter.toRest(item, utils.obtainProjection());
+    }
+
+
+    @SearchRestMethod(name = "getCounter")
+    public Integer getCounter() {
+        int counter=1;
+        try {
+            // String baseurl = configurationService.getProperty("dspace.server.url");
+           // String counterFile = configurationService.getProperty("dspace.dir") +"/webapps/jspui/counter.txt";
+            File f; f=new File("D://testcounter.txt");
+            if(!f.exists())
+            { f.createNewFile(); }
+            else
+            {
+                ObjectInputStream inp = new ObjectInputStream(new FileInputStream(f));
+                if(inp.available()>0) { counter=inp.readInt(); }
+                inp.close();
+            }
+            ObjectOutputStream oute = new ObjectOutputStream(new FileOutputStream(f));
+            oute.writeInt(++counter);
+            oute.flush();
+            oute.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return counter;
     }
 
     @SearchRestMethod(name = "findByStartDateAndEndDate")

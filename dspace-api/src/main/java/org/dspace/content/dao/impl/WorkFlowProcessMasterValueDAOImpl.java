@@ -74,4 +74,16 @@ public class WorkFlowProcessMasterValueDAOImpl  extends AbstractHibernateDAO<Wor
             return 0;
         }
     }
+    @Override
+    public List<WorkFlowProcessMasterValue> searchByDepartment(Context context,UUID masterid, String search) throws SQLException {
+        try {
+            Query query = createQuery(context, "SELECT mv from  WorkFlowProcessMasterValue as mv join mv.workflowprocessmaster as m where m.id=:master and lower(mv.primaryvalue) LIKE :search");
+            query.setParameter("master",masterid);
+            query.setParameter("search", "%"+search.toLowerCase()+"%");
+            return query.getResultList();
+        }catch (Exception e){
+            System.out.println("in error " + e.getMessage());
+            return null;
+        }
+    }
 }

@@ -119,6 +119,7 @@ public class WorkflowProcessDraftController extends AbstractDSpaceRestRepository
             context.commit();
             create.setComment(null);
             create.setWorkflowProcessReferenceDocs(null);
+            create.setInitiator(false);
         }catch (Exception e){
             e.printStackTrace();
         }

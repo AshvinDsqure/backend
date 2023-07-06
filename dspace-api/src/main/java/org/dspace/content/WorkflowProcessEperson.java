@@ -75,6 +75,9 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
 
     @Column(name = "issequence")
     private  Boolean issequence=false;
+
+    @Column(name = "isrefer")
+    private  Boolean isrefer=false;
     @Override
     public int getType() {
         return 0;
@@ -204,5 +207,13 @@ public class WorkflowProcessEperson extends DSpaceObject implements DSpaceObject
 
     public void setIssequence(Boolean issequence) {
         this.issequence = issequence;
+    }
+
+    public Boolean getIsrefer() {
+        return isrefer;
+    }
+
+    public void setIsrefer(Boolean isrefer) {
+        this.isrefer = isrefer;
     }
 }

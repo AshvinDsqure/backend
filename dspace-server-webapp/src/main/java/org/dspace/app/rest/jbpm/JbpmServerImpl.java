@@ -46,7 +46,7 @@ public class JbpmServerImpl {
         return restTemplate.exchange(baseurl+ JBPM.CREATEPROCESS, HttpMethod.POST, entity, String.class).getBody();
 
     }
-    public String forwardTask(WorkFlowProcessRest workflowProcess,List<String> users) throws  RuntimeException{
+    public String   forwardTask(WorkFlowProcessRest workflowProcess,List<String> users) throws  RuntimeException{
         System.out.println("::::::::::::::FORWARD ACTION::::::::::::::::::::::");
         String baseurl=configurationService.getProperty("jbpm.server");
         JBPMProcess jbpmProcess=new JBPMProcess();
@@ -140,6 +140,21 @@ public class JbpmServerImpl {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
         return restTemplate.exchange(baseurl+ JBPM.RESUMEPROCESS, HttpMethod.PUT, entity, String.class).getBody();
+    }
+    public String refer(WorkFlowProcessRest workflowProcess,String referuserid) throws  RuntimeException{
+        String baseurl=configurationService.getProperty("jbpm.server");
+        System.out.println("URL :"+baseurl+ JBPM.REFERTASK);
+        JBPMProcess jbpmProcess=new JBPMProcess();
+        jbpmProcess.setWorkflowType(null);
+        jbpmProcess.setQueueid(workflowProcess.getId());
+        if(workflowProcess.getWorkflowProcessEpersonRests()!= null) {
+            jbpmProcess.setReferuserid(referuserid);
+        }
+        System.out.println("jbpm json::"+new Gson().toJson(jbpmProcess));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        HttpEntity<JBPMProcess> entity = new HttpEntity<JBPMProcess>(jbpmProcess,headers);
+        return restTemplate.exchange(baseurl+ JBPM.REFERTASK, HttpMethod.POST, entity, String.class).getBody();
     }
 
     public String gettasklist(String uuid) throws  RuntimeException{

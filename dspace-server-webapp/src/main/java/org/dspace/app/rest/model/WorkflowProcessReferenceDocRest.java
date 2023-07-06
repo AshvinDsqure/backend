@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.dspace.app.rest.model.helper.MyDateConverter;
+import org.dspace.content.Item;
 import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.WorkflowProcessNote;
 
@@ -63,7 +64,7 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
 
     @JsonProperty
     private WorkflowProcessReferenceDocVersionRest workflowProcessReferenceDocVersionRest;
-
+    private String itemname;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String entityType = null;
@@ -177,5 +178,13 @@ public class WorkflowProcessReferenceDocRest extends DSpaceObjectRest {
 
     public void setWorkflowProcessReferenceDocVersionRest(WorkflowProcessReferenceDocVersionRest workflowProcessReferenceDocVersionRest) {
         this.workflowProcessReferenceDocVersionRest = workflowProcessReferenceDocVersionRest;
+    }
+
+    public String getItemname() {
+        return itemname;
+    }
+
+    public void setItemname(String itemname) {
+        this.itemname = itemname;
     }
 }

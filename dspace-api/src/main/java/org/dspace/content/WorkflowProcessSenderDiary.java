@@ -53,6 +53,12 @@ public class WorkflowProcessSenderDiary extends DSpaceObject implements DSpaceOb
     private String address;
     @Column(name = "city")
     private String city;
+
+    @Column(name = "state")
+    private String state;
+
+    @Column(name = "pincode")
+    private String pincode;
     @Column(name = "country")
         private String country;
 
@@ -139,5 +145,19 @@ public class WorkflowProcessSenderDiary extends DSpaceObject implements DSpaceOb
         this.country = country;
     }
 
+    public String getState() {
+        return state;
+    }
 
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public void setPincode(String pincode) {
+        this.pincode = pincode;
+    }
 }

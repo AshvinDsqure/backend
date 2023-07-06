@@ -64,6 +64,9 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
 
     @JsonProperty
     private  Boolean issequence=false;
+
+    @JsonProperty
+    private  Boolean isrefer=false;
     @JsonProperty
     @JsonDeserialize(converter = MyDateConverter.class)
     private Date assignDate =null;
@@ -196,5 +199,13 @@ public class WorkflowProcessEpersonRest extends DSpaceObjectRest {
     }
     public void setWorkflowProcessReferenceDocRests(List<WorkflowProcessReferenceDocRest> workflowProcessReferenceDocRests) {
         this.workflowProcessReferenceDocRests = workflowProcessReferenceDocRests;
+    }
+
+    public Boolean getIsrefer() {
+        return isrefer;
+    }
+
+    public void setIsrefer(Boolean isrefer) {
+        this.isrefer = isrefer;
     }
 }

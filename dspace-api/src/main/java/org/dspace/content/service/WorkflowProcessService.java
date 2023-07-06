@@ -17,10 +17,7 @@ import org.dspace.eperson.Group;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Service interface class for the Item object.
@@ -88,5 +85,8 @@ public interface WorkflowProcessService extends DSpaceObjectService<WorkflowProc
     List<WorkflowProcess> findDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid,UUID statusdraft,Integer offset, Integer limit) throws SQLException;
     int countfindDraftPending(Context context, UUID eperson, UUID statuscloseid, UUID statusdraftid,UUID statusdraft) throws SQLException;
     WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException;
+    int getCountByType(Context context,UUID typeid) throws SQLException;
+
+    List<WorkflowProcess> Filter(Context context, HashMap<String,String> perameter , Integer offset, Integer limit) throws SQLException;
 
 }

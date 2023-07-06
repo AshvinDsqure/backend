@@ -11,7 +11,9 @@ import org.dspace.content.*;
 import org.dspace.core.Context;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -35,5 +37,8 @@ public interface WorkflowProcessDAO extends DSpaceObjectLegacySupportDAO<Workflo
 
     int countfindNotCompletedByUser(Context context, UUID eperson, UUID statusid,UUID draftid) throws SQLException;
 
+    int getCountByType(Context context,UUID typeid) throws SQLException;
     WorkflowProcess getNoteByItemsid(Context context, UUID itemid) throws SQLException;
+    List<WorkflowProcess> Filter(Context context, HashMap<String,String> perameter ,Integer offset, Integer limit) throws SQLException;
+
 }

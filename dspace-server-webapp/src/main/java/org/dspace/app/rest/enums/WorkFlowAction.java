@@ -58,8 +58,15 @@ public enum WorkFlowAction {
     FORWARD("Forward") {
         @Override
         public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
-            List<String> usersUuid = this.removeInitiatorgetUserList(workFlowProcessRest);
-            System.out.println(usersUuid);
+            List<String> usersUuid = null;
+            if (this.getInitiator()) {
+                System.out.println("in removeInitiatorgetUserList1");
+                usersUuid = this.noteremoveInitiatorgetUserList(workFlowProcessRest);
+            } else {
+                System.out.println("in removeInitiatorgetUserList");
+                usersUuid = this.removeInitiatorgetUserList(workFlowProcessRest);
+            }
+            System.out.println("user list" + usersUuid);
             String forwardResponce = this.getJbpmServer().forwardTask(workFlowProcessRest, usersUuid);
             System.out.println("forward jbpm responce create" + forwardResponce);
             JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
@@ -74,12 +81,27 @@ public enum WorkFlowAction {
             String forwardResponce = this.getJbpmServer().backwardTask(workFlowProcessRest);
             JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
             System.out.println("jbpmResponse:: Backward" + new Gson().toJson(jbpmResponse));
+            if (workflowProcess.getWorkflowType().getPrimaryvalue().equals("Draft")) {
+                this.setIsbackward(true);
+            }
+            WorkflowProcessEperson currentOwner = this.changeOwnership(context, jbpmResponse, workflowProcess);
+            this.setIsbackward(false);
+            WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+            return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
+        }
+    },
+    REFER("Refer") {
+        @Override
+        public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+            String usersUuid = this.getreferUserID(workFlowProcessRest);
+            String forwardResponce = this.getJbpmServer().refer(workFlowProcessRest, usersUuid);
+            System.out.println("Refer jbpm responce :" + forwardResponce);
+            JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
             WorkflowProcessEperson currentOwner = this.changeOwnership(context, jbpmResponse, workflowProcess);
             WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
             return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
         }
     },
-    REFER("Refer"),
     HOLD("Hold") {
         @Override
         public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
@@ -102,6 +124,16 @@ public enum WorkFlowAction {
             JBPMResponse_ jbpmResponse = new Gson().fromJson(forwardResponce, JBPMResponse_.class);
             WorkflowProcessEperson currentOwner = this.changeOwnership(context, jbpmResponse, workflowProcess);
             WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+            return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
+        }
+    },
+    REJECTED("Rejected") {
+        @Override
+        public WorkFlowProcessHistory perfomeAction(Context context, WorkflowProcess workflowProcess, WorkFlowProcessRest workFlowProcessRest) throws SQLException, AuthorizeException {
+            WorkflowProcessEperson currentOwner = this.changeOwnerByReject(context, workflowProcess);
+            System.out.println("Reject action " + this.getComment());
+            WorkFlowProcessHistory workFlowAction = this.storeWorkFlowHistory(context, workflowProcess, currentOwner);
+            this.setComment(null);
             return this.getWorkFlowProcessHistoryService().create(context, workFlowAction);
         }
     },
@@ -137,6 +169,11 @@ public enum WorkFlowAction {
     };
     private String action;
     private String comment;
+
+    private Boolean isInitiator = false;
+
+    private Boolean isbackward = false;
+    private Boolean isrefer = false;
     private List<WorkflowProcessReferenceDoc> workflowProcessReferenceDocs;
     private WorkFlowProcessHistoryService workFlowProcessHistoryService;
     private WorkFlowProcessCommentService workFlowProcessCommentService;
@@ -180,6 +217,14 @@ public enum WorkFlowAction {
         }
     }
 
+    public Boolean getIsrefer() {
+        return isrefer;
+    }
+
+    public void setIsrefer(Boolean isrefer) {
+        this.isrefer = isrefer;
+    }
+
     WorkFlowAction(String action) {
         this.action = action;
     }
@@ -196,6 +241,14 @@ public enum WorkFlowAction {
         return action;
     }
 
+    public Boolean getInitiator() {
+        return isInitiator;
+    }
+
+    public void setInitiator(Boolean initiator) {
+        isInitiator = initiator;
+    }
+
     public List<WorkflowProcessReferenceDoc> getWorkflowProcessReferenceDocs() {
         return workflowProcessReferenceDocs;
     }
@@ -204,10 +257,37 @@ public enum WorkFlowAction {
         this.workflowProcessReferenceDocs = workflowProcessReferenceDocs;
     }
 
+    public Boolean getIsbackward() {
+        return isbackward;
+    }
+
+    public void setIsbackward(Boolean isbackward) {
+        this.isbackward = isbackward;
+    }
+
+    public String getreferUserID(WorkFlowProcessRest workFlowProcessRest) {
+        System.out.println("in find referid");
+        try {
+            return workFlowProcessRest.getWorkflowProcessEpersonRests().stream()
+                    .filter(s -> s.getIsrefer() != null)
+                    .filter(s -> s.getIsrefer())
+                    .map(d -> d.getUuid())
+                    .findFirst().get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public List<String> removeInitiatorgetUserList(WorkFlowProcessRest workFlowProcessRest) {
         return workFlowProcessRest.getWorkflowProcessEpersonRests().stream()
                 .filter(wei -> !wei.getUserType().getPrimaryvalue().equals(WorkFlowUserType.INITIATOR.getAction()))
                 .filter(wei -> !wei.getUserType().getPrimaryvalue().equals(WorkFlowUserType.DISPATCH.getAction()))
+                .sorted(Comparator.comparing(WorkflowProcessEpersonRest::getIndex)).map(d -> d.getUuid()).collect(Collectors.toList());
+    }
+
+    public List<String> noteremoveInitiatorgetUserList(WorkFlowProcessRest workFlowProcessRest) {
+        return workFlowProcessRest.getWorkflowProcessEpersonRests().stream()
                 .sorted(Comparator.comparing(WorkflowProcessEpersonRest::getIndex)).map(d -> d.getUuid()).collect(Collectors.toList());
     }
 
@@ -232,7 +312,6 @@ public enum WorkFlowAction {
     public WorkFlowProcessHistory storeWorkFlowHistory(Context context, WorkflowProcess workflowProcess, WorkflowProcessEperson workflowProcessEperson) throws SQLException {
         System.out.println("::::::IN :storeWorkFlowHistory:::::::::: ");
         WorkFlowProcessHistory workFlowAction = null;
-
         workFlowAction = new WorkFlowProcessHistory();
         WorkFlowProcessMaster workFlowProcessMaster = MASTER.getMaster(context);
         workFlowAction.setWorkflowProcessEpeople(workflowProcessEperson);
@@ -274,16 +353,48 @@ public enum WorkFlowAction {
         return workFlowAction;
     }
 
+    public WorkflowProcessEperson changeOwnerByReject(Context context, WorkflowProcess workflowProcess) throws SQLException, AuthorizeException {
+        WorkflowProcessEperson currentOwner = null;
+        WorkflowProcessEperson initiator = null;
+        currentOwner = workflowProcess.getWorkflowProcessEpeople()
+                .stream()
+                .filter(d -> d.getOwner() != null)
+                .filter(s -> s.getOwner()).findFirst().get();
+        if (currentOwner != null) {
+            System.out.println("getPerformed_by:::::::::: "+currentOwner.getePerson().getEmail());
+            currentOwner.setOwner(false);
+            this.getWorkflowProcessEpersonService().update(context, currentOwner);
+        }
+        initiator = workflowProcess.getWorkflowProcessEpeople().stream()
+                .filter(wei -> wei.getUsertype().getPrimaryvalue().equals(WorkFlowUserType.INITIATOR.getAction())).findFirst().get();
+
+        if (initiator != null) {
+            System.out.println("next User:::::::::: "+initiator.getePerson().getEmail());
+
+            initiator.setOwner(true);
+            this.getWorkflowProcessEpersonService().update(context, currentOwner);
+        }
+        return currentOwner;
+    }
+
     public WorkflowProcessEperson changeOwnership(Context context, JBPMResponse_ jbpmResponse, WorkflowProcess workflowProcess) throws SQLException, AuthorizeException {
         WorkflowProcessEperson currentOwner = null;
         if (jbpmResponse.getPerformed_by_user() != null) {
             currentOwner = workflowProcess.getWorkflowProcessEpeople().stream().filter(we -> we.getID().equals(UUID.fromString(jbpmResponse.getPerformed_by_user()))).findFirst().get();
+            if (this.isrefer) {
+                System.out.println("getPerformed_by::::::::::::" + currentOwner.getePerson().getEmail());
+                return currentOwner;
+            }
             if (currentOwner.getePerson().getEmail() != null) {
                 System.out.println("getPerformed_by::::::::::::" + currentOwner.getePerson().getEmail());
             }
+            if (this.isbackward) {
+                currentOwner.setIssequence(false);
+            } else {
+                currentOwner.setIssequence(true);
+            }
             currentOwner.setOwner(false);
             currentOwner.setSender(true);
-            currentOwner.setIssequence(true);
             this.getWorkflowProcessEpersonService().update(context, currentOwner);
         }
         if (jbpmResponse.getNext_user() != null && jbpmResponse.getNext_user().trim().length() != 0) {

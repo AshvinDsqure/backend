@@ -213,4 +213,18 @@ public class EPersonDAOImpl extends AbstractHibernateDSODAO<EPerson> implements 
     public int countRows(Context context) throws SQLException {
         return count(createQuery(context, "SELECT count(*) FROM EPerson"));
     }
+
+    @Override
+    public List<EPerson> getByDepartment(Context context, UUID idd) throws SQLException {
+        System.out.println("search :"+idd);
+        Query query = createQuery(context, "" +
+        "SELECT ep FROM EPerson as ep join ep.department as d where  d.id=:department");
+        query.setParameter("department",idd);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<EPerson> getByName(Context context, String type) throws SQLException {
+        return null;
+    }
 }

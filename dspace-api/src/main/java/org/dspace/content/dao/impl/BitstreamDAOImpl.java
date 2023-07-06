@@ -8,10 +8,7 @@
 package org.dspace.content.dao.impl;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -110,6 +107,14 @@ public class BitstreamDAOImpl extends AbstractHibernateDSODAO<Bitstream> impleme
         query.setParameter("item", item);
 
         return iterate(query);
+    }
+
+    @Override
+    public List<Bitstream> findByItemIdAndInward(Context context, UUID itemid, UUID inwardid,Integer limit, Integer offset) throws SQLException {
+        Query query = createQuery(context, "SELECT bt FROM WorkflowProcessReferenceDoc as d join d.bitstream as bt join d.workflowProcess as wp join wp.workflowType as wft join wp.item as i where i.id=:itemid and wft.id=:workflowtypeid");
+        query.setParameter("workflowtypeid",inwardid);
+        query.setParameter("itemid",itemid);
+        return query.getResultList();
     }
 
     @Override

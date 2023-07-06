@@ -36,6 +36,9 @@ public interface BitstreamService extends DSpaceObjectService<Bitstream>, DSpace
     @Override
     public Bitstream find(Context context, UUID id) throws SQLException;
 
+    public List<Bitstream> findByItemIdAndInward(Context context, UUID itemid,UUID inwardid,Integer limit, Integer offset) throws SQLException;
+
+
     public List<Bitstream> findAll(Context context) throws SQLException;
 
     public Iterator<Bitstream> findAll(Context context, int limit, int offset) throws SQLException;

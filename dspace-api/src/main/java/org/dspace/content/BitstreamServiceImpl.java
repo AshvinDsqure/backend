@@ -91,6 +91,11 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
     }
 
     @Override
+    public List<Bitstream> findByItemIdAndInward(Context context, UUID itemid, UUID inwardid, Integer limit, Integer offset) throws SQLException {
+        return bitstreamDAO.findByItemIdAndInward(context,itemid,inwardid,limit,offset);
+    }
+
+    @Override
     public List<Bitstream> findAll(Context context) throws SQLException {
         return bitstreamDAO.findAll(context, Bitstream.class);
     }

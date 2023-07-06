@@ -92,6 +92,10 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
 
     @Autowired
     private WorkflowProcessService workflowProcessService;
+
+
+    @Autowired
+    private ItemConverter itemConverter;
     @Autowired
     WorkflowProcessNoteConverter workflowProcessNoteConverter;
     @Autowired
@@ -171,6 +175,13 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
                 }
                 workflowProcessReferenceDoc.setWorkflowProcess(workflowProcess);
                 workflowProcessService.update(context, workflowProcess);
+            }
+            if (workflowProcessReferenceDocRest.getItemname()!=null){
+                System.out.println("in item rest :");
+                workflowProcessReferenceDoc.setItemname(workflowProcessReferenceDocRest.getItemname());
+            }
+            if (workflowProcessReferenceDocRest.getWorkflowProcessNoteRest()!=null){
+                workflowProcessReferenceDoc.setWorkflowprocessnote(workflowProcessNoteConverter.convert(workflowProcessReferenceDocRest.getWorkflowProcessNoteRest()));
             }
             if (workflowProcessReferenceDocRest.getDrafttypeRest() != null && workFlowProcessMasterValueConverter.convert(context, workflowProcessReferenceDocRest.getDrafttypeRest()) != null && workFlowProcessMasterValueConverter.convert(context, workflowProcessReferenceDocRest.getDrafttypeRest()).getPrimaryvalue().equalsIgnoreCase("Comment")) {
                 List<WorkflowProcessReferenceDoc>docs=new ArrayList<>();
@@ -340,6 +351,10 @@ public class WorkflowProcessReferenceDocController extends AbstractDSpaceRestRep
                 }
                 if (wrd.getWorkflowProcessNoteRest() != null) {
                     workflowProcessReferenceDoc.setWorkflowprocessnote(workflowProcessNoteService.find(context, UUID.fromString(wrd.getWorkflowProcessNoteRest().getUuid())));
+                }
+                if (wrd.getItemname()!=null){
+                    System.out.println("in item rest :");
+                    workflowProcessReferenceDoc.setItemname(wrd.getItemname());
                 }
                 WorkflowProcessReferenceDoc finalworkflowProcessReferenceDoc = workflowProcessReferenceDocService.create(context, workflowProcessReferenceDoc);
                 workflowProcessService.storeWorkFlowMataDataTOBitsream(context, finalworkflowProcessReferenceDoc);

@@ -84,7 +84,6 @@ public class EPerson extends DSpaceObject implements DSpaceObjectLegacySupport {
     @JoinColumn(name = "department_id")
     private WorkFlowProcessMasterValue department;
 
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "designation_id")
     private WorkFlowProcessMasterValue designation;

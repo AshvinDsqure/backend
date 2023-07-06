@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
@@ -67,6 +68,8 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
      */
     public EPerson findByEmail(Context context, String email)
         throws SQLException;
+
+    public List<EPerson> getByDepartment(Context context, UUID idd) throws SQLException;
 
     /**
      * Find the eperson by their netid.

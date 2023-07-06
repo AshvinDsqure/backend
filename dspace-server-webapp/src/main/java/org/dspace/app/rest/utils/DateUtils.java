@@ -2,6 +2,7 @@ package org.dspace.app.rest.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -10,14 +11,42 @@ import java.util.Date;
 public class DateUtils {
 
     public static void main(String[] args) throws ParseException {
-
         Date d=new Date();
-        System.out.println("test::"+DateToSTRDDMMYYYHHMMSS(d));
+        System.out.println(getFinancialYear());
+        System.out.println(getShortName("Computer Application"));
+       // System.out.println("test::"+strDateToString("2023-06-17 16:09:41.481"))
 
-        System.out.println("test::"+strDateToString("2023-06-17 16:09:41.481"));
+
+
+
+
 
     }
+    
+    public  static  String getShortName(String str){
+        StringBuilder initials = new StringBuilder();
+        for (String word : str.split(" ")) {
+            initials.append(word.charAt(0));
+        }
+        return initials.toString();
+    }
 
+    public static String getFinancialYear (){
+        LocalDate today = LocalDate.now();
+        System.out.println("todate date"+today);
+        int year = today.getYear();
+        int month = today.getMonthValue();
+        String financialYear;
+        String financialYears;
+        if (month <= 3) {
+            financialYear = String.format("%d-%d", year - 1, year);
+        } else {
+            financialYear = String.format("%d-%d", year, year + 1);
+        }
+        String s[]=financialYear.split("-");
+        financialYears=s[0].toString().substring(2)+"-"+s[1].toString().substring(2);
+        return  financialYears;
+    }
     public static String DateToSTRDDMMYYYHHMMSS(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
         return formatter.format(date);
@@ -42,4 +71,6 @@ public class DateUtils {
         }
         return date1;
     }
+
+
 }

@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest;
@@ -23,6 +23,7 @@ import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.converter.ConverterService;
+import org.dspace.app.rest.enums.WorkFlowType;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.model.BitstreamRest;
 import org.dspace.app.rest.model.hateoas.BitstreamResource;
@@ -32,8 +33,12 @@ import org.dspace.app.rest.utils.Utils;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bitstream;
 import org.dspace.content.BitstreamFormat;
+import org.dspace.content.WorkFlowProcessMaster;
+import org.dspace.content.WorkFlowProcessMasterValue;
 import org.dspace.content.service.BitstreamFormatService;
 import org.dspace.content.service.BitstreamService;
+import org.dspace.content.service.WorkFlowProcessMasterService;
+import org.dspace.content.service.WorkFlowProcessMasterValueService;
 import org.dspace.core.Context;
 import org.dspace.disseminate.service.CitationDocumentService;
 import org.dspace.eperson.EPerson;
@@ -54,7 +59,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * This is a specialized controller to provide access to the bitstream binary
  * content
- *
+ * <p>
  * The mapping for requested endpoint try to resolve a valid UUID, for example
  * <pre>
  * {@code
@@ -68,7 +73,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/" + BitstreamRest.CATEGORY + "/" + BitstreamRest.PLURAL_NAME
-    + REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID)
+        + REGEX_REQUESTMAPPING_IDENTIFIER_AS_UUID)
 public class BitstreamRestController {
 
     private static final Logger log = org.apache.logging.log4j.LogManager
@@ -79,6 +84,13 @@ public class BitstreamRestController {
 
     @Autowired
     private BitstreamService bitstreamService;
+
+
+    @Autowired
+    WorkFlowProcessMasterService workFlowProcessMasterService;
+
+    @Autowired
+    WorkFlowProcessMasterValueService workFlowProcessMasterValueService;
 
     @Autowired
     BitstreamFormatService bitstreamFormatService;
@@ -99,9 +111,9 @@ public class BitstreamRestController {
     Utils utils;
 
     @PreAuthorize("hasPermission(#uuid, 'BITSTREAM', 'READ')")
-    @RequestMapping( method = {RequestMethod.GET, RequestMethod.HEAD}, value = "content")
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD}, value = "content")
     public ResponseEntity retrieve(@PathVariable UUID uuid, HttpServletResponse response,
-                         HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+                                   HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
 
 
         Context context = ContextUtil.obtainContext(request);
@@ -123,11 +135,11 @@ public class BitstreamRestController {
             //We only log a download request when serving a request without Range header. This is because
             //a browser always sends a regular request first to check for Range support.
             eventService.fireEvent(
-                new UsageEvent(
-                    UsageEvent.Action.VIEW,
-                    request,
-                    context,
-                    bit));
+                    new UsageEvent(
+                            UsageEvent.Action.VIEW,
+                            request,
+                            context,
+                            bit));
         }
 
         try {
@@ -135,12 +147,12 @@ public class BitstreamRestController {
             Boolean citationEnabledForBitstream = citationDocumentService.isCitationEnabledForBitstream(bit, context);
 
             HttpHeadersInitializer httpHeadersInitializer = new HttpHeadersInitializer()
-                .withBufferSize(BUFFER_SIZE)
-                .withFileName(name)
-                .withChecksum(bit.getChecksum())
-                .withMimetype(mimetype)
-                .with(request)
-                .with(response);
+                    .withBufferSize(BUFFER_SIZE)
+                    .withFileName(name)
+                    .withChecksum(bit.getChecksum())
+                    .withMimetype(mimetype)
+                    .with(request)
+                    .with(response);
 
             if (lastModified != null) {
                 httpHeadersInitializer.withLastModified(lastModified);
@@ -153,9 +165,9 @@ public class BitstreamRestController {
             }
 
             org.dspace.app.rest.utils.BitstreamResource bitstreamResource =
-                new org.dspace.app.rest.utils.BitstreamResource(name, uuid,
-                    currentUser != null ? currentUser.getID() : null,
-                    context.getSpecialGroupUuids(), citationEnabledForBitstream);
+                    new org.dspace.app.rest.utils.BitstreamResource(name, uuid,
+                            currentUser != null ? currentUser.getID() : null,
+                            context.getSpecialGroupUuids(), citationEnabledForBitstream);
 
             //We have all the data we need, close the connection to the database so that it doesn't stay open during
             //download/streaming
@@ -169,11 +181,34 @@ public class BitstreamRestController {
 
         } catch (ClientAbortException ex) {
             log.debug("Client aborted the request before the download was completed. " +
-                          "Client is probably switching to a Range request.", ex);
+                    "Client is probably switching to a Range request.", ex);
         } catch (Exception e) {
             throw e;
         }
         return null;
+    }
+
+
+    @PreAuthorize("hasPermission(#uuid, 'BITSTREAM', 'READ')")
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.HEAD}, value = "getInwardBitstream")
+    public List<Bitstream> getInwardBitstream(@PathVariable UUID uuid, HttpServletResponse response,
+                                              HttpServletRequest request) throws IOException, SQLException, AuthorizeException {
+        System.out.println("in getInwardBitstream  " + uuid);
+        Context context = ContextUtil.obtainContext(request);
+        UUID workflowtypeuuid = null;
+        try {
+            WorkFlowProcessMasterValue inward = getMastervalueData(context, WorkFlowType.MASTER.getAction(), WorkFlowType.INWARD.getAction());
+            if (inward != null) {
+                System.out.println(":name ::" + inward.getPrimaryvalue());
+                workflowtypeuuid = inward.getID();
+            }
+            List<Bitstream> bitstreamList = bitstreamService.findByItemIdAndInward(context, uuid, workflowtypeuuid, 0, 99999);
+            return bitstreamList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("error in getInwardBitstream  " + uuid);
+            return  null;
+        }
     }
 
     private String getBitstreamName(Bitstream bit, BitstreamFormat format) {
@@ -191,16 +226,16 @@ public class BitstreamRestController {
     private boolean isNotAnErrorResponse(HttpServletResponse response) {
         Response.Status.Family responseCode = Response.Status.Family.familyOf(response.getStatus());
         return responseCode.equals(Response.Status.Family.SUCCESSFUL)
-            || responseCode.equals(Response.Status.Family.REDIRECTION);
+                || responseCode.equals(Response.Status.Family.REDIRECTION);
     }
 
     /**
      * This method will update the bitstream format of the bitstream that corresponds to the provided bitstream uuid.
      *
-     * @param uuid The UUID of the bitstream for which to update the bitstream format
-     * @param request  The request object
+     * @param uuid    The UUID of the bitstream for which to update the bitstream format
+     * @param request The request object
      * @return The wrapped resource containing the bitstream which in turn contains the bitstream format
-     * @throws SQLException       If something goes wrong in the database
+     * @throws SQLException If something goes wrong in the database
      */
     @RequestMapping(method = PUT, consumes = {"text/uri-list"}, value = "format")
     @PreAuthorize("hasPermission(#uuid, 'BITSTREAM','WRITE')")
@@ -231,5 +266,17 @@ public class BitstreamRestController {
 
         BitstreamRest bitstreamRest = converter.toRest(context.reloadEntity(bitstream), utils.obtainProjection());
         return converter.toResource(bitstreamRest);
+    }
+
+    public WorkFlowProcessMasterValue getMastervalueData(Context context, String mastername, String mastervaluename) throws SQLException {
+        WorkFlowProcessMaster workFlowProcessMaster = workFlowProcessMasterService.findByName(context, mastername);
+        if (workFlowProcessMaster != null) {
+            WorkFlowProcessMasterValue workFlowProcessMasterValue = workFlowProcessMasterValueService.findByName(context, mastervaluename, workFlowProcessMaster);
+            if (workFlowProcessMasterValue != null) {
+                System.out.println(" MAster value" + workFlowProcessMasterValue.getPrimaryvalue());
+                return workFlowProcessMasterValue;
+            }
+        }
+        return null;
     }
 }

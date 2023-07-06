@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.dspace.content.MetadataField;
 import org.dspace.content.dao.DSpaceObjectDAO;
@@ -51,4 +52,7 @@ public interface EPersonDAO extends DSpaceObjectDAO<EPerson>, DSpaceObjectLegacy
 
     int countRows(Context context) throws SQLException;
     public List<EPerson> wildcardSearchByEmail(Context context, String email) throws SQLException;
+    public List<EPerson> getByDepartment(Context context, UUID id) throws SQLException;
+    public List<EPerson> getByName(Context context, String type) throws SQLException;
+
 }
